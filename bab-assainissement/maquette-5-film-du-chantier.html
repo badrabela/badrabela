@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BAB Assainissement, le film du chantier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+/* Idée de mise en page : une affiche sérigraphiée qui se regarde comme un film.
+   Une seule scène en coupe ; on fait glisser une poignée et le chantier se déroule,
+   du rapport non conforme au jardin refermé. Le sous-sol est bleu nuit et devient le fond de la page. */
+:root{
+  color-scheme: dark;
+  --paper:#FFF4DF;       /* ciel, papier d'affiche */
+  --navy:#111C6E;        /* sous-sol et fond de page */
+  --navy-2:#1A2A99;
+  --ink:#0B1147;
+  --red:#FF4A26;         /* toit, alerte, action */
+  --sun:#FFC531;         /* poignée, étiquettes */
+  --green:#12A56B;
+  --water:#46D3FF;
+  --cream:#FFF4DF;
+  --display:"Syne","Arial Black",system-ui,sans-serif;
+  --body:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --gutter:clamp(18px,5vw,64px);
+  --max:1240px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--navy);color:var(--cream);font:400 18px/1.55 var(--body);-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;line-height:.98;letter-spacing:-.035em;text-wrap:balance}
+p{margin:0} a{color:inherit}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--red);outline-offset:4px;border-radius:999px}
+.wrap{max-width:var(--max);margin:0 auto;padding-inline:var(--gutter)}
+.mock{background:var(--ink);color:#C9CFF5;font-size:13.5px;padding:8px var(--gutter);text-align:center}
+.pill{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:54px;padding:0 26px;border-radius:999px;border:0;background:var(--red);color:#fff;font-weight:600;text-decoration:none;cursor:pointer;transition:transform .15s}
+.pill:hover{transform:translateY(-2px) rotate(-1deg)}
+.pill.ink{background:var(--ink);color:var(--cream)}
+.pill.line{background:transparent;color:inherit;box-shadow:inset 0 0 0 2px currentColor}
+
+/* Ciel */
+.sky{background:var(--paper);color:var(--ink)}
+.top{display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding-block:18px}
+.logo{margin-right:auto;font:800 30px/1 var(--display);letter-spacing:-.05em;text-decoration:none;display:flex;align-items:baseline;gap:10px}
+.logo span{font:500 14px/1 var(--body);letter-spacing:0}
+.logo i{display:inline-block;width:14px;height:14px;border-radius:50%;background:var(--red);margin-left:-6px}
+.top a.l{text-decoration:none;font-weight:500;font-size:16px}
+.top a.l:hover{text-decoration:underline;text-decoration-thickness:3px;text-decoration-color:var(--sun);text-underline-offset:6px}
+.top .pill{min-height:46px;padding:0 20px;font-size:15.5px}
+.hero{padding-block:clamp(24px,4vw,56px) clamp(8px,2vw,24px)}
+h1{font-size:clamp(33px,7.6vw,112px);max-width:13ch;overflow-wrap:break-word}
+h1 em{font-style:normal;color:var(--red)}
+.lede{font-size:clamp(18px,1.7vw,22px);max-width:44ch;margin-top:22px}
+
+/* Scène */
+.stage{position:relative}
+.scroll{overflow-x:auto;background:linear-gradient(var(--paper) 53.5%,var(--navy) 53.5%)}
+svg.film{display:block;width:100%;min-width:740px;height:auto;max-width:1500px;margin:0 auto}
+.film [data-s]{opacity:0;transition:opacity .6s ease,transform .7s cubic-bezier(.2,.8,.2,1)}
+.film [data-s].on{opacity:1}
+.film .slide{transform:translateX(70px)}
+.film .slide.on{transform:none}
+.film .pop{transform:scale(.4);transform-box:fill-box;transform-origin:center}
+.film .pop.on{transform:none}
+.film text{font-family:var(--body);font-weight:600;font-size:15px}
+.film .leak{animation:drip 1.4s ease-in infinite}
+@keyframes drip{0%{transform:translateY(0);opacity:1}100%{transform:translateY(22px);opacity:0}}
+.film .cone{animation:scan 2.2s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:left center}
+@keyframes scan{from{transform:rotate(-7deg)}to{transform:rotate(7deg)}}
+
+.cap{position:absolute;right:max(var(--gutter),calc((100% - var(--max))/2 + var(--gutter)));top:clamp(4px,1.5vw,26px);width:min(430px,38%);color:var(--ink);display:grid;gap:10px}
+.cap .when{justify-self:start;background:var(--ink);color:var(--sun);border-radius:999px;padding:6px 14px;font-weight:600;font-size:14.5px}
+.cap h2{font-size:clamp(24px,2.7vw,38px);line-height:1.02}
+.cap p{font-size:clamp(15.5px,1.25vw,17.5px)}
+.count{display:inline-flex;align-items:center;gap:10px;font-weight:600;font-size:15.5px}
+.count b{display:grid;place-items:center;min-width:36px;height:36px;padding:0 10px;border-radius:999px;background:var(--red);color:#fff;font:800 18px/1 var(--display);transition:background .4s}
+.count.ok b{background:var(--green)}
+
+/* Poignée */
+.scrub{padding-block:clamp(22px,3vw,36px) clamp(40px,6vw,80px)}
+.scrub-in{display:grid;gap:14px}
+input[type=range]{appearance:none;width:100%;height:56px;background:transparent;cursor:grab;margin:0}
+input[type=range]:active{cursor:grabbing}
+input[type=range]::-webkit-slider-runnable-track{height:12px;border-radius:99px;background:linear-gradient(90deg,var(--sun) var(--p,0%),#ffffff2e var(--p,0%))}
+input[type=range]::-moz-range-track{height:12px;border-radius:99px;background:#ffffff2e}
+input[type=range]::-moz-range-progress{height:12px;border-radius:99px;background:var(--sun)}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:56px;height:56px;margin-top:-22px;border-radius:50%;background:var(--sun);border:5px solid var(--ink);box-shadow:0 0 0 0 #FFC53166;animation:nudge 2s infinite}
+input[type=range]::-moz-range-thumb{width:46px;height:46px;border-radius:50%;background:var(--sun);border:5px solid var(--ink)}
+@keyframes nudge{70%{box-shadow:0 0 0 16px #FFC53100}100%{box-shadow:0 0 0 0 #FFC53100}}
+.stops{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.stops button{min-width:0;overflow-wrap:anywhere;background:transparent;border:0;padding:8px 2px;cursor:pointer;font:700 clamp(11.5px,1.7vw,21px)/1.1 var(--display);letter-spacing:-.02em;color:#ffffff80;text-align:center;border-radius:12px}
+.stops button:first-child{text-align:left}.stops button:last-child{text-align:right}
+.stops button[aria-pressed="true"]{color:var(--sun)}
+.stops button:hover{color:var(--cream)}
+.play{justify-self:center;margin-top:6px}
+
+/* Prestations */
+.sec{padding-block:clamp(40px,6vw,90px)}
+.sec>.wrap>h2{font-size:clamp(30px,5.6vw,80px);max-width:14ch;overflow-wrap:break-word}
+.sec .sub{margin-top:16px;max-width:48ch;color:#C9CFF5}
+.list{list-style:none;margin:clamp(28px,4vw,52px) 0 0;padding:0}
+.list li{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,5fr);gap:clamp(14px,4vw,56px);align-items:baseline;padding:clamp(16px,2.2vw,26px) 0;border-top:2px solid #ffffff24;transition:padding .25s}
+.list li:last-child{border-bottom:2px solid #ffffff24}
+.list b{font:700 clamp(26px,3.7vw,52px)/1.02 var(--display);letter-spacing:-.035em;transition:color .2s}
+.list span{color:#C9CFF5;font-size:17px}
+.list li:hover{padding-left:18px}
+.list li:hover b{color:var(--sun)}
+
+/* Demande */
+.ask{background:var(--sun);color:var(--ink);border-radius:clamp(30px,5vw,64px);padding:clamp(30px,6vw,80px) clamp(22px,5vw,72px);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,440px);gap:clamp(26px,5vw,72px);align-items:center;position:relative;overflow:hidden}
+.ask::before{content:"";position:absolute;width:340px;height:340px;border-radius:50%;background:var(--red);right:-110px;top:-150px}
+.ask>*{position:relative}
+.ask h2{font-size:clamp(32px,4.4vw,62px);overflow-wrap:break-word}
+.sec .ask .sub{margin-top:16px;max-width:34ch;font-weight:500;color:var(--ink)}
+.form{display:grid;gap:12px}
+.dz{display:grid;gap:4px;text-align:center;border-radius:28px;padding:26px 18px;cursor:pointer;background:var(--paper);box-shadow:inset 0 0 0 2.5px var(--ink);transition:transform .15s}
+.dz:hover,.dz.over{transform:rotate(-1deg) scale(1.01)}
+.dz b{font:700 24px/1.1 var(--display);letter-spacing:-.03em}
+.dz span{font-size:14.5px}
+.dz input{position:absolute;opacity:0;width:1px;height:1px}
+.dz:focus-within{outline:3px solid var(--red);outline-offset:4px}
+.form label.t{font-size:14.5px;font-weight:600;display:grid;gap:6px}
+.form input[type=tel]{min-height:54px;border-radius:999px;border:2.5px solid var(--ink);padding:0 22px;background:var(--paper);color:var(--ink)}
+.msg{font-size:15px;background:var(--ink);color:var(--cream);border-radius:22px;padding:12px 18px}
+.msg[hidden]{display:none}
+
+.zones{text-align:center;display:grid;gap:22px;justify-items:center}
+.zones h2{font-size:clamp(24px,4vw,54px);max-width:18ch;overflow-wrap:break-word}
+.zones p{max-width:58ch;color:#C9CFF5}
+.zones p b{color:var(--cream);font-weight:600}
+footer{font-size:14.5px;color:#C9CFF5;padding-bottom:34px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:8px 32px;justify-content:space-between;border-top:2px solid #ffffff24;padding-top:22px}
+footer b{color:var(--cream)}
+.fab{display:none}
+
+@media (max-width:900px){
+  .top a.l{display:none}
+  .cap{position:static;width:auto;padding:18px var(--gutter) 6px;background:var(--navy);color:var(--cream)}
+  .cap .when{background:var(--sun);color:var(--ink)}
+  .list li{grid-template-columns:minmax(0,1fr);gap:6px}
+  .ask{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:520px){
+  body{font-size:17px;padding-bottom:84px}
+  .top .pill{display:none}
+  .fab{display:flex;position:fixed;left:16px;right:16px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:40}
+  .fab .pill{flex:1;box-shadow:0 10px 40px #0008}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+<div class="mock">Maquette de travail. Coordonnées et prestations reprises de babassainissement.fr ; la scène et ses cotes sont un exemple.</div>
+
+<div class="sky">
+  <div class="wrap">
+    <nav class="top" aria-label="Navigation">
+      <a class="logo" href="#haut">BAB<i></i><span>Assainissement · Saint-Mandé</span></a>
+      <a class="l" href="#prestations">Prestations</a>
+      <a class="l" href="#demande">Prix et devis</a>
+      <a class="l" href="tel:+33189480964">01 89 48 09 64</a>
+      <a class="pill ink" href="#demande">Envoyer mon rapport</a>
+    </nav>
+    <header class="hero" id="haut">
+      <h1>Votre chantier, <em>avant</em> qu'il commence.</h1>
+      <p class="lede">Faites glisser la poignée jaune. Vous voyez tout se dérouler, du rapport non conforme au jardin refermé.</p>
+    </header>
+  </div>
+</div>
+
+<main>
+<section class="stage" aria-label="Le film du chantier">
+  <div class="scroll">
+  <svg class="film" id="film" viewBox="0 0 1200 560" role="img" aria-labelledby="cap-t cap-d">
+    <!-- ciel et sous-sol -->
+    <rect width="1200" height="300" fill="var(--paper)"/>
+    <rect y="300" width="1200" height="260" fill="var(--navy)"/>
+    <path d="M0 380C160 350 300 410 480 390S820 350 1200 400V560H0Z" fill="var(--navy-2)" opacity=".45"/>
+    <path d="M0 470C220 440 420 500 640 476S980 450 1200 484V560H0Z" fill="var(--ink)" opacity=".5"/>
+    <circle cx="470" cy="92" r="46" fill="var(--sun)"/>
+    <!-- rue et réseau public -->
+    <rect x="1010" y="292" width="190" height="20" fill="var(--ink)"/>
+    <path d="M1000 240V312" stroke="var(--ink)" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="1100" cy="470" r="34" fill="none" stroke="var(--cream)" stroke-width="5" stroke-dasharray="10 9" opacity=".7"/>
+    <text x="1100" y="530" text-anchor="middle" fill="var(--cream)" opacity=".8">Réseau public</text>
+    <!-- pelouse -->
+    <path d="M0 292C200 284 420 298 640 290S900 286 1010 292V312H0Z" fill="var(--green)"/>
+    <!-- maison -->
+    <rect x="120" y="170" width="240" height="130" rx="10" fill="#fff"/>
+    <path d="M104 182L240 92L376 182Z" fill="var(--red)" stroke="var(--red)" stroke-width="20" stroke-linejoin="round"/>
+    <rect x="150" y="204" width="52" height="52" rx="12" fill="var(--sun)"/>
+    <path d="M280 300v-58a24 24 0 0 1 48 0v58z" fill="var(--ink)"/>
+
+    <!-- AVANT : gouttière branchée sur les eaux usées, fonte fissurée, fosse en service -->
+    <g data-s="123">
+      <path d="M384 180V372" stroke="#7FB6FF" stroke-width="8" fill="none" stroke-linecap="round"/>
+      <path d="M180 300V372H384" stroke="#B07A55" stroke-width="13" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+      <path d="M266 365l8 9-9 6" stroke="var(--ink)" stroke-width="3" fill="none"/>
+      <circle class="leak" cx="270" cy="388" r="4" fill="var(--water)"/>
+      <path d="M384 372L566 388" stroke="#B07A55" stroke-width="13" stroke-linecap="round"/>
+      <rect x="560" y="346" width="140" height="84" rx="22" fill="var(--navy-2)" stroke="var(--cream)" stroke-width="4"/>
+      <path d="M630 346V300" stroke="var(--cream)" stroke-width="4"/>
+      <text x="630" y="394" text-anchor="middle" fill="var(--cream)">Fosse</text>
+    </g>
+    <g data-s="123" class="pop">
+      <circle cx="384" cy="340" r="15" fill="var(--red)"/><text x="384" y="346" text-anchor="middle" fill="#fff" font-size="18">!</text>
+    </g>
+    <g data-s="123" class="pop">
+      <circle cx="270" cy="346" r="15" fill="var(--red)"/><text x="270" y="352" text-anchor="middle" fill="#fff" font-size="18">!</text>
+    </g>
+    <g data-s="123" class="pop">
+      <circle cx="700" cy="346" r="15" fill="var(--red)"/><text x="700" y="352" text-anchor="middle" fill="#fff" font-size="18">!</text>
+    </g>
+
+    <!-- LA VISITE : technicien et caméra -->
+    <g data-s="2" class="slide">
+      <circle cx="452" cy="226" r="13" fill="var(--ink)"/>
+      <rect x="438" y="242" width="28" height="52" rx="12" fill="var(--red)"/>
+      <rect x="470" y="252" width="26" height="18" rx="4" fill="var(--ink)"/>
+      <path d="M452 294C452 340 410 372 440 380" stroke="var(--sun)" stroke-width="3" fill="none"/>
+      <rect x="438" y="371" width="30" height="16" rx="8" fill="var(--sun)"/>
+      <path class="cone" d="M468 379L548 360V400Z" fill="var(--sun)" opacity=".55"/>
+    </g>
+
+    <!-- LE DEVIS : ce qui est mesuré -->
+    <g data-s="3">
+      <path d="M384 500H975M384 490V510M975 490V510" stroke="var(--sun)" stroke-width="3" fill="none"/>
+      <g class="pop" data-s="3"><rect x="590" y="484" width="178" height="32" rx="16" fill="var(--sun)"/><text x="679" y="505" text-anchor="middle" fill="var(--ink)">Tranchée et conduite</text></g>
+      <g class="pop" data-s="3"><rect x="396" y="232" width="192" height="32" rx="16" fill="var(--sun)"/><text x="492" y="253" text-anchor="middle" fill="var(--ink)">Eaux de pluie à séparer</text></g>
+      <g class="pop" data-s="3"><rect x="716" y="372" width="236" height="32" rx="16" fill="var(--sun)"/><text x="834" y="393" text-anchor="middle" fill="var(--ink)">Fosse à mettre hors service</text></g>
+      <g class="pop" data-s="3"><rect x="150" y="402" width="176" height="32" rx="16" fill="var(--sun)"/><text x="238" y="423" text-anchor="middle" fill="var(--ink)">Fonte à remplacer</text></g>
+    </g>
+
+    <!-- LE CHANTIER : tranchée ouverte, pelle, réseau neuf -->
+    <g data-s="4">
+      <path d="M392 290H996V470H520C470 470 440 400 392 392Z" fill="var(--ink)" opacity=".75"/>
+      <path d="M392 288H996V314H392Z" fill="var(--navy)"/>
+      <path d="M800 292c14-34 44-44 70-30s34 22 44 30z" fill="#B07A55"/>
+    </g>
+    <g data-s="4" class="slide">
+      <rect x="610" y="266" width="120" height="24" rx="12" fill="var(--ink)"/>
+      <rect x="622" y="222" width="94" height="46" rx="10" fill="var(--sun)"/>
+      <rect x="670" y="196" width="46" height="40" rx="8" fill="var(--sun)"/><rect x="678" y="204" width="30" height="22" rx="4" fill="var(--paper)"/>
+      <path d="M628 236L572 184L536 250" stroke="var(--sun)" stroke-width="12" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+      <path d="M522 246h30l-6 26h-20z" fill="var(--ink)"/>
+    </g>
+    <g data-s="45">
+      <path d="M384 180V330C384 348 400 350 420 350H470" stroke="#7FB6FF" stroke-width="8" fill="none" stroke-linecap="round"/>
+      <rect x="462" y="296" width="30" height="66" rx="5" fill="var(--paper)"/>
+      <path d="M180 300V372H384C450 372 456 452 530 452H962" stroke="var(--water)" stroke-width="13" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+      <rect x="524" y="296" width="32" height="168" rx="5" fill="var(--paper)"/>
+      <rect x="958" y="296" width="34" height="172" rx="5" fill="var(--paper)"/>
+      <path d="M992 456L1070 466" stroke="var(--cream)" stroke-width="6" stroke-dasharray="10 8" opacity=".7"/>
+      <rect x="590" y="346" width="140" height="84" rx="22" fill="none" stroke="var(--cream)" stroke-width="3" stroke-dasharray="6 9" opacity=".45"/>
+      <text x="660" y="394" text-anchor="middle" fill="var(--cream)" opacity=".6">Hors service</text>
+    </g>
+
+    <!-- APRÈS : jardin refermé -->
+    <g data-s="5">
+      <path d="M380 292C520 284 760 296 1010 290V312H380Z" fill="var(--green)"/>
+      <rect x="456" y="288" width="42" height="9" rx="4" fill="var(--ink)"/><rect x="519" y="288" width="42" height="9" rx="4" fill="var(--ink)"/><rect x="954" y="288" width="42" height="9" rx="4" fill="var(--ink)"/>
+      <g fill="var(--red)"><circle cx="620" cy="276" r="8"/><circle cx="700" cy="272" r="8"/><circle cx="790" cy="278" r="8"/><circle cx="870" cy="274" r="8"/></g>
+      <g fill="var(--sun)"><circle cx="620" cy="276" r="3"/><circle cx="700" cy="272" r="3"/><circle cx="790" cy="278" r="3"/><circle cx="870" cy="274" r="3"/></g>
+      <path d="M620 284v10M700 280v12M790 286v8M870 282v10" stroke="var(--ink)" stroke-width="3"/>
+    </g>
+    <g data-s="5" class="pop"><circle cx="384" cy="340" r="15" fill="var(--green)"/><path d="M377 340l5 5 9-10" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round"/></g>
+    <g data-s="5" class="pop"><circle cx="270" cy="346" r="15" fill="var(--green)"/><path d="M263 346l5 5 9-10" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round"/></g>
+    <g data-s="5" class="pop"><circle cx="730" cy="346" r="15" fill="var(--green)"/><path d="M723 346l5 5 9-10" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round"/></g>
+  </svg>
+  </div>
+
+  <div class="cap" aria-live="polite">
+    <span class="when" id="cap-w"></span>
+    <h2 id="cap-t"></h2>
+    <p id="cap-d"></p>
+    <span class="count" id="count"><b id="count-n"></b><span id="count-l"></span></span>
+  </div>
+</section>
+
+<section class="scrub">
+  <div class="wrap scrub-in">
+    <label for="t" style="position:absolute;left:-9999px">Avancement du chantier, de 1 à 5</label>
+    <input type="range" id="t" min="1" max="5" step="1" value="1">
+    <div class="stops" id="stops">
+      <button type="button" data-v="1">Aujourd'hui</button>
+      <button type="button" data-v="2">La visite</button>
+      <button type="button" data-v="3">Le devis</button>
+      <button type="button" data-v="4">Le chantier</button>
+      <button type="button" data-v="5">Après</button>
+    </div>
+    <button class="pill line play" type="button" id="play">Lancer le film</button>
+  </div>
+</section>
+
+<section class="sec" id="prestations" style="padding-top:0">
+  <div class="wrap">
+    <h2>Ce que nous réparons</h2>
+    <p class="sub">Nous intervenons sur la partie privée de votre réseau, de la maison jusqu'à la boîte de branchement.</p>
+    <ul class="list">
+      <li><b>Mise en conformité</b><span>Après un contrôle, nous corrigeons ce que le rapport a relevé.</span></li>
+      <li><b>Raccordement au tout-à-l'égout</b><span>De la maison jusqu'à la boîte de branchement, en limite de terrain.</span></li>
+      <li><b>Inspection caméra et curage</b><span>Nettoyage haute pression, puis un rapport avec les images.</span></li>
+      <li><b>Canalisation fonte</b><span>Remplacement du tronçon fissuré ou affaissé.</span></li>
+      <li><b>Fosses et micro-stations</b><span>Pose, remplacement ou mise hors service.</span></li>
+      <li><b>Pompes de relevage</b><span>Installation, remplacement, entretien.</span></li>
+      <li><b>Cuve à fioul</b><span>Neutralisation ou retrait.</span></li>
+      <li><b>Terrassement</b><span>Tranchées, jardin, évacuation des terres.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section class="sec" id="demande" style="padding-top:0">
+  <div class="wrap">
+    <div class="ask">
+      <div>
+        <h2>Parlons de votre installation.</h2>
+        <p class="sub">Le prix dépend de la distance, de la profondeur, du terrain et des regards à créer. Il est fixé après la visite, poste par poste.</p>
+      </div>
+      <form class="form" id="send" novalidate>
+        <label class="dz" id="dz" for="file">
+          <input type="file" id="file" accept=".pdf,image/*">
+          <b id="dz-t">Déposez votre rapport</b>
+          <span id="dz-s">PDF ou photo. Sans rapport, quelques photos suffisent.</span>
+        </label>
+        <label class="t" for="tel">Votre téléphone<input id="tel" type="tel" inputmode="tel" autocomplete="tel" placeholder="06 12 34 56 78"></label>
+        <button class="pill" type="submit">Envoyer mon rapport</button>
+        <p class="msg" id="msg" hidden></p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section class="sec" style="padding-top:0">
+  <div class="wrap zones">
+    <h2>Depuis Saint-Mandé, dans toute l'Île-de-France</h2>
+    <p><b>Paris</b>, <b>Seine-et-Marne</b>, <b>Yvelines</b>, <b>Essonne</b>, <b>Hauts-de-Seine</b>, <b>Seine-Saint-Denis</b>, <b>Val-de-Marne</b> et <b>Val-d'Oise</b>.</p>
+    <a class="pill line" href="tel:+33189480964">Appeler le 01 89 48 09 64</a>
+  </div>
+</section>
+</main>
+
+<footer><div class="wrap">
+  <span><b>BAB Assainissement</b> · 14 avenue du Général de Gaulle, 94160 Saint-Mandé</span>
+  <span>Lundi au samedi, 8 h à 19 h · SIREN 933 127 995</span>
+  <span>Maquette, contenus à valider</span>
+</div></footer>
+
+<div class="fab"><a class="pill" href="#demande">Envoyer mon rapport</a></div>
+
+<script>
+(function(){
+  var $ = function(i){return document.getElementById(i)};
+  var T = {
+    1:{w:"Aujourd'hui", t:"Le rapport dit « non conforme ».", d:"La gouttière rejoint les eaux usées, la fonte est fissurée, la fosse est encore en service. Vous nous envoyez le rapport, ou quelques photos.", n:"3", l:"anomalies à corriger"},
+    2:{w:"Visite sous 7 jours", t:"Nous venons voir sur place.", d:"Terrain, regards, canalisations. La caméra parcourt le réseau et localise chaque défaut.", n:"3", l:"anomalies localisées"},
+    3:{w:"Devis sous 48 h", t:"Tout est écrit, poste par poste.", d:"Chaque étiquette devient une ligne du devis. Les travaux commencent seulement après votre accord.", n:"3", l:"anomalies chiffrées"},
+    4:{w:"Le chantier", t:"On ouvre, on remplace, on raccorde.", d:"Tranchée, canalisation neuve, regards, eaux de pluie séparées. L'ancienne fosse est mise hors service.", n:"…", l:"corrections en cours"},
+    5:{w:"Après", t:"Le jardin est refermé.", d:"La maison est raccordée jusqu'à la boîte de branchement, et les anomalies du rapport sont corrigées.", n:"0", l:"anomalie restante"}
+  };
+  var range = $("t"), film = $("film"), timer = null;
+  var parts = Array.prototype.slice.call(film.querySelectorAll("[data-s]"));
+  function set(v){
+    v = String(v); range.value = v;
+    range.style.setProperty("--p", ((v - 1) / 4 * 100) + "%");
+    parts.forEach(function(p){ p.classList.toggle("on", p.getAttribute("data-s").indexOf(v) > -1); });
+    document.querySelectorAll("#stops button").forEach(function(b){ b.setAttribute("aria-pressed", String(b.dataset.v === v)); });
+    var c = T[v];
+    $("cap-w").textContent = c.w; $("cap-t").textContent = c.t; $("cap-d").textContent = c.d;
+    $("count-n").textContent = c.n; $("count-l").textContent = c.l;
+    $("count").classList.toggle("ok", v === "5");
+  }
+  function stop(){ if (timer){ clearInterval(timer); timer = null; $("play").textContent = "Relancer le film"; } }
+  range.addEventListener("input", function(){ stop(); set(range.value); });
+  document.querySelectorAll("#stops button").forEach(function(b){ b.addEventListener("click", function(){ stop(); set(b.dataset.v); }); });
+  $("play").addEventListener("click", function(){
+    if (timer){ stop(); return; }
+    var v = 1; set(v); $("play").textContent = "Arrêter";
+    timer = setInterval(function(){ v++; set(v); if (v >= 5) stop(); }, 2600);
+  });
+  set(1);
+
+  var file = $("file"), dz = $("dz");
+  function named(f){ if (!f) return; $("dz-t").textContent = f.name; $("dz-s").textContent = "Fichier prêt. Touchez pour en choisir un autre."; }
+  file.addEventListener("change", function(){ named(file.files[0]); });
+  ["dragover","dragenter"].forEach(function(n){ dz.addEventListener(n, function(e){ e.preventDefault(); dz.classList.add("over"); }); });
+  ["dragleave","drop"].forEach(function(n){ dz.addEventListener(n, function(e){ e.preventDefault(); dz.classList.remove("over"); }); });
+  dz.addEventListener("drop", function(e){ if (e.dataTransfer && e.dataTransfer.files[0]) named(e.dataTransfer.files[0]); });
+  $("send").addEventListener("submit", function(e){
+    e.preventDefault();
+    var m = $("msg"), v = $("tel").value.replace(/[\s.\-]/g, "");
+    m.hidden = false;
+    if (!/^(?:\+33|0)[1-9]\d{8}$/.test(v)){ m.textContent = "Il nous faut un numéro à 10 chiffres pour vous rappeler, par exemple 06 12 34 56 78."; $("tel").focus(); return; }
+    m.textContent = "Maquette : rien n'est envoyé. Sur le site réel, BAB vous rappelle du lundi au samedi, de 8 h à 19 h.";
+  });
+})();
+</script>
+</body>
+</html>
