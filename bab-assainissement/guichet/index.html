@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BAB Assainissement, le guichet</title>
+<meta name="robots" content="noindex">
+<style>
+/* « LE GUICHET » : pas de page à faire défiler. Un écran, une question, trois gros choix.
+   Chaque choix ouvre un écran simple. Le téléphone reste en bas, toujours. */
+@font-face{font-family:"Sofia Sans";src:url(fonts/sofia-sans.woff2) format("woff2");font-weight:100 900;font-display:swap}
+:root{color-scheme:light;--ciel:#B4C6F0;--creme:#FFF6E8;--prune:#2B1830;--terre:#B4483C;--eau:#2FB6BD;--soleil:#FFC94A;--herbe:#3F7D4E;--f:"Sofia Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--creme);color:var(--prune);font:400 20px/1.45 var(--f);-webkit-font-smoothing:antialiased;display:flex;flex-direction:column}
+h1,h2{margin:0;font-weight:800;line-height:1.05;letter-spacing:-.015em;text-wrap:balance}
+h1{font-size:clamp(30px,5vw,56px)} h2{font-size:clamp(28px,4.2vw,48px)}
+p{margin:0} a{color:inherit} button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:4px solid var(--prune);outline-offset:3px}
+.haut{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px clamp(16px,4vw,48px)}
+.haut img{height:38px;width:auto;display:block}
+.retour{display:none;min-height:48px;padding:0 18px;border-radius:999px;border:2px solid var(--prune);background:none;font-weight:700;cursor:pointer}
+.ecran-ouvert .retour{display:inline-flex;align-items:center}
+main{flex:1;display:grid;padding:clamp(8px,2vh,24px) clamp(16px,4vw,48px) 20px}
+.ecran{display:none;max-width:1100px;width:100%;margin:0 auto;align-content:center;gap:clamp(16px,3vh,30px)}
+.ecran.ici{display:grid}
+.sans-js .ecran{display:grid;margin-bottom:60px}
+.sous{font-size:clamp(19px,1.8vw,23px);max-width:34em}
+.choix{display:grid;gap:14px}
+.carte{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:18px;min-height:104px;padding:16px 22px;border-radius:28px;border:0;text-align:left;text-decoration:none;cursor:pointer;color:#fff;font-weight:800;font-size:clamp(23px,2.6vw,32px);line-height:1.1;transition:transform .15s}
+.carte:hover{transform:translateY(-3px)}
+.carte small{display:block;font-weight:400;font-size:18px;margin-top:4px;opacity:.95}
+.carte .i{width:64px;height:64px;border-radius:50%;background:#ffffff2e;display:grid;place-items:center;font-size:30px}
+.carte .f{font-size:30px}
+.c1{background:var(--terre)} .c2{background:#1E7F86} .c3{background:var(--prune)}
+.grille{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.pre{display:grid;grid-template-columns:76px 1fr;gap:14px;align-items:center;min-height:96px;padding:10px 16px 10px 10px;border-radius:24px;border:2px solid var(--prune);background:#fff;text-align:left;cursor:pointer;font-weight:800;font-size:21px;line-height:1.12}
+.pre img,.pre .v{width:76px;height:76px;border-radius:18px;object-fit:cover;background:var(--ciel);display:block}
+.pre small{display:block;font-weight:400;font-size:17px;margin-top:3px}
+.pre:hover{background:var(--ciel)}
+.fiche{display:grid;gap:18px}
+.fiche img{width:100%;max-height:38vh;object-fit:cover;border-radius:28px}
+.form{display:grid;gap:14px;max-width:620px}
+.deux{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.depot{display:flex;align-items:center;justify-content:center;text-align:center;min-height:84px;border-radius:24px;border:3px dashed var(--prune);background:#fff;font-weight:800;font-size:21px;cursor:pointer;padding:10px;position:relative}
+.depot input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
+.depot:focus-within{outline:4px solid var(--prune);outline-offset:3px}
+label.t{display:grid;gap:6px;font-weight:800}
+label.t input,label.t textarea{min-height:64px;border-radius:20px;border:2px solid var(--prune);background:#fff;padding:12px 18px;font-size:22px;width:100%}
+.envoyer{min-height:72px;border-radius:999px;border:0;background:var(--terre);color:#fff;font-weight:800;font-size:24px;cursor:pointer}
+.envoyer:hover{background:#963A30}
+.msg{padding:16px 20px;border-radius:20px;background:var(--prune);color:#fff}
+.msg[hidden],.fichier:empty{display:none}
+.fichier{font-weight:700}
+.lien{font-weight:700;text-underline-offset:5px;text-decoration-thickness:2px;display:inline-flex;align-items:center;min-height:44px}
+.bas{background:var(--prune);color:#fff;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px 22px;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));text-align:center;position:sticky;bottom:0}
+.bas a{font-weight:800;font-size:clamp(26px,3.4vw,38px);text-decoration:none;font-variant-numeric:tabular-nums;white-space:nowrap;min-height:48px;display:inline-flex;align-items:center;gap:10px}
+.bas span{font-size:17px;opacity:.9}
+.proto{font-size:15px;text-align:center;padding:5px 12px;background:var(--soleil)}
+h1:focus,h2:focus{outline:none}
+.pre .v{display:none}
+.pre:has(.v){grid-template-columns:1fr;padding-left:20px}
+@media (max-width:759px){
+  .grille{grid-template-columns:minmax(0,1fr)}
+  .pre{min-height:84px;grid-template-columns:64px 1fr}
+  .pre img{width:64px;height:64px}
+  .bas span{display:none}
+  .bas{padding-block:8px}
+  .carte{min-height:92px;padding:12px 18px;border-radius:24px}
+  main{padding-top:4px}
+  .ecran{align-content:start}
+}
+@media (min-width:760px){
+  .pre:has(.v){align-content:center;text-align:center;background:var(--ciel);border-color:var(--ciel)}
+  .accueil{grid-template-columns:minmax(0,5fr) minmax(0,6fr);align-items:center;column-gap:clamp(30px,5vw,80px)}
+  .accueil .choix{grid-row:1/span 2;grid-column:2}
+  .grille{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .pre{grid-template-columns:1fr;align-content:start;padding:10px 10px 16px}
+  .pre img,.pre .v{width:100%;height:auto;aspect-ratio:4/3}
+  .fiche{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;column-gap:clamp(30px,5vw,70px)}
+  .fiche img{max-height:56vh;grid-row:1/span 3;grid-column:2}
+}
+@media (max-width:420px){.carte{grid-template-columns:auto 1fr;min-height:96px}.carte .f{display:none}.carte .i{width:54px;height:54px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body class="sans-js">
+<p class="proto">Prototype local. Formulaire de démonstration : rien n'est envoyé.</p>
+<header class="haut">
+  <a href="#accueil" aria-label="BAB Assainissement, accueil"><img src="img/logo-bab.webp" width="515" height="206" alt="BAB Assainissement"></a>
+  <button class="retour" type="button" id="retour">← Retour</button>
+</header>
+
+<main>
+  <section class="ecran accueil ici" id="accueil">
+    <h1>Votre assainissement est non conforme&nbsp;? Nous réalisons les travaux.</h1>
+    <p class="sous">Chez vous, sur la partie privée du réseau, en Île-de-France. Dites-nous simplement ce qui vous amène.</p>
+    <div class="choix">
+      <a class="carte c1" href="#rapport"><span class="i" aria-hidden="true">📄</span><span>J'ai reçu un rapport non conforme<small>Envoyez-le, nous le lisons et nous vous rappelons.</small></span><span class="f" aria-hidden="true">→</span></a>
+      <a class="carte c2" href="#travaux"><span class="i" aria-hidden="true">🔧</span><span>J'ai besoin de travaux<small>Raccordement, regard, curage, fosse, relevage…</small></span><span class="f" aria-hidden="true">→</span></a>
+      <a class="carte c3" href="tel:+33189480964"><span class="i" aria-hidden="true">📞</span><span>Je préfère appeler<small>01 89 48 09 64, du lundi au samedi, de 8 h à 19 h.</small></span><span class="f" aria-hidden="true">→</span></a>
+    </div>
+  </section>
+
+  <section class="ecran" id="rapport">
+    <h2>Envoyez-nous votre rapport.</h2>
+    <p class="sous">Une photo de chaque page suffit. Nous regardons ce qu'il demande, puis nous vous rappelons. Visite, puis devis écrit et gratuit.</p>
+    <form class="form" data-form novalidate>
+      <div class="deux">
+        <label class="depot">Prendre une photo<input type="file" accept="image/*" capture="environment" aria-label="Prendre une photo du rapport"></label>
+        <label class="depot">Choisir un fichier<input type="file" accept=".pdf,image/*" multiple aria-label="Choisir le fichier du rapport"></label>
+      </div>
+      <p class="fichier" aria-live="polite"></p>
+      <label class="t">Votre téléphone<input type="tel" inputmode="tel" autocomplete="tel"></label>
+      <button class="envoyer" type="submit">Envoyer mon rapport</button>
+      <p class="msg" role="status" hidden></p>
+    </form>
+  </section>
+
+  <section class="ecran" id="travaux">
+    <h2>De quels travaux avez-vous besoin&nbsp;?</h2>
+    <div class="grille" id="grille"></div>
+    <p><a class="lien" href="#demande" data-sujet="Autre besoin">Je ne sais pas, ou autre chose</a></p>
+  </section>
+
+  <section class="ecran" id="fiche">
+    <div class="fiche">
+      <h2 id="f-t"></h2>
+      <p class="sous" id="f-d"></p>
+      <img id="f-i" alt="" hidden>
+      <div style="display:grid;gap:12px;justify-items:start">
+        <a class="carte c1" href="#demande" id="f-b" style="min-height:84px;width:100%"><span class="i" aria-hidden="true">☎</span><span>Être rappelé pour ces travaux</span><span class="f" aria-hidden="true">→</span></a>
+        <a class="lien" id="f-l" href="#">Lire la page complète</a>
+        <span id="f-o" style="font-size:17px"></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="ecran" id="demande">
+    <h2>Nous vous rappelons.</h2>
+    <p class="sous" id="d-s">Laissez votre numéro. Du lundi au samedi, de 8 h à 19 h.</p>
+    <form class="form" data-form novalidate>
+      <label class="t">Votre besoin, en quelques mots (facultatif)<textarea rows="2"></textarea></label>
+      <label class="t">Votre téléphone<input type="tel" inputmode="tel" autocomplete="tel"></label>
+      <button class="envoyer" type="submit">Être rappelé</button>
+      <p class="msg" role="status" hidden></p>
+    </form>
+  </section>
+</main>
+
+<footer class="bas"><a href="tel:+33189480964">📞 01 89 48 09 64</a><span>du lundi au samedi, de 8 h à 19 h · Saint-Mandé (94)</span></footer>
+
+<script>
+(function(){
+  document.body.classList.remove("sans-js");
+  var U="https://www.babassainissement.fr/services/";
+  var P=[
+   ["Mise en conformité","Après un contrôle","Nous corrigeons ce que le contrôle a relevé : regards, canalisations, séparation des eaux.","vil-2","mise-en-conformite/","Photo : mise en conformité, Villecerf (77)."],
+   ["Raccordement au tout-à-l'égout","De la maison à la rue","La canalisation privée, jusqu'à la boîte de branchement en limite de propriété.","allee-3","raccordement-egout/","Photo : une allée, Île-de-France."],
+   ["Regards et canalisations","Création, remplacement","Création ou remplacement de regards et de canalisations, sur la partie privée.","vil-1","travaux-assainissement/","Photo : regard avec cunette, Villecerf (77)."],
+   ["Eaux de pluie","Puisard, drainage","Puisard, tranchée d'infiltration, drainage : les eaux de pluie ne rejoignent plus les eaux usées.","pui-2","drainage-eaux-pluviales/","Photo : puisard, Limeil-Brévannes (94)."],
+   ["Fosse ou micro-station","Sans tout-à-l'égout","Pose, remplacement ou mise hors service d'une installation autonome.","fosse","fosses-septiques/","Photo : fosse toutes eaux posée en fouille."],
+   ["Pompe de relevage","Installation, entretien","Installation, remplacement et entretien des pompes et postes de relevage.","relevage","pompes-relevage/","Photo : maintenance d'une pompe, Montreuil (93)."],
+   ["Inspection caméra","Voir l'intérieur","Une caméra passe dans la canalisation. Nous vous remettons un rapport avec les images.","","inspection-camera/",""],
+   ["Curage","Nettoyage haute pression","Nettoyage à haute pression des canalisations et des regards.","","curage-debouchage/",""]
+  ];
+  var $=function(i){return document.getElementById(i)}, g=$("grille"), sujet="", premier=true;
+  P.forEach(function(p,i){
+    var b=document.createElement("button"); b.type="button"; b.className="pre";
+    var v=p[3]?document.createElement("img"):document.createElement("span");
+    if(p[3]){v.src="img/"+p[3]+".webp";v.alt="";v.loading="lazy";} else v.className="v";
+    var t=document.createElement("span"); t.textContent=p[0]; var s=document.createElement("small"); s.textContent=p[1]; t.appendChild(s);
+    b.appendChild(v); b.appendChild(t);
+    b.addEventListener("click",function(){ fiche(i); location.hash="fiche"; });
+    g.appendChild(b);
+  });
+  function fiche(i){ var p=P[i]; sujet=p[0];
+    $("f-t").textContent=p[0]; $("f-d").textContent=p[2]; $("f-l").href=U+p[4]; $("f-o").textContent=p[5];
+    var im=$("f-i"); if(p[3]){im.src="img/"+p[3]+".webp";im.hidden=false;} else im.hidden=true; }
+  document.addEventListener("click",function(e){ var a=e.target.closest("[data-sujet]"); if(a) sujet=a.getAttribute("data-sujet"); });
+  function montrer(){
+    var id=(location.hash||"#accueil").slice(1); if(!$(id)||!$(id).classList.contains("ecran")) id="accueil";
+    if(id==="fiche"&&!$("f-t").textContent) id="travaux";
+    document.querySelectorAll(".ecran").forEach(function(s){ s.classList.toggle("ici",s.id===id); });
+    document.body.classList.toggle("ecran-ouvert",id!=="accueil");
+    if(id==="demande") $("d-s").textContent=(sujet?sujet+". ":"")+"Laissez votre numéro. Du lundi au samedi, de 8 h à 19 h.";
+    window.scrollTo(0,0); var h=$(id).querySelector("h1,h2"); if(h&&premier===false){h.tabIndex=-1;h.focus({preventScroll:true});} premier=false;
+  }
+  window.addEventListener("hashchange",montrer); montrer();
+  $("retour").addEventListener("click",function(){ if(history.length>1) history.back(); else location.hash="accueil"; });
+  document.querySelectorAll("[data-form]").forEach(function(f){
+    var fi=f.querySelector(".fichier");
+    f.querySelectorAll("input[type=file]").forEach(function(i){ i.addEventListener("change",function(){ if(fi&&i.files.length) fi.textContent="Fichier prêt : "+Array.prototype.map.call(i.files,function(x){return x.name}).join(", "); }); });
+    f.addEventListener("submit",function(e){ e.preventDefault(); var m=f.querySelector(".msg"), t=f.querySelector("input[type=tel]"); m.hidden=false;
+      if(!/^(?:\+33|0)[1-9]\d{8}$/.test(t.value.replace(/[\s.\-]/g,""))){ m.textContent="Il nous faut un numéro à 10 chiffres pour vous rappeler, par exemple 06 12 34 56 78."; t.focus(); return; }
+      m.textContent="Démonstration : rien n'a été envoyé. Sur le site réel, BAB vous rappellerait du lundi au samedi, de 8 h à 19 h."; });
+  });
+})();
+</script>
+</body>
+</html>
