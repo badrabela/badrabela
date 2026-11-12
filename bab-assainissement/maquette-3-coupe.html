@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BAB Assainissement, la coupe du terrain</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Idée de mise en page : un plan d'exécution de chantier. Le dessin en coupe de la parcelle
+   EST le menu : on clique sur l'ouvrage pour voir la prestation. Plus bas, la fiche de visite
+   se remplit avec les mesures du visiteur et le dessin se cote en direct. */
+:root{
+  color-scheme: light;
+  --concrete:#E8E6E0;     /* fond béton clair */
+  --sheet:#F7F6F2;
+  --ink:#181B1D;
+  --ink-soft:#5C6266;
+  --rule:#BEBBB1;
+  --chantier:#F6B800;     /* jaune engin : sélection et action */
+  --pipe:#1763D6;         /* bleu réseau privé */
+  --soil:#CFC7B6;
+  --public:#8D9296;
+  --display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --mono:"Spline Sans Mono",ui-monospace,Menlo,monospace;
+  --gutter:clamp(16px,4vw,48px);
+  --max:1240px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--concrete);color:var(--ink);font:400 17px/1.55 var(--display);font-stretch:100%;-webkit-font-smoothing:antialiased}
+h1,h2,h3{margin:0;font-weight:800;font-stretch:118%;line-height:.98;letter-spacing:-.025em;text-wrap:balance}
+p{margin:0} a{color:inherit}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--pipe);outline-offset:3px}
+.wrap{max-width:var(--max);margin:0 auto;padding-inline:var(--gutter)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.mock{background:var(--ink);color:#D9D6CC;font-size:13.5px;padding:8px var(--gutter);text-align:center}
+.tag{font:500 12.5px/1 var(--mono);text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft)}
+
+.top{position:sticky;top:0;z-index:20;background:var(--concrete);border-bottom:2px solid var(--ink)}
+.top .wrap{display:flex;align-items:center;gap:24px;flex-wrap:wrap;min-height:64px;padding-block:8px}
+.brand{margin-right:auto;text-decoration:none;display:flex;align-items:center;gap:12px}
+.brand b{font-weight:900;font-stretch:125%;font-size:24px;letter-spacing:-.03em;background:var(--chantier);padding:4px 10px 3px}
+.brand span{font:500 12px/1.3 var(--mono);text-transform:uppercase;color:var(--ink-soft)}
+.nav{display:flex;gap:22px;font-weight:600;font-size:15px}
+.nav a{text-decoration:none}
+.nav a:hover{text-decoration:underline;text-decoration-thickness:3px;text-decoration-color:var(--chantier);text-underline-offset:5px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:0 20px;border:2px solid var(--ink);background:var(--ink);color:#fff;font-weight:700;text-decoration:none;cursor:pointer}
+.btn:hover{background:#000}
+.btn.y{background:var(--chantier);color:var(--ink)}
+.btn.y:hover{background:#FFC71F}
+.btn.o{background:transparent;color:var(--ink)}
+
+.hero{padding-block:clamp(28px,4.5vw,56px) 0}
+.hero-h{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,4fr);gap:clamp(20px,4vw,56px);align-items:end}
+h1{font-size:clamp(42px,7.4vw,104px);font-weight:900}
+.lede{font-size:clamp(17px,1.5vw,20px);max-width:40ch}
+.lede b{font-weight:700}
+
+/* Le plan */
+.plan{margin-top:clamp(20px,3vw,36px);background:var(--sheet);border:2px solid var(--ink)}
+.plan-top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 14px;border-bottom:1px solid var(--ink)}
+.scroll{overflow-x:auto}
+svg.coupe{display:block;width:100%;min-width:760px;height:auto}
+.coupe text{font-family:var(--mono);font-size:13px;fill:var(--ink)}
+.coupe .lbl{fill:var(--ink-soft);font-size:12px}
+.coupe .hot{cursor:pointer}
+.coupe .hot circle{fill:var(--sheet);stroke:var(--ink);stroke-width:2.5;transition:fill .15s}
+.coupe .hot text{font-size:15px;font-weight:500;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.coupe .hot:hover circle,.coupe .hot[aria-pressed="true"] circle{fill:var(--chantier)}
+.coupe .hot:focus-visible{outline:none}
+.coupe .hot:focus-visible circle{stroke:var(--pipe);stroke-width:4}
+.coupe .part{transition:opacity .2s}
+.coupe.sel .part{opacity:.3}
+.coupe.sel .part.on{opacity:1}
+.detail{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);border-top:2px solid var(--ink)}
+.picker{display:grid;border-right:2px solid var(--ink)}
+.picker button{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:center;text-align:left;background:transparent;border:0;border-bottom:1px solid var(--rule);padding:12px 14px;cursor:pointer;font-weight:600;font-size:15.5px;min-height:50px}
+.picker button:last-child{border-bottom:0}
+.picker button i{font:500 14px/1 var(--mono);font-style:normal;width:26px;height:26px;border:2px solid var(--ink);border-radius:50%;display:grid;place-items:center}
+.picker button:hover{background:#EFEDE6}
+.picker button[aria-pressed="true"]{background:var(--chantier)}
+.picker button[aria-pressed="true"] i{background:var(--ink);color:var(--chantier)}
+.info{padding:clamp(18px,2.6vw,32px);display:grid;gap:16px;align-content:start}
+.info h2{font-size:clamp(28px,3.4vw,46px)}
+.info p{max-width:58ch}
+.info ul{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0;border-top:1px solid var(--ink)}
+.info li{padding:12px 14px 12px 0;border-bottom:1px solid var(--rule);font-size:15.5px}
+.info li b{display:block;font:500 12px/1 var(--mono);text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px;font-weight:500}
+.info .acts{display:flex;flex-wrap:wrap;gap:10px}
+
+.sec{padding-block:clamp(48px,7vw,96px)}
+.sec h2.big{font-size:clamp(30px,4.2vw,58px);overflow-wrap:break-word}
+.sub{color:var(--ink-soft);margin-top:14px;max-width:50ch}
+.two{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:clamp(24px,5vw,72px);align-items:start}
+
+/* Fiche de visite */
+.fiche-sec{background:var(--ink);color:#F3F1EA}
+.fiche-sec .tag,.fiche-sec .sub{color:#A9ADA8}
+.ctrl{display:grid;gap:22px;margin-top:30px}
+.rg{display:grid;gap:8px}
+.rg label{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-weight:600}
+.rg output{font:500 20px/1 var(--mono);color:var(--chantier)}
+input[type=range]{appearance:none;width:100%;height:28px;background:transparent;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:4px;background:#5C6266}
+input[type=range]::-moz-range-track{height:4px;background:#5C6266}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:26px;height:26px;background:var(--chantier);border:3px solid var(--ink);margin-top:-11px;border-radius:0}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;background:var(--chantier);border:3px solid var(--ink);border-radius:0}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);border:2px solid #F3F1EA}
+.seg button{background:transparent;border:0;border-right:2px solid #F3F1EA;padding:12px 8px;cursor:pointer;font-weight:600;font-size:15px;min-height:50px;color:#F3F1EA}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--chantier);color:var(--ink)}
+.fiche{background:var(--sheet);color:var(--ink);border:2px solid var(--chantier);padding:0}
+.fiche header{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 18px;border-bottom:2px solid var(--ink)}
+.fiche header b{font-weight:800;font-stretch:118%;font-size:20px}
+.fiche table{width:100%;border-collapse:collapse;font-size:15.5px}
+.fiche th,.fiche td{text-align:left;padding:13px 18px;border-bottom:1px solid var(--rule);vertical-align:top}
+.fiche th{font:500 12px/1.3 var(--mono);text-transform:uppercase;color:var(--ink-soft);width:36%;font-weight:500}
+.fiche td b{font-family:var(--mono);font-weight:500}
+.fiche td small{display:block;color:var(--ink-soft);font-size:13.5px;margin-top:3px}
+.fiche footer{padding:16px 18px;display:grid;gap:12px;background:transparent;border:0;color:var(--ink)}
+.fiche footer p{font-size:15px}
+
+.steps{list-style:none;margin:32px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:2px solid var(--ink);background:var(--sheet)}
+.steps li{padding:20px 18px 22px;border-right:1px solid var(--ink);display:grid;gap:10px;align-content:start}
+.steps li:last-child{border-right:0}
+.steps .n{font:500 13px/1 var(--mono);background:var(--ink);color:var(--chantier);padding:5px 8px;justify-self:start}
+.steps b{font-weight:800;font-stretch:112%;font-size:21px;line-height:1.1}
+.steps p{font-size:15.5px;color:var(--ink-soft)}
+.steps mark{background:var(--chantier);color:var(--ink);padding:0 .2em}
+
+.deps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:2px solid var(--ink);border-left:2px solid var(--ink)}
+.deps div{border-right:2px solid var(--ink);border-bottom:2px solid var(--ink);padding:14px;background:var(--sheet)}
+.deps div.home{background:var(--chantier)}
+.deps b{display:block;font:900 34px/1 var(--display);font-stretch:125%;letter-spacing:-.03em}
+.deps span{font-size:14.5px}
+
+.end{background:var(--chantier);border-block:2px solid var(--ink)}
+.end .wrap{display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:center;padding-block:clamp(36px,5vw,64px)}
+.end h2{font-size:clamp(34px,5.2vw,72px);font-weight:900;max-width:13ch}
+.end .acts{display:flex;flex-wrap:wrap;gap:10px}
+footer.site{padding-block:24px 30px;font-size:14.5px;color:var(--ink-soft)}
+footer.site .wrap{display:flex;flex-wrap:wrap;gap:8px 32px;justify-content:space-between}
+footer.site b{color:var(--ink)}
+.bar{display:none}
+
+@media (max-width:960px){
+  .hero-h,.two,.detail{grid-template-columns:minmax(0,1fr)}
+  .nav{display:none}
+  .picker{border-right:0;border-bottom:2px solid var(--ink);grid-template-columns:1fr 1fr}
+  .picker button{border-right:1px solid var(--rule)}
+  .steps{grid-template-columns:1fr 1fr}
+  .steps li{border-bottom:1px solid var(--ink)}
+}
+@media (max-width:620px){
+  body{padding-bottom:78px;font-size:16.5px}
+  .top .btn{display:none}
+  .picker{grid-template-columns:minmax(0,1fr)}
+  .steps{grid-template-columns:minmax(0,1fr)}
+  .steps li{border-right:0}
+  .deps{grid-template-columns:1fr 1fr}
+  .fiche th{width:40%;padding-inline:12px}
+  .fiche td{padding-inline:12px}
+  .bar{display:grid;grid-template-columns:1fr 1.3fr;gap:8px;position:fixed;inset:auto 0 0 0;z-index:30;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:var(--concrete);border-top:2px solid var(--ink)}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="mock">Maquette de travail. Coordonnées et prestations reprises de babassainissement.fr ; les cotes du dessin sont des exemples.</div>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#haut"><b>BAB</b><span>Assainissement<br>Saint-Mandé · Île-de-France</span></a>
+    <nav class="nav" aria-label="Sections"><a href="#plan">Prestations</a><a href="#fiche">Prix et devis</a><a href="#etapes">Étapes</a><a href="#zones">Zones</a></nav>
+    <a class="btn" href="tel:+33189480964"><span class="mono">01 89 48 09 64</span></a>
+  </div>
+</header>
+
+<main id="haut">
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-h">
+      <h1>Ce qui se passe sous votre maison.</h1>
+      <p class="lede">Touchez un ouvrage sur le plan. <b>Nous intervenons sur la partie privée de votre réseau</b>, de la maison jusqu'à la boîte de branchement.</p>
+    </div>
+
+    <div class="plan" id="plan">
+      <div class="plan-top"><span class="tag">Coupe type d'une parcelle · sans échelle</span><span class="tag">Planche 01 · réseau privé</span></div>
+      <div class="scroll">
+      <svg class="coupe" id="coupe" viewBox="0 0 1200 500" role="group" aria-label="Coupe d'une parcelle, de la maison à la rue. Six ouvrages numérotés sont sélectionnables.">
+        <defs>
+          <pattern id="h" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="14" stroke="#A9A08B" stroke-width="1.2"/></pattern>
+        </defs>
+        <!-- sol -->
+        <rect x="0" y="200" width="1200" height="300" fill="var(--soil)"/>
+        <rect x="0" y="200" width="1200" height="300" fill="url(#h)" opacity=".55"/>
+        <rect x="900" y="200" width="300" height="16" fill="var(--ink)"/>
+        <line x1="0" y1="200" x2="1200" y2="200" stroke="var(--ink)" stroke-width="2.5"/>
+        <!-- limite de propriété -->
+        <line x1="900" y1="60" x2="900" y2="470" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="8 6"/>
+        <text x="892" y="76" text-anchor="end" class="lbl">VOTRE TERRAIN</text>
+        <text x="910" y="76" class="lbl">DOMAINE PUBLIC</text>
+        <!-- maison -->
+        <g class="part on" data-always>
+          <polygon points="70,110 230,40 390,110" fill="var(--sheet)" stroke="var(--ink)" stroke-width="2.5"/>
+          <rect x="90" y="110" width="280" height="90" fill="var(--sheet)" stroke="var(--ink)" stroke-width="2.5"/>
+          <rect x="130" y="135" width="46" height="40" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
+          <rect x="290" y="140" width="38" height="60" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
+        </g>
+        <!-- réseau public -->
+        <g>
+          <path d="M880 348 L1040 392" stroke="var(--public)" stroke-width="7" stroke-dasharray="12 7" fill="none"/>
+          <circle cx="1060" cy="410" r="36" fill="var(--sheet)" stroke="var(--public)" stroke-width="5"/>
+          <text x="1060" y="466" text-anchor="middle" class="lbl">ÉGOUT · COLLECTIVITÉ</text>
+        </g>
+        <!-- 2 : fonte sous la maison -->
+        <g class="part" data-p="2"><path d="M130 200 V282 H250" stroke="#8A4B2A" stroke-width="9" fill="none" stroke-linejoin="round"/><path d="M180 276 l6 12 m8 -12 l5 12" stroke="var(--ink)" stroke-width="1.5"/></g>
+        <!-- 1 : canalisation principale -->
+        <g class="part" data-p="1"><path d="M250 282 L470 300 M650 314 L760 322" stroke="var(--pipe)" stroke-width="9" fill="none"/><rect x="446" y="188" width="34" height="122" fill="var(--sheet)" stroke="var(--ink)" stroke-width="2"/><rect x="442" y="184" width="42" height="9" fill="var(--ink)"/></g>
+        <!-- 3 : gouttière, eaux pluviales -->
+        <g class="part" data-p="3"><path d="M378 108 V200 V236 L446 250" stroke="#3FA7D6" stroke-width="5" fill="none" stroke-dasharray="2 0"/><path d="M398 250 l10 -10 m-10 0 l10 10" stroke="#C8281E" stroke-width="3"/></g>
+        <!-- 4 : fosse -->
+        <g class="part" data-p="4"><path d="M470 300 H520 M620 312 H650" stroke="var(--pipe)" stroke-width="9"/><rect x="520" y="262" width="100" height="74" rx="14" fill="var(--sheet)" stroke="var(--ink)" stroke-width="2.5" stroke-dasharray="7 5"/><line x1="570" y1="262" x2="570" y2="200" stroke="var(--ink)" stroke-width="2"/><text x="570" y="304" text-anchor="middle" class="lbl">FOSSE</text></g>
+        <!-- 5 : pompe de relevage -->
+        <g class="part" data-p="5"><rect x="760" y="296" width="44" height="80" fill="var(--sheet)" stroke="var(--ink)" stroke-width="2.5"/><circle cx="782" cy="356" r="10" fill="var(--pipe)"/><path d="M782 346 V320 H804" stroke="var(--pipe)" stroke-width="5" fill="none"/><path d="M776 330 l6 -9 l6 9" fill="none" stroke="var(--ink)" stroke-width="1.5"/></g>
+        <!-- 6 : boîte de branchement -->
+        <g class="part" data-p="6"><path d="M804 320 L862 338" stroke="var(--pipe)" stroke-width="9"/><rect x="858" y="190" width="36" height="170" fill="var(--sheet)" stroke="var(--ink)" stroke-width="2.5"/><rect x="854" y="186" width="44" height="9" fill="var(--ink)"/></g>
+        <!-- cotes -->
+        <g stroke="var(--ink)" stroke-width="1.2" fill="none">
+          <path d="M250 440 H876 M250 432 V448 M876 432 V448"/>
+          <path d="M960 200 V340 M952 200 H968 M952 340 H968"/>
+        </g>
+        <rect x="520" y="428" width="96" height="24" fill="var(--chantier)"/>
+        <text x="568" y="445" text-anchor="middle" id="cote-d">12 m</text>
+        <rect x="972" y="258" width="74" height="24" fill="var(--chantier)"/>
+        <text x="1009" y="275" text-anchor="middle" id="cote-p">1,0 m</text>
+        <!-- repères cliquables -->
+        <g class="hot" data-p="1" role="button" tabindex="0" aria-label="1, canalisations : curage et inspection caméra"><circle cx="350" cy="290" r="17"/><text x="350" y="291">1</text></g>
+        <g class="hot" data-p="2" role="button" tabindex="0" aria-label="2, canalisation en fonte sous la maison"><circle cx="130" cy="246" r="17"/><text x="130" y="247">2</text></g>
+        <g class="hot" data-p="3" role="button" tabindex="0" aria-label="3, gouttière : séparation des eaux pluviales"><circle cx="378" cy="150" r="17"/><text x="378" y="151">3</text></g>
+        <g class="hot" data-p="4" role="button" tabindex="0" aria-label="4, fosse septique et micro-station"><circle cx="570" cy="240" r="17"/><text x="570" y="241">4</text></g>
+        <g class="hot" data-p="5" role="button" tabindex="0" aria-label="5, pompe de relevage"><circle cx="782" cy="276" r="17"/><text x="782" y="277">5</text></g>
+        <g class="hot" data-p="6" role="button" tabindex="0" aria-label="6, boîte de branchement : raccordement au tout-à-l'égout"><circle cx="876" cy="160" r="17"/><text x="876" y="161">6</text></g>
+      </svg>
+      </div>
+
+      <div class="detail">
+        <div class="picker" id="picker"></div>
+        <div class="info" aria-live="polite">
+          <span class="tag" id="i-tag"></span>
+          <h2 id="i-t"></h2>
+          <p id="i-d"></p>
+          <ul id="i-l"></ul>
+          <div class="acts"><a class="btn y" href="#fiche">Préparer ma visite</a><a class="btn o" href="tel:+33189480964">Appeler le <span class="mono">01 89 48 09 64</span></a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec fiche-sec" id="fiche">
+  <div class="wrap two">
+    <div>
+      <span class="tag">Prix et devis</span>
+      <h2 class="big" style="margin-top:16px">Le prix se mesure sur place. Voici ce qu'on mesure.</h2>
+      <p class="sub">Distance, profondeur, terrain, regards à créer : ce sont eux qui font le devis. Réglez-les à vue d'œil, la fiche de visite se remplit et le plan se cote.</p>
+      <div class="ctrl">
+        <div class="rg"><label for="dist">De la maison à la rue<output id="o-dist" for="dist"></output></label><input type="range" id="dist" min="3" max="40" step="1" value="12"></div>
+        <div class="rg"><label for="prof">Profondeur de la canalisation<output id="o-prof" for="prof"></output></label><input type="range" id="prof" min="0.6" max="2.4" step="0.1" value="1"></div>
+        <div class="rg"><label for="reg">Regards à créer<output id="o-reg" for="reg"></output></label><input type="range" id="reg" min="0" max="4" step="1" value="2"></div>
+        <div class="rg"><span style="font-weight:600" id="sol-l">Ce qu'il y a en surface</span>
+          <div class="seg" role="group" aria-labelledby="sol-l" id="sol">
+            <button type="button" data-v="jardin" aria-pressed="true">Jardin</button>
+            <button type="button" data-v="dalle" aria-pressed="false">Dallage</button>
+            <button type="button" data-v="enrobe" aria-pressed="false">Enrobé</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fiche" aria-live="polite">
+      <header><b>Fiche de visite</b><span class="tag">Brouillon · à vérifier sur place</span></header>
+      <table>
+        <tr><th scope="row">Tranchée</th><td><b id="f-tr"></b><small>Largeur courante de 0,50 m</small></td></tr>
+        <tr><th scope="row">Terres à évacuer</th><td><b id="f-vol"></b><small>Volume en place, avant foisonnement</small></td></tr>
+        <tr><th scope="row">Canalisation</th><td><b id="f-can"></b><small id="f-pente"></small></td></tr>
+        <tr><th scope="row">Regards</th><td><b id="f-reg"></b><small id="f-reg-s"></small></td></tr>
+        <tr><th scope="row">Remise en état</th><td><b id="f-sol"></b><small id="f-sol-s"></small></td></tr>
+        <tr><th scope="row">Accès</th><td><b id="f-acc"></b><small id="f-acc-s"></small></td></tr>
+      </table>
+      <footer>
+        <p>Chaque ligne devient un poste chiffré du devis, envoyé sous 48 h après la visite. Les travaux commencent seulement après votre accord.</p>
+        <button class="btn y" type="button" id="book">Demander une visite avec cette fiche</button>
+        <p id="book-m" hidden style="border-left:4px solid var(--ink);padding-left:12px"></p>
+      </footer>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="etapes">
+  <div class="wrap">
+    <span class="tag">Déroulé</span>
+    <h2 class="big" style="margin-top:16px">Quatre étapes, sans surprise</h2>
+    <ol class="steps">
+      <li><span class="n">J</span><b>Vous écrivez ou appelez</b><p>Avec votre rapport de contrôle ou quelques photos du terrain.</p></li>
+      <li><span class="n">Lun. – sam.</span><b>On vous rappelle</b><p>Du lundi au samedi, de 8 h à 19 h, pour fixer le rendez-vous.</p></li>
+      <li><span class="n">Sous 7 jours</span><b>Visite sur place</b><p>Terrain, regards, canalisations. <mark>La visite est planifiée sous 7 jours.</mark></p></li>
+      <li><span class="n">+ 48 h</span><b>Devis détaillé</b><p>Poste par poste, par écrit, <mark>sous 48 h après la visite.</mark></p></li>
+    </ol>
+  </div>
+</section>
+
+<section class="sec" id="zones" style="padding-top:0">
+  <div class="wrap two">
+    <div>
+      <span class="tag">Zones d'intervention</span>
+      <h2 class="big" style="margin-top:16px">Huit départements, un point de départ</h2>
+      <p class="sub">Les équipes partent de Saint-Mandé, dans le Val-de-Marne, et couvrent toute l'Île-de-France, Provinois compris.</p>
+    </div>
+    <div class="deps">
+      <div><b>75</b><span>Paris</span></div><div><b>77</b><span>Seine-et-Marne</span></div><div><b>78</b><span>Yvelines</span></div><div><b>91</b><span>Essonne</span></div>
+      <div><b>92</b><span>Hauts-de-Seine</span></div><div><b>93</b><span>Seine-Saint-Denis</span></div><div class="home"><b>94</b><span>Val-de-Marne · siège</span></div><div><b>95</b><span>Val-d'Oise</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="end">
+  <div class="wrap">
+    <h2>Parlons de votre installation.</h2>
+    <div class="acts"><a class="btn" href="#fiche">Préparer ma visite</a><a class="btn o" href="tel:+33189480964">Appeler le <span class="mono">01 89 48 09 64</span></a></div>
+  </div>
+</section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <span><b>BAB Assainissement</b> · 14 avenue du Général de Gaulle, 94160 Saint-Mandé</span>
+    <span class="mono">01 89 48 09 64 · lun.–sam. 8 h–19 h · SIREN 933 127 995</span>
+    <span>Maquette, contenus à valider</span>
+  </div>
+</footer>
+
+<div class="bar"><a class="btn o" href="tel:+33189480964">Appeler</a><a class="btn y" href="#fiche">Préparer ma visite</a></div>
+
+<script>
+(function(){
+  var $ = function(i){return document.getElementById(i)};
+  var D = {
+    1:{n:"Canalisations", t:"Curage et inspection caméra", d:"On nettoie les canalisations à haute pression, puis la caméra parcourt le réseau. Vous savez où se trouve le défaut, au mètre près, avant de décider du moindre travail.", l:[["Vous recevez","Un rapport avec les images"],["Souvent demandé","Avant un achat ou après un contrôle"],["Ensuite","Un devis seulement si des travaux s'imposent"]]},
+    2:{n:"Fonte sous la maison", t:"Remplacement de canalisation fonte", d:"Les anciennes conduites en fonte se fissurent et s'affaissent. On remplace le tronçon abîmé, sous la dalle ou en vide sanitaire, sans refaire tout le réseau.", l:[["Signes","Odeurs, humidité, écoulement lent"],["Avant","Inspection caméra pour localiser"],["Après","Contrôle d'écoulement"]]},
+    3:{n:"Eaux pluviales", t:"Séparation des eaux usées et pluviales", d:"C'est l'anomalie la plus fréquente des rapports de contrôle : la gouttière rejoint le tuyau des eaux usées. On crée un réseau distinct pour la pluie, avec ses regards.", l:[["Prestation","Mise en conformité après contrôle"],["Travaux","Canalisations, regards, terrassement"],["Résultat","Un rapport corrigé, point par point"]]},
+    4:{n:"Fosse et micro-station", t:"Pose, remplacement ou mise hors service", d:"Quand la rue est raccordée, l'ancienne fosse doit être vidangée, désinfectée et comblée. Sans réseau public, on pose ou on remplace une fosse ou une micro-station.", l:[["Avec réseau public","Mise hors service de la fosse"],["Sans réseau public","Fosse ou micro-station neuve"],["Sur le même chantier","Neutralisation ou retrait de cuve à fioul"]]},
+    5:{n:"Pompe de relevage", t:"Installation, remplacement, entretien", d:"Quand les évacuations sont plus basses que l'égout, une pompe remonte les eaux jusqu'à la rue. On installe la station, on la remplace, on l'entretient.", l:[["Cas typique","Sous-sol aménagé, terrain en contrebas"],["Fourni","Station, conduite de refoulement"],["Suivi","Entretien de la pompe"]]},
+    6:{n:"Boîte de branchement", t:"Raccordement au tout-à-l'égout", d:"De la maison jusqu'à la boîte de branchement, en limite de propriété. Au-delà, le réseau relève de la collectivité : notre chantier s'arrête exactement là.", l:[["Périmètre","Partie privée uniquement"],["Comprend","Tranchée, canalisation, regards, remise en état"],["Le prix dépend de","Distance, profondeur, terrain, regards"]]}
+  };
+  var cur = "6", svg = $("coupe"), picker = $("picker");
+  Object.keys(D).forEach(function(k){
+    var b = document.createElement("button"); b.type = "button"; b.dataset.p = k;
+    var i = document.createElement("i"); i.textContent = k; b.appendChild(i);
+    b.appendChild(document.createTextNode(D[k].n));
+    b.addEventListener("click", function(){pick(k)}); picker.appendChild(b);
+  });
+  function pick(k){
+    cur = k; var d = D[k];
+    svg.classList.add("sel");
+    svg.querySelectorAll(".part").forEach(function(p){ p.classList.toggle("on", p.hasAttribute("data-always") || p.dataset.p === k); });
+    document.querySelectorAll("[data-p]").forEach(function(e){ if (e.matches(".hot, .picker button")) e.setAttribute("aria-pressed", String(e.dataset.p === k)); });
+    $("i-tag").textContent = "Repère " + k + " · " + d.n;
+    $("i-t").textContent = d.t; $("i-d").textContent = d.d;
+    var ul = $("i-l"); ul.textContent = "";
+    d.l.forEach(function(x){ var li = document.createElement("li"), b = document.createElement("b"); b.textContent = x[0]; li.appendChild(b); li.appendChild(document.createTextNode(x[1])); ul.appendChild(li); });
+  }
+  svg.querySelectorAll(".hot").forEach(function(h){
+    h.addEventListener("click", function(){pick(h.dataset.p)});
+    h.addEventListener("keydown", function(e){ if (e.key === "Enter" || e.key === " "){ e.preventDefault(); pick(h.dataset.p); } });
+  });
+
+  var sol = "jardin";
+  var SOL = {jardin:["Engazonnement","Terre végétale remise en place, semis"], dalle:["Dallage reposé","Dépose soignée, repose sur lit de sable"], enrobe:["Enrobé ou béton refait","Sciage, démolition, réfection de la bande"]};
+  function fr(n, dec){ return n.toFixed(dec).replace(".", ","); }
+  function calc(){
+    var L = +$("dist").value, P = +$("prof").value, R = +$("reg").value;
+    $("o-dist").textContent = L + " m"; $("o-prof").textContent = fr(P,1) + " m"; $("o-reg").textContent = R;
+    $("cote-d").textContent = L + " m"; $("cote-p").textContent = fr(P,1) + " m";
+    $("f-tr").textContent = L + " m × " + fr(P,1) + " m de profondeur";
+    $("f-vol").textContent = "≈ " + fr(L * 0.5 * P, 1) + " m³";
+    $("f-can").textContent = L + " m de conduite";
+    $("f-pente").textContent = "Pente de 2 % : " + Math.round(L * 2) + " cm de dénivelé à trouver entre la maison et la rue";
+    $("f-reg").textContent = R === 0 ? "Aucun à créer" : R + (R > 1 ? " regards à créer" : " regard à créer");
+    $("f-reg-s").textContent = R === 0 ? "On vérifie ceux qui existent" : "À chaque changement de direction et en limite de propriété";
+    $("f-sol").textContent = SOL[sol][0]; $("f-sol-s").textContent = SOL[sol][1];
+    var deep = P >= 1.3;
+    $("f-acc").textContent = deep ? "Tranchée blindée" : "Mini-pelle ou terrassement manuel";
+    $("f-acc-s").textContent = deep ? "Au-delà de 1,30 m de profondeur, les parois sont étayées" : "Selon la largeur du passage vers le jardin";
+    $("book-m").hidden = true;
+  }
+  ["dist","prof","reg"].forEach(function(i){ $(i).addEventListener("input", calc); });
+  $("sol").querySelectorAll("button").forEach(function(b){
+    b.addEventListener("click", function(){ sol = b.dataset.v; $("sol").querySelectorAll("button").forEach(function(x){x.setAttribute("aria-pressed", String(x === b))}); calc(); });
+  });
+  $("book").addEventListener("click", function(){
+    var m = $("book-m"); m.hidden = false;
+    m.textContent = "Maquette : rien n'est envoyé. Sur le site réel, cette fiche (" + $("dist").value + " m, " + $("o-prof").textContent + ", " + SOL[sol][0].toLowerCase() + ") est jointe à votre demande et BAB vous rappelle du lundi au samedi, de 8 h à 19 h.";
+  });
+  pick(cur); calc();
+})();
+</script>
+</body>
+</html>
