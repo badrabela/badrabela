@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BAB Assainissement, « La preuve avant le discours » : diagnostic et prototype</title><meta name="robots" content="noindex">
+<style>
+@font-face{font-family:"Atkinson Next";src:url({{font:fonts/atkinson-next.woff2}}) format("woff2");font-weight:200 800;font-display:swap}
+@font-face{font-family:"Atkinson Mono";src:url({{font:fonts/atkinson-mono.woff2}}) format("woff2");font-weight:200 800;font-display:swap}
+:root{color-scheme:light;--beton:#EFEEEA;--papier:#FAFAF7;--encre:#16181A;--gris:#54585A;--filet:#CFCDC6;--bleu:#0F3FD6}
+*{box-sizing:border-box}body{margin:0;background:var(--beton);color:var(--encre);font:400 18px/1.6 "Atkinson Next",system-ui,sans-serif}
+.c{max-width:1120px;margin:0 auto;padding:0 clamp(20px,4vw,56px)}
+header{padding:clamp(34px,6vw,76px) 0 28px;border-bottom:2px solid var(--encre)}
+h1{font-size:clamp(32px,5vw,60px);font-weight:800;line-height:1.05;letter-spacing:-.022em;margin:0;max-width:16em;text-wrap:balance}
+header p{font-size:20px;max-width:44em;margin:18px 0 0}
+section{padding:clamp(38px,5vw,72px) 0;border-bottom:1px solid var(--filet)}
+h2{font-size:clamp(26px,3.2vw,40px);font-weight:800;line-height:1.08;letter-spacing:-.02em;margin:0 0 20px;text-wrap:balance}
+h3{font-size:22px;font-weight:800;margin:30px 0 8px}
+p{margin:0 0 14px;max-width:46em}ul,ol{max-width:46em;padding-left:24px;margin:0 0 14px}li{margin-bottom:7px}
+.note{background:var(--papier);border-left:4px solid var(--encre);padding:15px 18px;max-width:46em;margin:18px 0}
+.t{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:700px;font-size:17px}th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--filet);vertical-align:top}th{border-bottom:2px solid var(--encre)}td:first-child{font:800 18px "Atkinson Mono",monospace;width:44px}
+figure{margin:20px 0}figure img{display:block;max-width:100%;height:auto;border:1px solid var(--filet)}figcaption{font-size:16px;color:var(--gris);margin-top:8px}
+.duo{display:grid;grid-template-columns:minmax(0,3.6fr) minmax(0,1fr);gap:16px;align-items:start}
+.quatre{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;align-items:start}
+.pal{display:flex;flex-wrap:wrap;gap:12px}.pal div{width:150px;font-size:15px}.pal i{display:block;height:64px;border:1px solid var(--filet);margin-bottom:6px}
+code{font:15px "Atkinson Mono",monospace;background:var(--papier);padding:1px 6px}
+footer{padding:26px 0 60px;color:var(--gris);font-size:16px}
+@media(max-width:760px){.duo{grid-template-columns:1fr}.quatre{grid-template-columns:1fr 1fr}}
+</style></head><body>
+<header><div class="c">
+<h1>« La preuve avant le discours » : diagnostic et nouveau prototype</h1>
+<p>Rien n'a été modifié en production ni poussé sur le dépôt distant. Votre message s'est interrompu au milieu de l'étape A ; j'ai suivi tout ce qui était lisible, et ce dossier commence par cette étape.</p>
+</div></header>
+
+<section><div class="c">
+<h2>Étape A. Les dix problèmes de la version précédente</h2>
+<p>J'ai revu les sources, les captures aux six formats et les images extraites des vidéos de défilement. Votre diagnostic décrit la première version (empattements, italique bleu). La révision suivante avait retiré l'italique et les bandes sombres, mais les problèmes de fond restaient entiers.</p>
+<div class="t"><table>
+<tr><th></th><th>Problème</th><th>Effet sur la crédibilité</th></tr>
+<tr><td>1</td><td>Le premier écran est un assemblage : texte à gauche, photo à droite, médaillon rond posé dessus.</td><td>On voit l'effet avant le métier. Le médaillon et son anneau de texte tournant n'apportent aucune information.</td></tr>
+<tr><td>2</td><td>La page est interchangeable. En changeant le logo et les photos, elle servirait à un architecte ou à une agence.</td><td>BAB n'a pas de signature. Le visiteur ne retient rien.</td></tr>
+<tr><td>3</td><td>Le même schéma revient à chaque section : petit intitulé, grand titre, texte, deux colonnes, filets.</td><td>Le rythme monotone fait « gabarit ». Aucune section ne se détache.</td></tr>
+<tr><td>4</td><td>Un rond fléché bleu accompagne chaque action, chaque prestation, chaque lien.</td><td>Le signe perd son sens. Il devient un tic de générateur.</td></tr>
+<tr><td>5</td><td>Les photos de chantier, seule vraie preuve, sont traitées en galerie : petites, puis recadrées en ronds dans la révision.</td><td>Le recadrage rond coupait les tranchées et les murs. On perdait le lieu, donc la preuve.</td></tr>
+<tr><td>6</td><td>Les chantiers ne racontent rien. Quatre vignettes légendées ne montrent pas une transformation.</td><td>Le visiteur doit lire pour comprendre ce que l'image devrait montrer seule.</td></tr>
+<tr><td>7</td><td>Sur téléphone, la barre fixe restait affichée partout et recouvrait le bas des champs du formulaire.</td><td>Gêne réelle au moment le plus important : quand le client écrit.</td></tr>
+<tr><td>8</td><td>Deux formulaires complets dans la même page, avec les mêmes champs.</td><td>Le client ne sait pas lequel utiliser. La page s'allonge inutilement.</td></tr>
+<tr><td>9</td><td>La coupe mélangeait tout sur un seul dessin et, sur téléphone, n'apparaissait qu'à moitié, avec des libellés minuscules.</td><td>Un schéma illisible fait plus de tort qu'une absence de schéma. Il ne distinguait pas maison raccordée et maison non raccordée.</td></tr>
+<tr><td>10</td><td>Le bleu, les grands titres et les capitales étaient partout.</td><td>Quand tout est accentué, rien ne l'est. La page crie au lieu de rassurer.</td></tr>
+</table></div>
+<div class="note"><b>Emplacements vides : vérifié.</b> Les cases grises visibles sur une ancienne capture venaient de ma méthode de capture, qui photographiait la page avant le chargement différé des images. Dans le prototype, toutes les images se chargent : c'est désormais contrôlé par un test automatique.</div>
+</div></section>
+
+<section><div class="c">
+<h2>La direction : chaque photo devient une pièce de relevé</h2>
+<p>Votre fil conducteur, du document au chantier puis au résultat, m'a donné la forme. Un rapport de contrôle est un document qui désigne des défauts. BAB répond par des photos qui désignent des ouvrages. D'où un seul geste graphique, propre à BAB : <b>un point carré, un trait, un mot</b>, posés avec précision sur la photo réelle.</p>
+<ul>
+<li><b>Le premier écran montre la preuve.</b> Le titre commercial, les deux parcours, puis la même allée avant et après, en pleine largeur. Aucune image décorative.</li>
+<li><b>Une seule famille de caractères</b>, Atkinson Hyperlegible, dessinée par le Braille Institute pour les personnes qui voient mal : chaque lettre et chaque chiffre s'y distinguent nettement. Sa version à chasse fixe sert aux repères et aux numéros d'étape.</li>
+<li><b>Le bleu ne sert qu'à ce qui se touche</b> : boutons, soulignés de liens, contour de focus. Toutes les autres couleurs viennent des photos.</li>
+<li><b>Deux boutons rectangulaires, dessinés une fois</b> : plein pour l'action principale, contour pour la seconde. Les liens sont des mots soulignés. Plus aucun rond fléché.</li>
+<li><b>Un rythme qui change</b> : le rapport est une section de texte pur, les prestations alternent photo et liste, les chantiers passent en fond sombre, la compréhension revient au clair avec deux schémas.</li>
+</ul>
+<div class="pal">
+<div><i style="background:#EFEEEA"></i><b>Béton</b> #EFEEEA<br>fond</div>
+<div><i style="background:#FAFAF7"></i><b>Papier</b> #FAFAF7<br>lecture, champs</div>
+<div><i style="background:#16181A"></i><b>Encre</b> #16181A<br>texte</div>
+<div><i style="background:#121416"></i><b>Nuit</b> #121416<br>les chantiers</div>
+<div><i style="background:#0F3FD6"></i><b>Bleu</b> #0F3FD6<br>interface seulement</div>
+</div>
+</div></section>
+
+<section><div class="c">
+<h2>Le prototype, séquence par séquence</h2>
+<div class="duo"><figure><img src="{{img:captures/1440x900.jpg}}" alt="Premier écran sur ordinateur"><figcaption>Premier écran, 1440 × 900.</figcaption></figure><figure><img src="{{img:captures/390x844.jpg}}" alt="Premier écran sur téléphone"><figcaption>390 × 844 : titre, deux parcours, téléphone et photos avant/après sans défiler.</figcaption></figure></div>
+<ol>
+<li><b>Premier contact.</b> Titre conservé. Deux parcours. Téléphone dans l'en-tête et sous les photos.</li>
+<li><b>Le rapport.</b> La question du client en titre : « Pouvez-vous faire les travaux indiqués sur mon rapport ? ». Cinq étapes en clair, deux boutons pour photographier ou choisir le fichier. Aucune promesse de prix, de délai ni de conformité finale.</li>
+<li><b>Les prestations.</b> Onze prestations en trois familles, chacune adossée à une photo d'ouvrage annotée. Les liens mènent aux pages actuelles du site.</li>
+<li><b>Les chantiers.</b> L'allée en quatre grandes photos : sur ordinateur, l'étape en cours s'allume dans une colonne fixe pendant que les photos défilent ; sur téléphone, un fil d'étapes reste sous l'en-tête. Puis Villecerf en planche de quatre, et un puisard à Limeil-Brévannes en trois temps. Les angles de prise de vue diffèrent : je n'ai simulé aucune continuité.</li>
+<li><b>Comprendre.</b> Deux schémas sobres au lieu d'une coupe : maison raccordée, maison non raccordée. Mention « schémas de principe », réserve sur le règlement local, cinq définitions.</li>
+<li><b>Le déroulé.</b> Quatre étapes concrètes, sans délai chiffré.</li>
+<li><b>Contact.</b> Trois voies distinctes : le numéro en très grand, un rapport à envoyer, un besoin à décrire. Un seul formulaire, qui change selon la situation choisie.</li>
+</ol>
+<div class="quatre">
+<figure><img src="{{img:captures/premier-jet-390x844.jpg}}" alt=""><figcaption>Premier jet : le repère « Grille » était coupé.</figcaption></figure>
+<figure><img src="{{img:captures/390x844.jpg}}" alt=""><figcaption>Après correction.</figcaption></figure>
+<figure><img src="{{img:captures/360x800.jpg}}" alt=""><figcaption>360 × 800.</figcaption></figure>
+<figure><img src="{{img:captures/768x1024.jpg}}" alt=""><figcaption>768 × 1024.</figcaption></figure>
+</div>
+<p>Le dossier <code>captures/</code> contient les six formats, les deux pages entières et le premier jet. Le dossier <code>videos/</code> contient le défilement sur ordinateur (23 s) et sur téléphone (38 s). Ce sont des démonstrations, pas des tests avec des utilisateurs.</p>
+</div></section>
+
+<section><div class="c">
+<h2>Contrôles effectués</h2>
+<p>Dans Chromium sans écran (Playwright), page servie en local, dans un conteneur en ligne. Aucun téléphone réel, aucun lecteur d'écran, aucun utilisateur.</p>
+<ul>
+<li><b>24 vérifications automatiques sur 24.</b> Entre autres : aux formats 390 × 844 et 360 × 800, le titre, les deux parcours, le téléphone et les photos avant/après tiennent entièrement dans le premier écran.</li>
+<li><b>Barre fixe.</b> Elle est absente tant que les deux parcours sont visibles, présente dans les prestations et les chantiers, retirée dans la section contact et dès qu'un champ est en cours de saisie.</li>
+<li><b>Clavier du téléphone.</b> Simulé en réduisant la hauteur de la fenêtre à 420 px : le champ reste visible et rien de fixe ne le recouvre. Ce n'est pas un essai avec un vrai clavier tactile.</li>
+<li><b>Accessibilité automatique</b> (axe-core, WCAG 2.1 A et AA) : 0 violation sur ordinateur et sur téléphone. À vérifier à l'œil : le contraste des repères posés sur les photos, que l'outil ne sait pas mesurer.</li>
+<li><b>Tailles.</b> Texte courant à 18 ou 19 px. Seuls les repères posés sur les photos sont à 15 px sur téléphone ; chacun est repris dans la légende à 17 px.</li>
+<li><b>Sans JavaScript</b>, la page reste complète ; le choix entre rapport et travaux fonctionne. <b>Mouvement réduit</b> : aucune transition.</li>
+<li><b>Performance mesurée</b> sur téléphone simulé, bridé à 1,6 Mbit/s et processeur ralenti quatre fois : premier affichage en 0,5 s, chargement en 1,1 s, 177 ko au départ, 936 ko après défilement complet. Aucune bibliothèque externe.</li>
+</ul>
+</div></section>
+
+<section><div class="c">
+<h2>Ce que je pense du résultat, et ce qui reste</h2>
+<ul>
+<li><b>Ce qui est acquis.</b> Le premier écran prouve avant de parler. Les chantiers portent la page, surtout sur téléphone. Le repère carré est un signe simple, utile et propre à BAB.</li>
+<li><b>Ce qui reste en dessous.</b> Les photos sont des clichés de téléphone en 800 à 1 000 px : en pleine largeur sur un grand écran, les deux photos d'ouverture manquent de définition. Le bas de page (déroulé, zones, questions) est clair mais ordinaire.</li>
+<li><b>À relire par vous.</b> Les deux schémas et les mots posés sur les photos (« cunette », « boîte de raccordement », « puisard ») viennent des légendes de votre site, mais leur position exacte est de mon fait.</li>
+<li><b>À fournir.</b> Les originaux en haute définition, et la confirmation, photo par photo, qu'il s'agit bien de chantiers BAB.</li>
+<li><b>À brancher.</b> Le formulaire sur l'envoi réel existant, sans changer ses champs ; le titre, la description et les données structurées de l'accueil actuel.</li>
+<li><b>À tester.</b> De vrais téléphones, dont un ancien ; un lecteur d'écran ; quelques propriétaires de 60 à 80 ans.</li>
+<li><b>La fin de votre message.</b> La méthode au-delà de l'étape A et la liste des livrables ne me sont pas parvenues. Renvoyez-les et j'ajuste.</li>
+</ul>
+</div></section>
+<footer><div class="c">Dossier produit le 12 novembre 2026. Prototype local, non déployé, non poussé.</div></footer>
+</body></html>
