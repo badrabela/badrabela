@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BAB Assainissement, dossier de la nouvelle vision</title><meta name="robots" content="noindex">
+<style>
+@font-face{font-family:"Source Serif 4";src:url({{font:fonts/source-serif-4.woff2}}) format("woff2");font-weight:200 900;font-display:swap}
+@font-face{font-family:"Schibsted Grotesk";src:url({{font:fonts/schibsted-grotesk.woff2}}) format("woff2");font-weight:400 900;font-display:swap}
+:root{color-scheme:light;--calcaire:#ECE9E2;--chaux:#F8F6F1;--fonte:#1C2023;--pierre:#54585A;--filet:#C8C3B7;--bleu:#1546E0;--t:"Source Serif 4",Georgia,serif;--s:"Schibsted Grotesk",system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:var(--calcaire);color:var(--fonte);font:400 18px/1.6 var(--s)}
+.c{max-width:1180px;margin:0 auto;padding:0 clamp(18px,4vw,56px)}
+header{padding:clamp(36px,6vw,80px) 0 clamp(20px,3vw,40px);border-bottom:2px solid var(--fonte)}
+h1{font:600 clamp(38px,6vw,84px)/1 var(--t);letter-spacing:-.02em;margin:0;max-width:14em;text-wrap:balance}
+h1 em{color:var(--bleu);font-weight:500}
+header p{font-size:20px;max-width:44em;margin:20px 0 0}
+nav{position:sticky;top:0;background:var(--calcaire);border-bottom:1px solid var(--filet);z-index:5}
+nav .c{display:flex;gap:6px 22px;flex-wrap:wrap;padding-block:12px;font-weight:600;font-size:16px}
+nav a{color:inherit;text-decoration:none;padding:6px 0}nav a:hover{color:var(--bleu)}
+section{padding:clamp(40px,6vw,88px) 0;border-bottom:1px solid var(--filet)}
+h2{font:600 clamp(30px,3.8vw,52px)/1.05 var(--t);letter-spacing:-.015em;margin:0 0 22px;text-wrap:balance}
+h3{font:600 26px/1.15 var(--t);margin:34px 0 10px}
+p{margin:0 0 14px;max-width:46em}ul{max-width:46em;padding-left:22px;margin:0 0 14px}li{margin-bottom:6px}
+.n{font:italic 500 26px var(--t);color:var(--bleu);margin-right:12px}
+.note{background:var(--chaux);border-left:6px solid var(--bleu);padding:16px 20px;max-width:46em;margin:18px 0}
+.alerte{border-left-color:#A6231B}
+figure{margin:22px 0}figure img{display:block;max-width:100%;height:auto;border:1px solid var(--filet)}figcaption{font-size:16px;color:var(--pierre);margin-top:8px}
+.duo{display:grid;grid-template-columns:minmax(0,3.6fr) minmax(0,1fr);gap:16px;align-items:start}
+.paire{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.six{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;align-items:start}
+.t{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:680px;font-size:17px}th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--filet);vertical-align:top}th{font-weight:700;border-bottom:2px solid var(--fonte)}td.c2,th.c2{text-align:center;font-variant-numeric:tabular-nums}
+.pal{display:flex;flex-wrap:wrap;gap:12px}.pal div{width:150px;font-size:15px}.pal i{display:block;height:70px;border:1px solid var(--filet);margin-bottom:6px}
+.spec{font:600 clamp(34px,5vw,64px)/1.05 var(--t);letter-spacing:-.018em}.spec2{font:800 clamp(34px,6vw,84px)/1 var(--s);letter-spacing:-.04em}
+code{font-size:.92em;background:var(--chaux);padding:1px 6px}
+footer{padding:28px 0 60px;color:var(--pierre);font-size:16px}
+@media(max-width:760px){.duo,.paire{grid-template-columns:1fr}.six{grid-template-columns:1fr 1fr}}
+</style></head><body>
+<header><div class="c">
+<h1>BAB Assainissement : <em>une nouvelle vision</em>, pas une nouvelle version.</h1>
+<p>Dossier de travail : audit, trois directions artistiques, direction retenue, prototype d'accueil, contrôles et reste à faire. Rien n'a été modifié en production ; tout est local.</p>
+</div></header>
+<nav><div class="c"><a href="#audit">1. Audit</a><a href="#concepts">2. Trois concepts</a><a href="#choix">3. Comparaison et choix</a><a href="#systeme">4. Design system</a><a href="#proto">5. Prototype</a><a href="#captures">6. Captures</a><a href="#tests">7. Contrôles</a><a href="#reste">8. Reste à faire</a></div></nav>
+
+<section id="audit"><div class="c">
+<h2><span class="n">1</span>Audit du site et des ressources</h2>
+<h3>Ce que j'ai réellement pu consulter</h3>
+<ul>
+<li><b>Le site public</b> babassainissement.fr : accueil, réalisations, prix et devis, envoi de rapport, contact, plans de site, fichier de présentation pour assistants.</li>
+<li><b>Le dépôt local</b> : il ne contient que les cinq maquettes produites dans cette conversation. Les versions V2 à V5 de « La coupe », le logo source et les photos originales n'y sont pas. Je ne les ai donc pas vus.</li>
+<li><b>Les photos</b> : 47 photos de chantier et le logo, récupérés sur le site public, en 1 000 à 1 600 pixels de large.</li>
+</ul>
+<h3>Ce que le site contient</h3>
+<div class="t"><table>
+<tr><th>Élément</th><th>Constat</th></tr>
+<tr><td>Pages</td><td>39 adresses dans le plan « services » (17 prestations, 9 zones, pages d'entreprise), 368 pages communes, 20 guides, 1 article de blog.</td></tr>
+<tr><td>Prestations à l'accueil</td><td>Dix : mise en conformité, raccordement, travaux d'assainissement, fosses et micro-stations, inspection caméra, curage, pompes de relevage, canalisation fonte, cuve à fioul, terrassement. S'y ajoutent les eaux pluviales à la parcelle.</td></tr>
+<tr><td>Chemins de conversion</td><td>Téléphone 01 89 48 09 64, « Envoyer mon rapport » (<code>/upload-rapport</code> : photo ou fichier, nom, téléphone, commune), formulaire de contact, page d'estimation.</td></tr>
+<tr><td>Référencement à préserver</td><td>Titre et description de l'accueil, adresse canonique, données structurées (entreprise, établissement local, questions fréquentes), plans de site, adresses des pages prestations et communes.</td></tr>
+<tr><td>Identité actuelle</td><td>Logo bleu marine et orange ; titres en Big Shoulders Display, texte en Public Sans ; fonds ciment et nuit ; une scène animée d'ouverture avec un lien « Passer l'animation ».</td></tr>
+<tr><td>Règles éditoriales du site</td><td>Aucun prix publié, aucun délai garanti, aucune certification. Devis écrit et gratuit après visite. Intervention sur la partie privée uniquement.</td></tr>
+</table></div>
+<div class="paire">
+<figure><img src="{{img:captures/site-actuel-1366.jpg}}" alt="Accueil actuel sur ordinateur"><figcaption>Accueil actuel, 1366 × 768, capturé le 12 novembre 2026.</figcaption></figure>
+<figure style="max-width:300px"><img src="{{img:captures/site-actuel-390.jpg}}" alt="Accueil actuel sur téléphone"><figcaption>Accueil actuel, 390 × 844.</figcaption></figure>
+</div>
+<h3>Problèmes constatés</h3>
+<ul>
+<li>Le titre « Ce qui se passe sous votre maison » ne dit pas ce que BAB fait : un propriétaire inquiet doit lire le paragraphe pour comprendre.</li>
+<li>Le premier écran dépend d'une scène animée, qu'il faut passer.</li>
+<li>Les photos de chantier, qui sont la meilleure preuve, arrivent tard et en petit.</li>
+<li>La page réalisations mélange jardins privés, parkings, voirie et un camion marqué d'un autre nom : voir l'alerte ci-dessous.</li>
+</ul>
+<div class="note alerte"><b>À vérifier par vous.</b> Certaines photos du site montrent des interventions sur parking ou voirie et un véhicule portant un marquage tiers. Le prototype n'utilise que des photos de jardins, d'allées et de caves privées. Pour chacune, il faut confirmer que le chantier est bien celui de BAB et que vous en avez les droits.</div>
+<div class="note"><b>Correction de mes maquettes précédentes.</b> Les maquettes 1 à 5 affichaient « visite sous 7 jours » et « devis sous 48 h ». Ces délais figuraient sur une page locale, mais l'accueil et le fichier de présentation précisent que BAB ne garantit aucun délai. Le prototype n'en affiche plus aucun.</div>
+</div></section>
+
+<section id="concepts"><div class="c">
+<h2><span class="n">2</span>Trois concepts, réellement différents</h2>
+<p>Les trois partent du même titre commercial et des mêmes photos réelles. Chacun existe en vraie page, pas seulement en description.</p>
+<h3>A. « Le tampon »</h3>
+<p><b>Idée.</b> Après un chantier d'assainissement, tout ce qui reste visible est un tampon dans le jardin. La page est claire en surface ; un rond montre ce qu'il y a dessous. Cela répond à la crainte principale d'un propriétaire : l'état du jardin après les travaux.</p>
+<ul><li><b>Typographie :</b> Source Serif 4 pour les titres, avec une italique bleue ; Schibsted Grotesk pour le texte et les chiffres.</li><li><b>Photo :</b> couleurs réelles, grand format, bord perdu à droite ; un médaillon rond « dessous ».</li><li><b>Navigation :</b> barre claire, téléphone en gras avec les horaires ; menu en toutes lettres sur mobile, barre d'appel fixe.</li><li><b>Actions :</b> deux lignes typographiques terminées par un rond, la forme du tampon ; le numéro de téléphone est lui-même l'action.</li></ul>
+<div class="duo"><figure><img src="{{img:captures/apres-1440x900.jpg}}" alt="Concept A sur ordinateur"><figcaption>Concept A, 1440 × 900.</figcaption></figure><figure><img src="{{img:captures/apres-390x844.jpg}}" alt="Concept A sur téléphone"><figcaption>390 × 844.</figcaption></figure></div>
+<h3>B. « La une »</h3>
+<p><b>Idée.</b> L'accueil est une première page de journal : un titre immense, trois colonnes, la photo traitée comme un document en noir et blanc.</p>
+<ul><li><b>Typographie :</b> serif très grasse, jusqu'à 148 px ; rouge brique pour « non conforme ».</li><li><b>Photo :</b> petite, en niveaux de gris, avec légende de presse.</li><li><b>Navigation :</b> une têtière et une ligne de rubriques entre deux filets.</li><li><b>Actions :</b> des liens soulignés avec flèche, sans aucun bouton.</li></ul>
+<div class="duo"><figure><img src="{{img:captures/concept-b-1440.jpg}}" alt="Concept B sur ordinateur"><figcaption>Concept B, 1440 × 900. Fichier : <code>concepts/concept-b-la-une.html</code></figcaption></figure><figure><img src="{{img:captures/concept-b-390.jpg}}" alt="Concept B sur téléphone"><figcaption>390 × 844.</figcaption></figure></div>
+<h3>C. « Plein cadre »</h3>
+<p><b>Idée.</b> Le chantier occupe tout l'écran comme un plan de cinéma : capitales massives, repères techniques posés sur la photo, trois actions en pied d'écran.</p>
+<ul><li><b>Typographie :</b> grotesque en capitales, graisse 900.</li><li><b>Photo :</b> plein écran, assombrie, avec deux repères (« fosse toutes eaux », « vers l'épandage »).</li><li><b>Navigation :</b> transparente, posée sur l'image.</li><li><b>Actions :</b> une barre en trois cases, dont le téléphone en bleu.</li></ul>
+<div class="duo"><figure><img src="{{img:captures/concept-c-1440.jpg}}" alt="Concept C sur ordinateur"><figcaption>Concept C, 1440 × 900. Fichier : <code>concepts/concept-c-plein-cadre.html</code></figcaption></figure><figure><img src="{{img:captures/concept-c-390.jpg}}" alt="Concept C sur téléphone"><figcaption>390 × 844.</figcaption></figure></div>
+</div></section>
+
+<section id="choix"><div class="c">
+<h2><span class="n">3</span>Comparaison et direction retenue</h2>
+<p>Notes sur 5. Ce sont mes jugements de direction artistique, pas des mesures.</p>
+<div class="t"><table>
+<tr><th>Critère</th><th class="c2">A. Le tampon</th><th class="c2">B. La une</th><th class="c2">C. Plein cadre</th></tr>
+<tr><td>Impact visuel</td><td class="c2">4</td><td class="c2">4</td><td class="c2">5</td></tr>
+<tr><td>Originalité</td><td class="c2">4</td><td class="c2">4</td><td class="c2">2</td></tr>
+<tr><td>Crédibilité métier</td><td class="c2">5</td><td class="c2">3</td><td class="c2">4</td></tr>
+<tr><td>Compréhension pour une personne âgée</td><td class="c2">5</td><td class="c2">4</td><td class="c2">3</td></tr>
+<tr><td>Facilité de contact</td><td class="c2">5</td><td class="c2">3</td><td class="c2">4</td></tr>
+<tr><td>Faisabilité technique</td><td class="c2">5</td><td class="c2">5</td><td class="c2">4</td></tr>
+<tr><td>Performance mobile</td><td class="c2">4</td><td class="c2">5</td><td class="c2">3</td></tr>
+<tr><th>Total sur 35</th><th class="c2">32</th><th class="c2">28</th><th class="c2">25</th></tr>
+</table></div>
+<h3>Je retiens A, « Le tampon »</h3>
+<ul>
+<li><b>Il a une idée que les autres n'ont pas.</b> Le tampon est le seul objet que le client verra de votre travail. C'est vrai, c'est propre à votre métier, et cela rassure sur la remise en état.</li>
+<li><b>B est beau mais froid.</b> Sans grande photo, il prouve moins ; ses liens soulignés sont moins évidents à toucher pour un utilisateur âgé.</li>
+<li><b>C impressionne puis fatigue.</b> Le sombre et les capitales ressemblent aux sites de travaux publics ; le texte sur photo est moins lisible ; vos photos actuelles (1 600 px) ne tiennent pas le plein écran sur un grand moniteur.</li>
+<li><b>Ce que A reprend aux deux autres :</b> l'ambition typographique de B, et de C la grande photo de fosse à bord perdu, placée dans les réalisations.</li>
+</ul>
+</div></section>
+
+<section id="systeme"><div class="c">
+<h2><span class="n">4</span>Design system</h2>
+<h3>Couleurs, prises sur les chantiers</h3>
+<div class="pal">
+<div><i style="background:#ECE9E2"></i><b>Calcaire</b> #ECE9E2<br>fond de page</div>
+<div><i style="background:#F8F6F1"></i><b>Chaux</b> #F8F6F1<br>bandes claires, champs</div>
+<div><i style="background:#1C2023"></i><b>Fonte</b> #1C2023<br>texte, bandes sombres</div>
+<div><i style="background:#54585A"></i><b>Pierre</b> #54585A<br>texte secondaire</div>
+<div><i style="background:#1546E0"></i><b>Bleu pression</b> #1546E0<br>actions, repères</div>
+<div><i style="background:#9DB6FF"></i><b>Bleu clair</b> #9DB6FF<br>le bleu, sur fond sombre</div>
+</div>
+<p style="margin-top:16px">Le bleu électrique n'est pas décoratif : c'est celui des tuyaux sous pression visibles sur vos photos de tranchées. Il n'est utilisé que pour ce qui se touche. L'orange du logo reste dans le logo, non modifié.</p>
+<h3>Typographie</h3>
+<p class="spec">Source Serif 4, pour les titres.</p>
+<p class="spec2">01 89 48 09 64</p>
+<p>Schibsted Grotesk pour le texte, les libellés et les chiffres. Texte courant à 18 px, jamais moins de 16 px. Les deux polices sont hébergées avec la page, sans appel extérieur.</p>
+<h3>Composants</h3>
+<ul>
+<li><b>Le rond.</b> Toute action principale se termine par un disque fléché, bleu ou fonte : la forme du tampon. Le libellé reste écrit en toutes lettres à côté.</li>
+<li><b>Le numéro.</b> Le téléphone n'est jamais un bouton coloré : c'est le numéro lui-même, en gras, jusqu'à 186 px dans la section contact.</li>
+<li><b>La ligne.</b> Prestations, départements et questions sont des lignes typographiques séparées par des filets, sans cartes ni icônes.</li>
+<li><b>La photo.</b> Couleurs réelles, angles droits, légende avec la commune quand le site la donne.</li>
+<li><b>Les bandes.</b> Clair pour ce qui se passe en surface (comprendre, contacter), fonte pour les chantiers.</li>
+</ul>
+</div></section>
+
+<section id="proto"><div class="c">
+<h2><span class="n">5</span>Le prototype d'accueil</h2>
+<p>Une vraie page interactive, à ouvrir dans un navigateur.</p>
+<ul>
+<li><code>BAB-accueil-autonome.html</code> : un seul fichier, images et polices incluses, qui s'ouvre d'un double-clic.</li>
+<li><code>index.html</code> avec les dossiers <code>img/</code> et <code>fonts/</code> : la version de travail, celle qui a été mesurée.</li>
+</ul>
+<h3>Ce qu'on peut y faire</h3>
+<ul>
+<li>Choisir entre « J'ai reçu un rapport non conforme » et « J'ai besoin de travaux » dès le premier écran.</li>
+<li>Inverser la vue d'ouverture : la surface en grand et le dessous en médaillon, ou l'inverse.</li>
+<li>Parcourir onze prestations classées en trois groupes ; la photo de chantier suit la ligne survolée ou atteinte au clavier. Sur mobile, chaque ligne porte sa vignette.</li>
+<li>Voir deux chantiers en séquence (l'allée, Villecerf) et une fosse en grand format.</li>
+<li>Lire, si on le souhaite, une coupe de principe redessinée au trait, avec six repères.</li>
+<li>Remplir les deux formulaires : ils contrôlent la saisie, puis affichent « Démonstration : rien n'a été envoyé ».</li>
+</ul>
+<p>Les liens de prestations, de zones et de mentions pointent vers les adresses actuelles du site, inchangées.</p>
+</div></section>
+
+<section id="captures"><div class="c">
+<h2><span class="n">6</span>Captures, avant et après correction</h2>
+<p>« Avant » : premier jet. « Après » : après deux tours de critique. Corrections principales : le médaillon masquait les deux ronds d'action ; le texte de l'anneau se chevauchait ; le point d'interrogation partait seul à la ligne ; les photos de réalisations étaient trop petites ; la section rapport laissait un vide ; sur mobile, la deuxième porte passait sous la barre d'appel.</p>
+<div class="paire"><figure><img src="{{img:captures/avant-1440x900.jpg}}" alt=""><figcaption>Avant, 1440 × 900.</figcaption></figure><figure><img src="{{img:captures/apres-1440x900.jpg}}" alt=""><figcaption>Après, 1440 × 900.</figcaption></figure></div>
+<div class="six">
+<figure><img src="{{img:captures/avant-390x844.jpg}}" alt=""><figcaption>Avant, 390 × 844.</figcaption></figure>
+<figure><img src="{{img:captures/apres-390x844.jpg}}" alt=""><figcaption>Après, 390 × 844.</figcaption></figure>
+<figure><img src="{{img:captures/avant-360x800.jpg}}" alt=""><figcaption>Avant, 360 × 800.</figcaption></figure>
+<figure><img src="{{img:captures/apres-360x800.jpg}}" alt=""><figcaption>Après, 360 × 800.</figcaption></figure>
+</div>
+<div class="paire"><figure><img src="{{img:captures/apres-1366x768.jpg}}" alt=""><figcaption>Après, 1366 × 768.</figcaption></figure><figure><img src="{{img:captures/apres-1024x768.jpg}}" alt=""><figcaption>Après, 1024 × 768.</figcaption></figure></div>
+<figure style="max-width:520px"><img src="{{img:captures/apres-768x1024.jpg}}" alt=""><figcaption>Après, 768 × 1024.</figcaption></figure>
+<p>Le dossier <code>captures/</code> contient les douze captures (six formats, avant et après) et la page entière en 1440 et en 390 de large. Le dossier <code>videos/</code> contient le défilement sur ordinateur (15 s) et sur téléphone (26 s).</p>
+</div></section>
+
+<section id="tests"><div class="c">
+<h2><span class="n">7</span>Contrôles effectués</h2>
+<p>Tout a été exécuté dans Chromium sans écran (Playwright 1.63), dans un conteneur en ligne, page servie en local. Ce ne sont pas des mesures sur un téléphone réel.</p>
+<h3>Accessibilité</h3>
+<div class="t"><table>
+<tr><th>Contrôle</th><th>Résultat</th></tr>
+<tr><td>axe-core, règles WCAG 2.1 A et AA et bonnes pratiques, 1440 × 900</td><td>0 violation, 48 règles réussies. Premier passage : 2 violations, corrigées.</td></tr>
+<tr><td>axe-core, mêmes règles, 390 × 844</td><td>0 violation, 50 règles réussies. Premier passage : 2 violations, corrigées.</td></tr>
+<tr><td>À vérifier à l'œil (signalé par l'outil)</td><td>Le contraste de la légende posée sur la photo d'ouverture, que l'outil ne sait pas calculer sur une image.</td></tr>
+<tr><td>Taille des textes sur mobile</td><td>Aucun texte sous 16 px.</td></tr>
+<tr><td>Zones tactiles sur mobile</td><td>Liens et boutons à 44 px de haut ou plus ; barre d'appel à 64 px.</td></tr>
+<tr><td>Clavier</td><td>Lien d'évitement au premier Tab ; menu fermé par Échap ; erreurs de formulaire annoncées et focus placé sur le premier champ fautif.</td></tr>
+<tr><td>Mouvement réduit</td><td>L'anneau cesse de tourner ; aucune autre animation.</td></tr>
+<tr><td>Sans JavaScript</td><td>Titre, deux portes, téléphone et formulaires restent présents et lisibles.</td></tr>
+</table></div>
+<p>17 vérifications fonctionnelles automatisées sur 17 réussies. Aucun test avec un lecteur d'écran réel ni avec des utilisateurs âgés n'a été fait.</p>
+<h3>Performance</h3>
+<div class="t"><table>
+<tr><th>Contexte</th><th>Premier affichage</th><th>Chargement complet</th><th>Décalage cumulé</th><th>Poids initial</th><th>Poids après défilement</th></tr>
+<tr><td>Ordinateur 1440 × 900, sans bridage</td><td>0,10 s</td><td>0,04 s</td><td>0</td><td>669 ko</td><td>1 935 ko</td></tr>
+<tr><td>Mobile 390 × 844, bridé à 1,6 Mbit/s, 150 ms de latence, processeur ralenti 4 fois</td><td>0,59 s</td><td>2,8 s</td><td>0,03</td><td>530 ko</td><td>814 ko</td></tr>
+<tr><td>Mobile 360 × 800, même bridage</td><td>0,53 s</td><td>2,8 s</td><td>0,006</td><td>530 ko</td><td>814 ko</td></tr>
+</table></div>
+<p>Le premier affichage mesuré est celui du titre ; la photo d'ouverture arrive ensuite. Je n'ai pas lancé Lighthouse ni mesuré l'interactivité (INP). Aucune bibliothèque externe : une page HTML de 62 ko, CSS et JavaScript compris.</p>
+</div></section>
+
+<section id="reste"><div class="c">
+<h2><span class="n">8</span>Ce qui reste à faire avant la production</h2>
+<h3>Ma critique du résultat</h3>
+<ul>
+<li><b>Le saut est réel sur trois points :</b> le premier écran dit l'offre et propose les deux parcours ; les photos de chantier portent la page ; il n'y a plus ni carte, ni pictogramme, ni illustration.</li>
+<li><b>Il reste en dessous de l'ambition sur deux points.</b> Les photos sont des clichés de téléphone en 1 000 à 1 600 px : bien cadrées, elles tiennent, mais un vrai reportage changerait tout. Et le milieu de page (étapes, zones, questions) est propre mais sage.</li>
+<li><b>La coupe</b> est sobre et lisible, mais c'est un dessin de principe fait par moi : elle doit être relue par vous pour l'exactitude technique.</li>
+</ul>
+<h3>À faire</h3>
+<ul>
+<li>Valider, photo par photo, l'origine et les droits ; fournir les originaux en haute définition.</li>
+<li>Faire photographier quatre ou cinq chantiers (avant, pendant, après, tampon fini) et, si vous le voulez, le fondateur sur site.</li>
+<li>Ajouter des photos pour l'inspection caméra et la cuve à fioul, aujourd'hui sans image.</li>
+<li>Brancher les deux formulaires sur l'envoi réel et le suivi des conversions existants, sans changer leurs champs.</li>
+<li>Reporter le titre, la description, l'adresse canonique et les données structurées de l'accueil actuel ; décider si le titre principal change.</li>
+<li>Décliner le système sur les pages prestations, communes, réalisations, guides, contact et envoi de rapport.</li>
+<li>Tester sur de vrais téléphones, dont un ancien, avec un lecteur d'écran et avec quelques propriétaires de 60 à 80 ans.</li>
+<li>Mesurer avec Lighthouse et sur le terrain une fois la page hébergée ; ajouter des formats d'image AVIF.</li>
+<li>Décider du sort de la scène animée actuelle et du bandeau de cookies, absents du prototype.</li>
+<li>Faire valider la proposition de couleurs au regard du logo, que je n'ai pas modifié.</li>
+</ul>
+</div></section>
+<footer><div class="c">Dossier produit le 12 novembre 2026. Prototype local, non déployé, non poussé sur le dépôt distant.</div></footer>
+</body></html>

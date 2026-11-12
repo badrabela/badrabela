@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Concept B, « La une »</title><meta name="robots" content="noindex">
+<style>
+/* CONCEPT B « LA UNE » : la page d'accueil est une première page de journal.
+   Tout passe par la typographie ; la photo est un document, pas un décor. */
+@font-face{font-family:"Source Serif 4";src:url(../fonts/source-serif-4.woff2) format("woff2");font-weight:200 900;font-display:swap}
+@font-face{font-family:"Source Serif 4";src:url(../fonts/source-serif-4-italic.woff2) format("woff2");font-weight:200 900;font-style:italic;font-display:swap}
+@font-face{font-family:"Schibsted Grotesk";src:url(../fonts/schibsted-grotesk.woff2) format("woff2");font-weight:400 900;font-display:swap}
+:root{--papier:#FBFAF6;--encre:#111;--gris:#555;--filet:#111;--rouge:#B3261E;--t:"Source Serif 4",Georgia,serif;--s:"Schibsted Grotesk",system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:var(--papier);color:var(--encre);font:400 18px/1.5 var(--t)}
+a{color:inherit}.c{max-width:1360px;margin:0 auto;padding:0 clamp(18px,4vw,56px)}
+.tetiere{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:16px;padding-top:18px;font:500 16px var(--s)}
+.tetiere img{height:54px;width:auto;justify-self:center}
+.tetiere .d{justify-self:end;font-weight:800;font-size:22px;text-decoration:none}
+.rub{margin-top:12px;border-block:3px double var(--filet);display:flex;gap:clamp(14px,3vw,40px);justify-content:center;padding:10px 0;font:600 16px var(--s);flex-wrap:wrap}
+.rub a{text-decoration:none}
+h1{font:800 clamp(44px,9.2vw,148px)/.92 var(--t);letter-spacing:-.035em;margin:clamp(18px,3vh,36px) 0 clamp(14px,2.4vh,28px);text-wrap:balance}
+h1 em{font-weight:500;color:var(--rouge)}
+.cols{display:grid;grid-template-columns:1fr 1.15fr 1fr;border-top:2px solid var(--filet)}
+.cols>*{padding:18px clamp(14px,2vw,28px) 22px}.cols>*+*{border-left:1px solid var(--filet)}.cols>*:first-child{padding-left:0}.cols>*:last-child{padding-right:0}
+h2{font:700 clamp(24px,2.4vw,34px)/1.05 var(--t);margin:0 0 8px}
+.lien{display:inline-block;margin-top:12px;font:700 18px var(--s);text-underline-offset:5px;text-decoration-thickness:2px}
+figure{margin:0}figure img{width:100%;aspect-ratio:16/10;object-fit:cover;filter:grayscale(1) contrast(1.08)}figcaption{font:400 15px/1.35 var(--s);color:var(--gris);margin-top:8px}
+.idx{list-style:none;margin:8px 0 0;padding:0;font:600 18px/1.2 var(--s)}.idx li{padding:7px 0;border-bottom:1px dotted #999;display:flex;justify-content:space-between}
+@media(max-width:820px){.tetiere{grid-template-columns:auto 1fr}.tetiere span:first-child{display:none}.tetiere img{height:40px;justify-self:start}.rub{justify-content:flex-start;font-size:15px;gap:14px}.cols{grid-template-columns:1fr}.cols>*{padding-inline:0}.cols>*+*{border-left:0;border-top:1px solid var(--filet)}.cols figure{order:3}}
+</style></head><body><div class="c">
+<div class="tetiere"><span>Saint-Mandé · Île-de-France</span><img src="../img/logo-bab.webp" alt="BAB Assainissement"><a class="d" href="tel:+33189480964">01 89 48 09 64</a></div>
+<nav class="rub"><a href="#">Rapport non conforme</a><a href="#">Prestations</a><a href="#">Réalisations</a><a href="#">Prix et devis</a><a href="#">Zones</a></nav>
+<h1>Assainissement <em>non conforme</em>&nbsp;? Nous réalisons les travaux.</h1>
+<div class="cols">
+<div><h2>J'ai reçu un rapport non conforme</h2><p>Vous vendez, ou la mairie vous a écrit. Envoyez le rapport : nous le lisons avant de vous rappeler.</p><a class="lien" href="#">Envoyer mon rapport →</a></div>
+<figure><img src="../img/hero-large-1600.webp" alt="Un regard posé dans un jardin."><figcaption>Après le chantier, il reste un tampon au ras du sol. BAB intervient sur la partie privée du réseau.</figcaption></figure>
+<div><h2>J'ai besoin de travaux</h2><ul class="idx"><li>Raccordement<span>→</span></li><li>Regards et canalisations<span>→</span></li><li>Inspection caméra, curage<span>→</span></li><li>Fosses, relevage<span>→</span></li></ul><a class="lien" href="#">Toutes les prestations →</a></div>
+</div></div></body></html>

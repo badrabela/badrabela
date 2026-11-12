@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BAB Assainissement, prototype d'accueil « Le tampon »</title>
+<meta name="description" content="Prototype local de la page d'accueil BAB Assainissement : mise en conformité, raccordement, regards, inspection caméra, fosses, en Île-de-France.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preload" as="font" type="font/woff2" href="fonts/source-serif-4.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="fonts/schibsted-grotesk.woff2" crossorigin>
+<link rel="preload" as="image" href="img/hero-surface-1200.webp" imagesrcset="img/hero-surface-720.webp 720w, img/hero-surface-1200.webp 960w" imagesizes="(max-width: 900px) 100vw, 42vw" fetchpriority="high">
+<style>
+/* DIRECTION « LE TAMPON »
+   Après un chantier d'assainissement, tout ce qui reste visible est un tampon dans le jardin.
+   La page est donc claire et minérale en surface ; la fonte et le bleu des tuyaux sous pression
+   viennent des photos de chantier. Le rond du tampon est la seule forme signature :
+   il porte les actions et cadre ce qu'il y a dessous. */
+@font-face{font-family:"Source Serif 4";src:url(fonts/source-serif-4.woff2) format("woff2");font-weight:200 900;font-style:normal;font-display:swap}
+@font-face{font-family:"Source Serif 4";src:url(fonts/source-serif-4-italic.woff2) format("woff2");font-weight:200 900;font-style:italic;font-display:swap}
+@font-face{font-family:"Schibsted Grotesk";src:url(fonts/schibsted-grotesk.woff2) format("woff2");font-weight:400 900;font-style:normal;font-display:swap}
+:root{
+  color-scheme:light;
+  --calcaire:#ECE9E2;   /* le sol clair, fond de page */
+  --chaux:#F8F6F1;      /* surfaces plus claires, champs */
+  --fonte:#1C2023;      /* encre et bandes sombres : la fonte des tampons */
+  --fonte-2:#2C3237;
+  --pierre:#54585A;     /* texte secondaire */
+  --filet:#C8C3B7;
+  --bleu:#1546E0;       /* le bleu des tuyaux sous pression : action */
+  --bleu-fonce:#0D2FA6;
+  --bleu-clair:#9DB6FF; /* le même bleu, sur fond sombre */
+  --alerte:#A6231B;
+  --titre:"Source Serif 4","Iowan Old Style",Georgia,"Times New Roman",serif;
+  --texte:"Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --marge:clamp(20px,4.2vw,64px);
+  --large:1360px;
+  --entete:76px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--entete) + 12px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--calcaire);color:var(--fonte);font:400 18px/1.55 var(--texte);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+h1,h2,h3{font-family:var(--titre);font-weight:600;margin:0;line-height:1.04;letter-spacing:-.018em;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+img{display:block;max-width:100%;height:auto}
+button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--bleu);outline-offset:3px}
+.sombre :focus-visible{outline-color:#fff}
+.cadre{max-width:var(--large);margin:0 auto;padding-inline:var(--marge)}
+.cache{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.evitement{position:absolute;left:8px;top:-60px;background:var(--fonte);color:#fff;padding:12px 16px;z-index:100}
+.evitement:focus{top:8px}
+.proto{background:var(--fonte);color:#D9D6CE;font-size:15px;line-height:1.4;padding:8px var(--marge);text-align:center}
+.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* Le rond : forme signature des actions */
+.rond{flex:none;width:56px;height:56px;border-radius:50%;background:var(--bleu);display:grid;place-items:center;box-shadow:inset 0 0 0 5px var(--bleu),inset 0 0 0 6.5px #ffffff66;transition:background .2s}
+.rond svg{width:22px;height:22px;stroke:#fff;stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round;transition:transform .25s}
+.rond.fonte{background:var(--fonte);box-shadow:inset 0 0 0 5px var(--fonte),inset 0 0 0 6.5px #ffffff55}
+a:hover>.rond svg,button:hover>.rond svg{transform:translateX(4px)}
+a:hover>.rond,button:hover>.rond{background:var(--bleu-fonce)}
+a:hover>.rond.fonte,button:hover>.rond.fonte{background:#000}
+/* Action écrite : le libellé et son rond */
+.action{display:inline-flex;align-items:center;gap:14px;text-decoration:none;font-weight:700;font-size:19px;min-height:56px;background:none;border:0;padding:0;cursor:pointer;text-align:left}
+.action span.t{border-bottom:2px solid currentColor;padding-bottom:2px}
+/* Le téléphone : le numéro est l'action */
+.tel{display:inline-flex;align-items:baseline;gap:10px;min-height:48px;padding-block:8px;text-decoration:none;font-weight:800;letter-spacing:-.01em}
+.tel svg{width:.82em;height:.82em;fill:var(--bleu);align-self:center;flex:none}
+.tel:hover .num{text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:5px;text-decoration-color:var(--bleu)}
+
+/* En-tête */
+.entete{position:sticky;top:0;z-index:50;background:var(--calcaire);border-bottom:1px solid var(--filet)}
+.entete .cadre{display:flex;align-items:center;gap:clamp(16px,2.6vw,40px);height:var(--entete)}
+.logo{flex:none;margin-right:auto;display:flex;align-items:center;min-height:48px}
+.logo img{height:46px;width:auto}
+.nav{display:flex;gap:clamp(14px,2vw,30px);font-size:17px;font-weight:500}
+.nav a{text-decoration:none;padding:10px 0;border-bottom:2px solid transparent}
+.nav a:hover{border-color:var(--bleu)}
+.entete .tel{font-size:22px;flex-direction:column;align-items:flex-end;justify-content:center;gap:0;line-height:1.1;padding-block:0}
+.entete .tel .l{display:flex;align-items:baseline;gap:8px}
+.entete .tel small{font-weight:500;font-size:14.5px;color:var(--pierre);letter-spacing:0}
+.btn-menu{display:none;align-items:center;gap:10px;min-height:48px;padding:0 4px 0 12px;background:none;border:0;font-weight:700;font-size:17px;cursor:pointer}
+.btn-menu i{width:26px;height:14px;border-block:2.5px solid var(--fonte);display:block}
+.menu{position:fixed;inset:0;z-index:60;background:var(--calcaire);display:none;flex-direction:column;padding:18px var(--marge) 28px;overflow:auto}
+.menu.ouvert{display:flex}
+.menu-haut{display:flex;justify-content:space-between;align-items:center;min-height:52px}
+.menu nav{display:grid;margin-top:18px;border-top:2px solid var(--fonte)}
+.menu nav a{font:600 30px/1.1 var(--titre);text-decoration:none;padding:18px 0;border-bottom:1px solid var(--filet);display:flex;justify-content:space-between;align-items:center;gap:12px}
+.menu .tel{font-size:34px;margin-top:28px}
+.menu small{color:var(--pierre);font-size:16px}
+
+/* Ouverture */
+.ouverture{position:relative}
+.ouverture .cadre{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(24px,4vw,72px);align-items:start}
+.o-texte{padding-block:clamp(28px,5vh,64px) clamp(28px,4vw,56px)}
+.sur{font-size:16px;font-weight:600;color:var(--pierre);display:flex;gap:12px;align-items:center;margin-bottom:clamp(14px,2.4vh,26px)}
+.sur::before{content:"";width:34px;height:2px;background:var(--bleu)}
+h1{font-size:clamp(36px,5.1vw,78px)}
+h1 em{font-style:italic;font-weight:500;color:var(--bleu)}
+.chapo{font-size:clamp(18px,1.45vw,21px);max-width:38em;margin-top:clamp(14px,2.2vh,24px);color:var(--fonte-2)}
+.portes{margin-top:clamp(20px,3.4vh,40px);display:grid;border-bottom:2px solid var(--fonte);margin-right:clamp(0px,5vw,84px)}
+.porte{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px;align-items:center;text-decoration:none;padding:clamp(14px,2vh,22px) 0;border-top:2px solid var(--fonte);transition:padding .2s,background .2s}
+.porte b{display:block;font:600 clamp(23px,2.2vw,32px)/1.12 var(--titre);letter-spacing:-.012em}
+.porte span.s{display:block;color:var(--pierre);font-size:17px;margin-top:5px}
+.porte:hover{background:var(--chaux);padding-inline:14px}
+.o-tel{margin-top:clamp(16px,2.4vh,26px);display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;font-size:17px;color:var(--pierre)}
+.o-tel .tel{font-size:clamp(26px,2.4vw,34px);color:var(--fonte)}
+
+.vue{margin:0;position:relative;align-self:stretch;min-height:100%}
+.vue-grand{position:absolute;inset:0 calc(-1 * max(var(--marge),(100vw - var(--large))/2 + var(--marge))) 0 0;overflow:hidden;background:var(--fonte-2)}
+.vue-grand img{width:100%;height:100%;object-fit:cover;object-position:38% 40%}
+.vue-rond{position:absolute;left:0;bottom:clamp(96px,15vh,150px);width:clamp(180px,19vw,280px);aspect-ratio:1;transform:translateX(-30%);border-radius:50%}
+.vue-rond img{width:100%;height:100%;object-fit:cover;border-radius:50%;background:var(--fonte)}
+.vue-rond svg{position:absolute;inset:-30px;width:calc(100% + 60px);height:calc(100% + 60px);animation:tourne 80s linear infinite}
+.vue-rond::before{content:"";position:absolute;inset:-30px;border-radius:50%;background:var(--calcaire)}
+.vue-rond img{position:relative}
+.vue-rond text{font:700 14px var(--texte);fill:var(--fonte)}
+@keyframes tourne{to{transform:rotate(360deg)}}
+.vue-bas{position:absolute;left:0;right:0;bottom:0;padding:44px clamp(16px,2vw,28px) 18px clamp(24px,3vw,44px);background:linear-gradient(transparent,#101315E6 34%);color:#fff;font-size:16px;line-height:1.4;margin-right:calc(-1 * max(var(--marge),(100vw - var(--large))/2 + var(--marge)));display:grid;gap:10px}
+.vue-bas b{font-weight:700}
+.vue-bas button{justify-self:start;background:none;border:0;border-bottom:2px solid #fff;color:#fff;font-weight:700;font-size:16px;padding:8px 0 3px;min-height:44px;cursor:pointer}
+
+.faits{border-block:1px solid var(--filet);background:var(--chaux)}
+.faits ul{list-style:none;margin:0;padding:18px 0;display:flex;flex-wrap:wrap;gap:8px clamp(18px,3vw,44px);font-size:17px;font-weight:500}
+.faits li{display:flex;gap:10px;align-items:baseline}
+.faits li::before{content:"";width:9px;height:9px;border-radius:50%;border:2px solid var(--bleu);flex:none;transform:translateY(-1px)}
+
+/* Sections */
+.section{padding-block:clamp(56px,8vw,128px)}
+.section>.cadre>.tete{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(20px,4vw,72px);align-items:end;margin-bottom:clamp(28px,4vw,60px)}
+h2{font-size:clamp(32px,4.2vw,62px)}
+.intro{font-size:clamp(18px,1.35vw,20px);color:var(--fonte-2);max-width:34em}
+.sombre{background:var(--fonte);color:#F1EEE7}
+.sombre .intro{color:#C9C6BE}
+.sombre .sur{color:#B4B1A9}
+.sombre .sur::before{background:var(--bleu-clair)}
+
+/* Rapport non conforme */
+.rapport .cadre{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,5fr);gap:clamp(28px,6vw,110px);align-items:start}
+.rapport h2{max-width:11em}
+.rapport .intro{margin-top:22px}
+.releve{margin:30px 0 0;padding:0;list-style:none;border-top:2px solid var(--fonte)}
+.releve li{padding:14px 0;border-bottom:1px solid var(--filet);display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:baseline}
+.releve li::before{content:"";width:12px;height:12px;border-radius:50%;background:var(--fonte)}
+.h-pas{font-size:clamp(24px,2vw,30px);margin-top:clamp(32px,4vw,56px)}
+.pas{counter-reset:p;list-style:none;margin:12px 0 0;padding:0;display:grid;gap:0;border-top:2px solid var(--fonte)}
+.pas li{counter-increment:p;display:grid;grid-template-columns:54px 1fr;align-items:baseline;padding:12px 0;border-bottom:1px solid var(--filet);font-size:18px}
+.pas li::before{content:counter(p);font:600 34px/1 var(--titre);color:var(--bleu)}
+.fiche{background:var(--chaux);border-top:6px solid var(--bleu);padding:clamp(20px,2.6vw,36px);position:sticky;top:calc(var(--entete) + 20px)}
+.fiche h3{font-size:clamp(25px,2.1vw,32px);margin-bottom:16px}
+.depot{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px}
+.depot label{display:flex;align-items:center;justify-content:center;gap:10px;min-height:64px;border:2px dashed var(--fonte);cursor:pointer;font-weight:700;text-align:center;padding:8px 10px;background:#fff}
+.depot label:hover{border-style:solid;background:var(--calcaire)}
+.depot label:focus-within{outline:3px solid var(--bleu);outline-offset:3px}
+.depot svg{width:22px;height:22px;stroke:var(--bleu);stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.aide{font-size:16px;color:var(--pierre)}
+.fichier{font-weight:700;font-size:16px;margin-top:8px;overflow-wrap:anywhere}
+.fichier:empty{display:none}
+.champs{display:grid;gap:14px;margin-top:20px}
+.champ{display:grid;gap:6px}
+.champ label{font-weight:700;font-size:17px}
+.champ input,.champ textarea{min-height:56px;border:2px solid var(--fonte);background:#fff;padding:12px 14px;font-size:18px;border-radius:0;width:100%}
+.champ textarea{min-height:104px;resize:vertical}
+.champ input:focus,.champ textarea:focus{outline:3px solid var(--bleu);outline-offset:2px}
+.champ .err{color:var(--alerte);font-weight:700;font-size:16px}
+.champ .err:empty{display:none}
+.champ.faux input{border-color:var(--alerte)}
+.envoi{margin-top:22px;display:flex;flex-wrap:wrap;gap:14px 26px;align-items:center}
+.retour{margin-top:16px;padding:14px 16px;background:var(--fonte);color:#fff;font-size:17px}
+.retour[hidden]{display:none}
+
+/* Prestations */
+.prest{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,4fr);gap:clamp(28px,6vw,110px);align-items:start}
+.groupe+.groupe{margin-top:clamp(28px,3.4vw,48px)}
+.groupe h3{font:700 16px/1.2 var(--texte);letter-spacing:.02em;color:var(--pierre);padding-bottom:12px;border-bottom:2px solid var(--fonte)}
+.ligne{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 22px;align-items:center;padding:18px 0;border-bottom:1px solid var(--filet);text-decoration:none;transition:padding .2s}
+.ligne b{font:600 clamp(24px,2.5vw,36px)/1.1 var(--titre);letter-spacing:-.014em;grid-column:1}
+.ligne span.d{grid-column:1;color:var(--pierre);font-size:17px}
+.ligne .fl{grid-row:1/span 2;grid-column:2;width:44px;height:44px;border-radius:50%;border:2px solid var(--fonte);display:grid;place-items:center;transition:background .2s,border-color .2s}
+.ligne .fl svg{width:18px;height:18px;stroke:var(--fonte);stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round;transition:stroke .2s}
+.ligne:hover,.ligne.actif{padding-left:14px}
+.ligne:hover b,.ligne.actif b{color:var(--bleu)}
+.ligne:hover .fl,.ligne.actif .fl{background:var(--bleu);border-color:var(--bleu)}
+.ligne:hover .fl svg,.ligne.actif .fl svg{stroke:#fff}
+.ligne img{display:none}
+.visionneuse{position:sticky;top:calc(var(--entete) + 28px);margin:0}
+.visionneuse .im{aspect-ratio:4/5;background:var(--fonte);position:relative;overflow:hidden}
+.visionneuse img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .35s}
+.visionneuse .vide{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:28px;color:#C9C6BE;font-size:17px}
+.visionneuse figcaption{margin-top:12px;font-size:16px;color:var(--pierre);min-height:3.2em}
+.visionneuse figcaption b{color:var(--fonte)}
+.suite{margin-top:clamp(26px,3vw,40px);display:flex;flex-wrap:wrap;gap:12px 40px}
+
+/* Réalisations */
+.serie{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(12px,1.6vw,24px);align-items:start}
+.serie figure{margin:0}
+.serie figure:nth-child(2){margin-top:clamp(20px,4vw,64px)}
+.serie figure:nth-child(3){margin-top:clamp(8px,1.6vw,26px)}
+.serie figure:nth-child(4){margin-top:clamp(32px,6vw,100px)}
+.serie img{width:100%;aspect-ratio:4/5;object-fit:cover;background:var(--fonte-2)}
+.serie figcaption{margin-top:12px;font-size:16px;line-height:1.4;color:#C9C6BE;display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:baseline}
+.serie figcaption i{font:italic 500 30px/1 var(--titre);color:var(--bleu-clair)}
+.serie figcaption b{color:#fff;font-size:18px}
+.serie figcaption span{grid-column:2}
+.mosaique{grid-template-columns:minmax(0,5fr) minmax(0,2.3fr) minmax(0,5fr);grid-template-rows:auto auto;align-items:stretch}
+.mosaique figure:nth-child(n){margin-top:0}
+.mosaique figure:nth-child(1){grid-column:1;grid-row:1/span 2}
+.mosaique figure:nth-child(2){grid-column:2;grid-row:1}
+.mosaique figure:nth-child(3){grid-column:2;grid-row:2}
+.mosaique figure:nth-child(4){grid-column:3;grid-row:1/span 2;margin-top:clamp(28px,5vw,80px)}
+.sous-serie{margin-top:clamp(56px,8vw,120px);display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(20px,3vw,40px)}
+.sous-serie>div:first-child{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(20px,4vw,72px);align-items:end}
+.sous-serie>div:first-child p{margin-top:0}
+.sous-serie h3{font-size:clamp(28px,3vw,44px)}
+.sous-serie p{margin-top:14px;color:#C9C6BE}
+.sous-serie .serie figure{margin-top:0}
+.sous-serie .serie figcaption{grid-template-columns:1fr}
+.sous-serie .serie figcaption span{grid-column:1}
+.pleine{margin:clamp(56px,8vw,120px) 0 0;position:relative}
+.pleine img{width:100%;aspect-ratio:2/1;object-fit:cover}
+.pleine figcaption{position:absolute;left:0;bottom:0;max-width:min(560px,86%);background:var(--calcaire);color:var(--fonte);padding:16px clamp(16px,2vw,26px);font-size:17px}
+.sombre .action{color:#fff}
+
+/* Comprendre : la coupe, facultative */
+.coupe{background:var(--chaux)}
+.coupe .dessin{overflow-x:auto;border-block:2px solid var(--fonte);background:#fff}
+.coupe svg{display:block;width:100%;min-width:820px;height:auto}
+.coupe svg text{font:600 20px var(--texte);fill:var(--fonte)}
+.coupe svg .n{font:700 17px var(--texte);fill:#fff;text-anchor:middle;dominant-baseline:central}
+.legende{list-style:none;margin:26px 0 0;padding:0;counter-reset:l;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 clamp(20px,3vw,48px)}
+.legende li{counter-increment:l;display:grid;grid-template-columns:38px 1fr;gap:0 4px;padding:14px 0;border-bottom:1px solid var(--filet);font-size:17px;color:var(--fonte-2)}
+.legende li::before{content:counter(l);width:28px;height:28px;border-radius:50%;background:var(--fonte);color:#fff;font-weight:700;font-size:15px;display:grid;place-items:center;grid-row:span 2}
+.legende b{color:var(--fonte)}
+.legende span{grid-column:2}
+
+/* Étapes et prix */
+.etapes{list-style:none;margin:0;padding:0;counter-reset:e;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:2px solid var(--fonte)}
+.etapes li{counter-increment:e;padding:20px clamp(14px,2vw,28px) 0 0}
+.etapes li::before{content:counter(e);font:italic 500 clamp(54px,6vw,92px)/1 var(--titre);color:var(--bleu);display:block}
+.etapes b{display:block;font:600 clamp(22px,1.9vw,27px)/1.15 var(--titre);margin:10px 0 8px}
+.etapes p{font-size:17px;color:var(--fonte-2)}
+.prix{margin-top:clamp(40px,6vw,88px);display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(18px,3vw,40px);align-items:center;max-width:980px}
+.prix img{width:clamp(88px,9vw,128px);border-radius:50%;aspect-ratio:1;object-fit:cover}
+.prix p{font:500 clamp(21px,2vw,29px)/1.3 var(--titre)}
+.prix small{display:block;font:400 16px/1.4 var(--texte);color:var(--pierre);margin-top:10px}
+
+/* Zones et questions */
+.deux{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(28px,6vw,110px);align-items:start}
+.deps{list-style:none;margin:0;padding:0;columns:2;column-gap:clamp(20px,3vw,48px);border-top:2px solid var(--fonte)}
+.deps li{break-inside:avoid;border-bottom:1px solid var(--filet)}
+.deps a{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:14px 0;text-decoration:none;font:600 clamp(21px,1.8vw,26px)/1.15 var(--titre);min-height:52px}
+.deps a span{font:700 17px var(--texte);color:var(--pierre)}
+.deps a:hover{color:var(--bleu)}
+details{border-bottom:1px solid var(--filet)}
+details:first-of-type{border-top:2px solid var(--fonte)}
+summary{cursor:pointer;list-style:none;display:grid;grid-template-columns:1fr 30px;gap:16px;align-items:center;padding:18px 0;font:600 clamp(21px,1.7vw,25px)/1.2 var(--titre);min-height:60px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"";width:26px;height:26px;border-radius:50%;border:2px solid var(--fonte);background:linear-gradient(var(--fonte),var(--fonte)) center/12px 2px no-repeat,linear-gradient(var(--fonte),var(--fonte)) center/2px 12px no-repeat}
+details[open] summary::after{background:linear-gradient(var(--fonte),var(--fonte)) center/12px 2px no-repeat}
+details p{padding:0 46px 20px 0;color:var(--fonte-2);max-width:42em}
+
+/* Contact */
+.contact h2{max-width:12em}
+.monument{display:block;margin-top:clamp(18px,3vw,36px);text-decoration:none;font:800 clamp(46px,12.2vw,186px)/.92 var(--texte);letter-spacing:-.045em;color:#fff;font-variant-numeric:tabular-nums;white-space:nowrap}
+.monument:hover{color:var(--bleu-clair)}
+.contact .horaires{margin-top:14px;color:#C9C6BE;font-size:18px}
+.contact .bas{margin-top:clamp(40px,6vw,88px);display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:clamp(28px,6vw,110px);align-items:start;border-top:1px solid #ffffff33;padding-top:clamp(28px,4vw,56px)}
+.contact h3{font-size:clamp(26px,2.4vw,36px)}
+.contact .bas p{margin-top:12px;color:#C9C6BE}
+.contact .champ label{color:#fff}
+.contact .champ input,.contact .champ textarea{border-color:#fff;background:#fff;color:var(--fonte)}
+.contact .champ .err{color:#FFB4AB}
+.contact .action{color:#fff}
+.contact .retour{background:#fff;color:var(--fonte)}
+
+.pied{background:var(--fonte);color:#B4B1A9;font-size:16px;border-top:1px solid #ffffff22;padding-block:28px 34px}
+.pied .cadre{display:flex;flex-wrap:wrap;gap:10px 36px;justify-content:space-between}
+.pied b{color:#fff}
+.pied a{text-underline-offset:4px}
+.barre{display:none}
+
+@media (max-width:1100px){
+  .nav{display:none}
+  .btn-menu{display:inline-flex}
+}
+@media (max-width:900px){
+  :root{--entete:64px}
+  .logo img{height:38px}
+  .entete .tel small{display:none}
+  .entete .tel{font-size:19px}
+  .ouverture .cadre,.rapport .cadre,.prest,.deux,.contact .bas,.sous-serie>div:first-child,.section>.cadre>.tete{grid-template-columns:minmax(0,1fr)}
+  .fiche{position:static}
+  .portes{margin-right:0}
+  .mosaique{grid-template-rows:none}
+  .mosaique figure:nth-child(n){grid-column:auto;grid-row:auto;margin-top:0}
+  .vue-rond::before{inset:-7px}
+  .o-texte{padding-block:18px 22px}
+  .chapo .long{display:none}
+  .sur{margin-bottom:12px}
+  .vue{min-height:0;margin-inline:calc(-1 * var(--marge));height:min(112vw,560px)}
+  .vue-grand{inset:0}
+  .vue-rond{left:var(--marge);bottom:auto;top:-8px;transform:none;width:clamp(128px,36vw,190px)}
+  .vue-rond svg{display:none}
+  .vue-bas{margin-right:0;padding:54px var(--marge) 16px}
+  .faits ul{display:grid;gap:10px}
+  .visionneuse{display:none}
+  .ligne{grid-template-columns:76px minmax(0,1fr) auto;gap:4px 16px}
+  .ligne img{display:block;grid-row:1/span 2;grid-column:1;width:76px;height:76px;object-fit:cover;background:var(--fonte-2)}
+  .ligne .ph{grid-row:1/span 2;grid-column:1;width:76px;height:76px;border:2px dashed var(--filet)}
+  .ligne b,.ligne span.d{grid-column:2}
+  .ligne .fl{grid-column:3}
+  .serie{grid-auto-flow:column;grid-template-columns:none;grid-auto-columns:76%;overflow-x:auto;scroll-snap-type:x mandatory;margin-inline:calc(-1 * var(--marge));padding-inline:var(--marge);scroll-padding-inline:var(--marge);padding-bottom:10px}
+  .serie figure,.serie figure:nth-child(n){margin-top:0;scroll-snap-align:start}
+  .glisser{display:block!important}
+  .pleine img{aspect-ratio:4/3}
+  .pleine figcaption{position:static;max-width:none}
+  .legende{grid-template-columns:minmax(0,1fr)}
+  .etapes{grid-template-columns:1fr 1fr}
+  .etapes li{padding-bottom:22px}
+  .deps{columns:1}
+}
+@media (max-width:640px){
+  body{padding-bottom:78px}
+  .entete .tel .num{font-size:17px}
+  .rond{width:50px;height:50px}
+  .depot{grid-template-columns:minmax(0,1fr)}
+  .etapes{grid-template-columns:minmax(0,1fr)}
+  .prix{grid-template-columns:minmax(0,1fr)}
+  .barre{display:grid;grid-template-columns:1fr 1.25fr;position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--fonte);padding-bottom:env(safe-area-inset-bottom,0px)}
+  .barre a{display:flex;align-items:center;justify-content:center;gap:10px;min-height:64px;text-decoration:none;font-weight:800;font-size:18px;color:#fff;padding:0 10px;text-align:center;line-height:1.15}
+  .barre a+a{background:var(--bleu)}
+  .barre svg{width:20px;height:20px;fill:#fff;flex:none}
+}
+@media (max-width:380px){
+  .entete .tel{display:none}
+}
+.glisser{display:none;font-size:16px;color:#B4B1A9;margin-top:10px}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+<a class="evitement" href="#contenu">Aller au contenu</a>
+<div class="proto" role="region" aria-label="Avertissement">Prototype local, hors production. Les formulaires sont des démonstrations : rien n'est envoyé.</div>
+
+<header class="entete">
+  <div class="cadre">
+    <a class="logo" href="#haut" aria-label="BAB Assainissement, accueil"><img src="img/logo-bab.webp" width="515" height="206" alt="BAB Assainissement"></a>
+    <nav class="nav" aria-label="Navigation principale">
+      <a href="#rapport">Rapport non conforme</a>
+      <a href="#prestations">Prestations</a>
+      <a href="#realisations">Réalisations</a>
+      <a href="#etapes">Prix et devis</a>
+      <a href="#zones">Zones</a>
+    </nav>
+    <a class="tel" href="tel:+33189480964">
+      <span class="l"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg><span class="num">01 89 48 09 64</span></span>
+      <small>lundi au samedi, 8 h à 19 h</small>
+    </a>
+    <button class="btn-menu" type="button" id="ouvrir-menu" aria-expanded="false" aria-controls="menu">Menu<i aria-hidden="true"></i></button>
+  </div>
+</header>
+
+<div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Menu">
+  <div class="menu-haut">
+    <img src="img/logo-bab.webp" width="515" height="206" alt="BAB Assainissement" style="height:38px;width:auto">
+    <button class="btn-menu" type="button" id="fermer-menu" style="display:inline-flex">Fermer</button>
+  </div>
+  <nav aria-label="Menu">
+    <a href="#rapport">J'ai un rapport non conforme<span class="rond" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+    <a href="#prestations">Prestations</a>
+    <a href="#realisations">Réalisations</a>
+    <a href="#comprendre">Comprendre mon installation</a>
+    <a href="#etapes">Prix et devis</a>
+    <a href="#zones">Zones d'intervention</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <a class="tel" href="tel:+33189480964"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg><span class="num">01 89 48 09 64</span></a>
+  <small>Du lundi au samedi, de 8 h à 19 h</small>
+</div>
+
+<main id="contenu">
+<span id="haut"></span>
+
+<!-- OUVERTURE -->
+<section class="ouverture" aria-labelledby="titre">
+  <div class="cadre">
+    <div class="o-texte">
+      <p class="sur">Assainissement des propriétés privées, en Île-de-France</p>
+      <h1 id="titre">Votre assainissement est <em>non conforme</em>&nbsp;? Nous réalisons les travaux.</h1>
+      <p class="chapo">Mise en conformité, raccordement au tout-à-l'égout, regards, canalisations, fosses. BAB intervient chez vous, sur la partie privée du réseau<span class="long">, de la maison jusqu'à la limite de propriété</span>.</p>
+      <div class="portes">
+        <a class="porte" href="#rapport">
+          <span><b>J'ai reçu un rapport non conforme</b><span class="s">Envoyez-le : nous le lisons avant de vous rappeler.</span></span>
+          <span class="rond" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </a>
+        <a class="porte" href="#prestations">
+          <span><b>J'ai besoin de travaux d'assainissement</b><span class="s">Raccordement, regard, curage, caméra, fosse, relevage.</span></span>
+          <span class="rond fonte" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </a>
+      </div>
+      <p class="o-tel">
+        <a class="tel" href="tel:+33189480964"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg><span class="num">01 89 48 09 64</span></a>
+        <span>Vous préférez téléphoner : du lundi au samedi, de 8 h à 19 h.</span>
+      </p>
+    </div>
+
+    <figure class="vue" id="vue">
+      <div class="vue-grand"><img id="vue-g" src="img/hero-surface-1200.webp" srcset="img/hero-surface-720.webp 720w, img/hero-surface-1200.webp 960w" sizes="(max-width: 900px) 100vw, 42vw" width="960" height="1200" alt="Un regard posé dans un jardin : le tampon affleure au ras de la terre, le long d'une clôture blanche." fetchpriority="high"></div>
+      <div class="vue-rond">
+        <img id="vue-r" src="img/hero-dessous-640.webp" width="640" height="640" alt="Sous un tampon : un regard avec sa cunette, raccordé à la canalisation d'eaux usées." loading="eager">
+        <svg viewBox="0 0 300 300" aria-hidden="true"><defs><path id="cercle" d="M150 150m-132 0a132 132 0 1 1 264 0a132 132 0 1 1-264 0"/></defs><text><textPath href="#cercle" id="vue-anneau" textLength="820" lengthAdjust="spacing">DESSOUS · CE QUE LE TAMPON RECOUVRE · DESSOUS · CE QUE LE TAMPON RECOUVRE ·</textPath></text></svg>
+      </div>
+      <figcaption class="vue-bas">
+        <span id="vue-l"><b>En surface.</b> Après le chantier, il reste un tampon au ras du sol. <b>Dessous.</b> Un regard avec cunette, raccordé aux eaux usées, à Villecerf (77).</span>
+        <button type="button" id="vue-b" aria-pressed="false">Voir le dessous en grand</button>
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<div class="faits">
+  <div class="cadre"><ul>
+    <li>Partie privée du réseau uniquement</li>
+    <li>Visite sur place, puis devis écrit et gratuit</li>
+    <li>Les travaux commencent après votre accord</li>
+    <li>Entreprise de Saint-Mandé (94), SIREN 933 127 995</li>
+  </ul></div>
+</div>
+
+<!-- RAPPORT NON CONFORME -->
+<section class="section rapport" id="rapport" aria-labelledby="t-rapport">
+  <div class="cadre">
+    <div>
+      <p class="sur">Vous avez reçu un rapport</p>
+      <h2 id="t-rapport">Un rapport non conforme, cela se corrige.</h2>
+      <p class="intro">Vous vendez votre maison, ou la mairie vous a écrit. Le contrôle est fait par le service d'assainissement de votre commune. Nous, nous réalisons les travaux qu'il demande, chez vous, sur la partie privée.</p>
+      <ul class="releve" aria-label="Ce qu'un contrôle peut relever">
+        <li>Le branchement au réseau public</li>
+        <li>La séparation des eaux usées et des eaux de pluie</li>
+        <li>Une fosse ou une micro-station, pour une maison non raccordée</li>
+      </ul>
+      <h3 class="h-pas">Ce qui se passe ensuite</h3>
+      <ol class="pas">
+        <li>Vous envoyez le rapport. Deux minutes suffisent.</li>
+        <li>Nous le lisons, puis nous vous rappelons.</li>
+        <li>Visite sur place, puis devis détaillé, poste par poste.</li>
+      </ol>
+    </div>
+    <div>
+      <form class="fiche" id="f-rapport" novalidate>
+        <h3>Envoyer mon rapport</h3>
+        <div class="depot">
+          <label for="photo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Prendre une photo<input class="cache" type="file" id="photo" accept="image/*" capture="environment"></label>
+          <label for="doc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 13h5M10 17h5"/></svg>Choisir un fichier<input class="cache" type="file" id="doc" multiple accept=".pdf,image/*"></label>
+        </div>
+        <p class="aide">PDF ou photos. Une photo par page, c'est très bien.</p>
+        <p class="fichier" id="fichier" aria-live="polite"></p>
+        <div class="champs">
+          <div class="champ"><label for="r-nom">Votre nom</label><input id="r-nom" autocomplete="name"><span class="err" id="r-nom-e" role="alert"></span></div>
+          <div class="champ"><label for="r-tel">Votre téléphone</label><input id="r-tel" type="tel" inputmode="tel" autocomplete="tel" aria-describedby="r-tel-e"><span class="err" id="r-tel-e" role="alert"></span></div>
+          <div class="champ"><label for="r-ville">Commune du bien</label><input id="r-ville" autocomplete="address-level2"><span class="err" id="r-ville-e" role="alert"></span></div>
+        </div>
+        <div class="envoi">
+          <button class="action" type="submit"><span class="t">Envoyer mon rapport</span><span class="rond" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
+          <a class="tel" href="tel:+33189480964" style="font-size:21px"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg><span class="num">01 89 48 09 64</span></a>
+        </div>
+        <p class="retour" id="r-retour" role="status" hidden></p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- PRESTATIONS -->
+<section class="section" id="prestations" aria-labelledby="t-prest" style="padding-top:0">
+  <div class="cadre">
+    <div class="tete">
+      <div><p class="sur">Nos prestations</p><h2 id="t-prest">Ce que nous faisons, côté privé.</h2></div>
+      <p class="intro">De la maison jusqu'à la limite de propriété. Le réseau sous la rue relève de la collectivité.</p>
+    </div>
+    <div class="prest">
+      <div id="lignes">
+        <div class="groupe">
+          <h3>Après un contrôle, avant une vente</h3>
+          <a class="ligne" href="https://www.babassainissement.fr/services/mise-en-conformite/" data-img="img/p-conformite.webp" data-leg="Mise en conformité, Villecerf (77). Pose d'un tampon avec raccordement de la canalisation."><img src="img/p-conformite-s.webp" width="168" height="168" alt="" loading="lazy"><b>Mise en conformité</b><span class="d">Nous corrigeons ce que le contrôle a relevé.</span><span class="fl" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+          <a class="ligne" href="https://www.babassainissement.fr/services/raccordement-egout/" data-img="img/p-raccordement.webp" data-leg="Raccordement le long d'une clôture, Joinville-le-Pont (94)."><img src="img/p-raccordement-s.webp" width="168" height="168" alt="" loading="lazy"><b>Raccordement au tout-à-l'égout</b><span class="d">De la maison jusqu'à la boîte de branchement.</span><span class="fl" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+          <a class="ligne" href="https://www.babassainissement.fr/services/travaux-assainissement/" data-img="img/p-travaux.webp" data-leg="Construction d'un regard béton maçonné, Neuilly-sur-Seine (92)."><img src="img/p-travaux-s.webp" width="168" height="168" alt="" loading="lazy"><b>Canalisations et regards</b><span class="d">Création, remplacement, séparation des eaux usées et pluviales.</span><span class="fl" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+          <a class="ligne" href="https://www.babassainissement.fr/services/fosses-septiques/" data-img="img/p-fosses.webp" data-leg="Fosse toutes eaux posée en fouille et raccordée, avant le remblai."><img src="img/p-fosses-s.webp" width="168" height="168" alt="" loading="lazy"><b>Fosses et micro-stations</b><span class="d">Pose, remplacement ou mise hors service.</span><span class="fl" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+        </div>
+        <div class="groupe">
+          <h3>Voir, nettoyer, entretenir</h3>
+          <a class="ligne" href="https://www.babassainissement.fr/services/inspection-camera/" data-img="" data-leg="Inspection caméra : pas encore de photo de chantier pour cette prestation."><span class="ph" aria-hidden="true"></span><b>Inspection caméra</b><span class="d">Voir l'intérieur des canalisations, avec un rapport et des images.</span><span class="fl" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+          <a class="ligne" href="https://www.babassainissement.fr/services/curage-debouchage/" data-img="img/p-curage.webp" data-leg="Nettoyage à haute pression dans un regard, lors de l'entretien d'une pompe."><img src="img/p-curage-s.webp" width="168" height="168" alt="" loading="lazy"><b>Curage des canalisations</b><span class="d">Nettoyage à haute pression des canalisations et des regards.</span><span class="fl" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+          <a class="ligne" href="https://www.babassainissement.fr/services/pompes-relevage/" data-img="img/p-relevage.webp" data-leg="Maintenance d'une pompe de relevage immergée, Montreuil (93)."><img src="img/p-relevage-s.webp" width="168" height="168" alt="" loading="lazy"><b>Pompes de relevage</b><span class="d">Installation, remplacement et entretien.</span><span class="fl" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+        </div>
+        <div class="groupe">
+          <h3>Autres travaux</h3>
+          <a class="ligne" href="https://www.babassainissement.fr/services/drainage-eaux-pluviales/" data-img="img/p-pluviales.webp" data-leg="Pose d'un puisard avec raccordement, Limeil-Brévannes (94)."><img src="img/p-pluviales-s.webp" width="168" height="168" alt="" loading="lazy"><b>Eaux de pluie à la parcelle</b><span class="d">Puisard, tranchée d'infiltration, drainage.</span><span class="fl" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+          <a class="ligne" href="https://www.babassainissement.fr/services/remplacement-canalisation-fonte/" data-img="img/p-fonte.webp" data-leg="Réseau d'évacuation refait dans une cave ancienne, Alfortville (94)."><img src="img/p-fonte-s.webp" width="168" height="168" alt="" loading="lazy"><b>Canalisations en fonte</b><span class="d">Colonnes et conduites anciennes remplacées par des neuves.</span><span class="fl" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+          <a class="ligne" href="https://www.babassainissement.fr/services/cuve-fioul/" data-img="" data-leg="Cuve à fioul : pas encore de photo de chantier pour cette prestation."><span class="ph" aria-hidden="true"></span><b>Cuve à fioul</b><span class="d">Neutralisation ou retrait d'une ancienne cuve.</span><span class="fl" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+          <a class="ligne" href="https://www.babassainissement.fr/services/terrassement/" data-img="img/p-terrassement.webp" data-leg="Terrassement d'un jardin à la mini-pelle, Villepinte (93)."><img src="img/p-terrassement-s.webp" width="168" height="168" alt="" loading="lazy"><b>Terrassement</b><span class="d">Tranchées, jardin, évacuation des terres.</span><span class="fl" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+        </div>
+        <div class="suite">
+          <a class="action" href="#contact"><span class="t">Décrire mon besoin</span><span class="rond" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+          <a class="action" href="https://www.babassainissement.fr/services/"><span class="t">Toutes les prestations</span></a>
+        </div>
+      </div>
+      <figure class="visionneuse" aria-hidden="true">
+        <div class="im"><p class="vide" id="v-vide" hidden>Pas encore de photo de chantier pour cette prestation.</p><img id="v-img" src="img/p-conformite.webp" width="640" height="800" alt="" loading="lazy"></div>
+        <figcaption id="v-leg"></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- RÉALISATIONS -->
+<section class="section sombre" id="realisations" aria-labelledby="t-real">
+  <div class="cadre">
+    <div class="tete">
+      <div><p class="sur">Sur un de nos chantiers</p><h2 id="t-real">De l'allée en terre à l'allée bétonnée.</h2></div>
+      <p class="intro">Quatre photos du même chantier, en Île-de-France : une canalisation posée sur toute la longueur de l'allée, raccordée, puis l'allée refaite avec ses regards accessibles.</p>
+    </div>
+    <div class="serie mosaique" role="group" tabindex="0" aria-label="Quatre photos du même chantier, à faire défiler">
+      <figure><img src="img/allee-1.webp" width="720" height="900" loading="lazy" alt="Allée en terre étroite entre deux murs, avant les travaux."><figcaption><i>1</i><b>Avant</b><span>L'allée en terre, avant les travaux.</span></figcaption></figure>
+      <figure><img src="img/allee-2.webp" width="720" height="900" loading="lazy" alt="Tranchée creusée sur toute la longueur de l'allée, le long du mur."><figcaption><i>2</i><b>Ouvrir</b><span>Tranchée creusée sur toute la longueur.</span></figcaption></figure>
+      <figure><img src="img/allee-3.webp" width="720" height="900" loading="lazy" alt="Boîte de raccordement et canalisations en place au fond de la fouille."><figcaption><i>3</i><b>Raccorder</b><span>Boîte de raccordement et canalisations en place.</span></figcaption></figure>
+      <figure><img src="img/allee-4.webp" width="720" height="900" loading="lazy" alt="La même allée, bétonnée, une grille et des regards affleurants."><figcaption><i>4</i><b>Après</b><span>L'allée bétonnée, grille et regards au niveau du sol.</span></figcaption></figure>
+    </div>
+    <p class="glisser">Faites glisser pour voir les quatre photos.</p>
+
+    <div class="sous-serie">
+      <div>
+        <h3>Une mise en conformité, à Villecerf (77).</h3>
+        <p>Un regard avec cunette pour raccorder les eaux usées, un tampon scellé, puis le terrain remis en état avec deux tampons d'accès.</p>
+      </div>
+      <div class="serie" role="group" tabindex="0" aria-label="Quatre photos du chantier de Villecerf, à faire défiler">
+        <figure><img src="img/villecerf-1.webp" width="720" height="900" loading="lazy" alt="Regard avec cunette au fond de la fouille."><figcaption><span>Le regard et sa cunette.</span></figcaption></figure>
+        <figure><img src="img/villecerf-2.webp" width="720" height="900" loading="lazy" alt="Tampon posé sur le regard, canalisation raccordée."><figcaption><span>Le tampon, canalisation raccordée.</span></figcaption></figure>
+        <figure><img src="img/villecerf-3.webp" width="600" height="750" loading="lazy" alt="Tampon de visite scellé dans le béton."><figcaption><span>Le tampon scellé.</span></figcaption></figure>
+        <figure><img src="img/villecerf-4.webp" width="600" height="750" loading="lazy" alt="Terrain remis en état, deux tampons d'accès affleurants."><figcaption><span>Le terrain remis en état.</span></figcaption></figure>
+      </div>
+    </div>
+    <p style="margin-top:clamp(28px,4vw,48px)"><a class="action" href="https://www.babassainissement.fr/realisations/"><span class="t">Voir toutes nos réalisations</span><span class="rond" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a></p>
+  </div>
+  <figure class="pleine">
+    <img src="img/fosse-1600.webp" width="1600" height="800" loading="lazy" alt="Fouille ouverte dans un jardin : une fosse toutes eaux noire à deux tampons, raccordée par des tuyaux bleus.">
+    <figcaption>Sur un autre chantier : fosse toutes eaux posée en fouille et raccordée à l'épandage, avant le remblai.</figcaption>
+  </figure>
+</section>
+
+<!-- COMPRENDRE -->
+<section class="section coupe" id="comprendre" aria-labelledby="t-coupe">
+  <div class="cadre">
+    <div class="tete">
+      <div><p class="sur">Facultatif, une minute de lecture</p><h2 id="t-coupe">Comprendre votre installation.</h2></div>
+      <p class="intro">Coupe de principe, dimensions indicatives. À gauche de la limite, c'est chez vous : c'est là que nous intervenons.</p>
+    </div>
+    <div class="dessin" role="group" tabindex="0" aria-label="Coupe de principe, à faire défiler">
+      <svg viewBox="0 0 1200 430" role="img" aria-label="Coupe de principe : la maison, un regard de visite, la canalisation d'eaux usées en pente vers la rue, les eaux pluviales en réseau séparé, les boîtes de branchement en limite de propriété et le réseau public sous la rue.">
+        <defs><pattern id="terre" width="22" height="22" patternUnits="userSpaceOnUse"><path d="M2 20L12 10M14 20L20 14" stroke="#B9B4A8" stroke-width="1.2"/></pattern></defs>
+        <rect x="0" y="170" width="1200" height="260" fill="url(#terre)" opacity=".7"/>
+        <rect x="0" y="235" width="1200" height="195" fill="#fff" opacity=".55"/>
+        <!-- maison en coupe -->
+        <path d="M40 170V52H250V170" fill="#fff" stroke="#1C2023" stroke-width="2.5"/>
+        <path d="M40 52H250M28 170H262" stroke="#1C2023" stroke-width="5"/>
+        <path d="M250 60v98" stroke="#9DB6FF" stroke-width="7" transform="translate(12 0)"/>
+        <text x="62" y="120">Maison</text>
+        <!-- sol -->
+        <path d="M262 170H905" stroke="#1C2023" stroke-width="2.5"/>
+        <path d="M905 170h70v8h225" stroke="#1C2023" stroke-width="2.5" fill="none"/>
+        <text x="1010" y="160">Rue</text>
+        <!-- eaux pluviales -->
+        <path d="M262 158V214L880 250" stroke="#7FA2F5" stroke-width="5" fill="none" stroke-dasharray="14 8"/>
+        <!-- eaux usées -->
+        <path d="M150 170V236L470 258M506 260L880 286" stroke="#1546E0" stroke-width="7" fill="none" stroke-linejoin="round"/>
+        <!-- regard -->
+        <rect x="468" y="172" width="40" height="100" fill="#fff" stroke="#1C2023" stroke-width="2.5"/>
+        <rect x="460" y="164" width="56" height="9" fill="#1C2023"/>
+        <!-- boîtes de branchement -->
+        <rect x="878" y="172" width="26" height="90" fill="#fff" stroke="#1C2023" stroke-width="2.5"/>
+        <rect x="878" y="268" width="26" height="30" fill="#fff" stroke="#1C2023" stroke-width="2.5"/>
+        <!-- limite -->
+        <path d="M918 30V410" stroke="#1C2023" stroke-width="2" stroke-dasharray="16 6 3 6"/>
+        <text x="906" y="28" text-anchor="end">Chez vous</text><text x="930" y="28">Domaine public</text>
+        <!-- réseau public -->
+        <path d="M904 284L1050 330M904 252L1052 318" stroke="#8A8E90" stroke-width="5" stroke-dasharray="10 7" fill="none"/>
+        <circle cx="1080" cy="340" r="34" fill="#fff" stroke="#8A8E90" stroke-width="5"/>
+        <!-- repères -->
+        <g><circle cx="488" cy="140" r="15" fill="#1C2023"/><text class="n" x="488" y="140">1</text></g>
+        <g><circle cx="650" cy="296" r="15" fill="#1C2023"/><text class="n" x="650" y="296">2</text></g>
+        <g><circle cx="620" cy="210" r="15" fill="#1C2023"/><text class="n" x="620" y="210">3</text></g>
+        <g><circle cx="852" cy="218" r="15" fill="#1C2023"/><text class="n" x="852" y="218">4</text></g>
+        <g><circle cx="918" cy="72" r="15" fill="#1C2023"/><text class="n" x="918" y="72">5</text></g>
+        <g><circle cx="1080" cy="340" r="15" fill="#1C2023"/><text class="n" x="1080" y="340">6</text></g>
+      </svg>
+    </div>
+    <p class="glisser" style="color:var(--pierre)">Faites glisser le dessin pour le voir en entier.</p>
+    <ol class="legende">
+      <li><b>Tampon et regard de visite</b><span>Pour contrôler, curer et passer la caméra.</span></li>
+      <li><b>Canalisation d'eaux usées</b><span>En pente vers la rue, posée sur un lit de sable.</span></li>
+      <li><b>Eaux pluviales, réseau séparé</b><span>Elles ne passent pas par le regard des eaux usées.</span></li>
+      <li><b>Boîtes de branchement</b><span>En limite de propriété, une par réseau.</span></li>
+      <li><b>Limite de propriété</b><span>Côté privé, c'est chez vous ; c'est là que nous intervenons.</span></li>
+      <li><b>Réseau public, sous la rue</b><span>Il relève de la collectivité.</span></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ÉTAPES ET PRIX -->
+<section class="section" id="etapes" aria-labelledby="t-etapes">
+  <div class="cadre">
+    <div class="tete">
+      <div><p class="sur">Comment ça se passe</p><h2 id="t-etapes">Quatre étapes, sans surprise.</h2></div>
+      <p class="intro">Aucun prix n'est donné sans visite. Le devis écrit est gratuit et sans engagement.</p>
+    </div>
+    <ol class="etapes">
+      <li><b>Vous nous écrivez ou vous appelez</b><p>Avec votre rapport de contrôle ou quelques photos, si vous en avez.</p></li>
+      <li><b>Nous vous rappelons</b><p>Du lundi au samedi, de 8 h à 19 h, pour comprendre la situation.</p></li>
+      <li><b>Nous venons voir</b><p>Une visite sur rendez-vous, pour voir le terrain, les regards et les canalisations.</p></li>
+      <li><b>Vous recevez un devis détaillé</b><p>Poste par poste. Les travaux commencent seulement après votre accord.</p></li>
+    </ol>
+    <div class="prix">
+      <img src="img/fondateur.webp" width="320" height="320" loading="lazy" alt="Portrait de Badr-Eddine Belaïd">
+      <p>Le devis tient compte de l'accès, du linéaire, du sol et des travaux nécessaires.<small>Badr-Eddine Belaïd, fondateur de BAB Assainissement, entreprise créée à Saint-Mandé en 2024.</small></p>
+    </div>
+  </div>
+</section>
+
+<!-- ZONES ET QUESTIONS -->
+<section class="section" id="zones" aria-labelledby="t-zones" style="padding-top:0">
+  <div class="cadre deux">
+    <div>
+      <p class="sur">Où nous intervenons</p>
+      <h2 id="t-zones">Toute l'Île-de-France, depuis Saint-Mandé.</h2>
+      <ul class="deps" style="margin-top:clamp(24px,3vw,40px)">
+        <li><a href="https://www.babassainissement.fr/zones/paris-75/">Paris<span>75</span></a></li>
+        <li><a href="https://www.babassainissement.fr/zones/seine-et-marne-77/">Seine-et-Marne<span>77</span></a></li>
+        <li><a href="https://www.babassainissement.fr/zones/yvelines-78/">Yvelines<span>78</span></a></li>
+        <li><a href="https://www.babassainissement.fr/zones/essonne-91/">Essonne<span>91</span></a></li>
+        <li><a href="https://www.babassainissement.fr/zones/hauts-de-seine-92/">Hauts-de-Seine<span>92</span></a></li>
+        <li><a href="https://www.babassainissement.fr/zones/seine-saint-denis-93/">Seine-Saint-Denis<span>93</span></a></li>
+        <li><a href="https://www.babassainissement.fr/zones/val-de-marne-94/">Val-de-Marne<span>94</span></a></li>
+        <li><a href="https://www.babassainissement.fr/zones/val-doise-95/">Val-d'Oise<span>95</span></a></li>
+      </ul>
+    </div>
+    <div id="questions">
+      <p class="sur">Les questions qu'on nous pose</p>
+      <details open><summary>Qu'est-ce que la mise en conformité d'assainissement ?</summary><p>C'est corriger ce qu'un contrôle a relevé sur votre installation : branchement au réseau public, séparation des eaux usées et des eaux pluviales, fosse ou micro-station pour une maison non raccordée. Le contrôle est fait par le service d'assainissement de votre commune ; nous réalisons les travaux sur la partie privée.</p></details>
+      <details><summary>Comment est calculé le prix d'un raccordement ?</summary><p>Le prix dépend de la distance entre la maison et la boîte de branchement, de la profondeur, du terrain et des regards à créer. Nous l'établissons par un devis détaillé, poste par poste, après avoir vu les lieux.</p></details>
+      <details><summary>Sous quel délai pouvez-vous intervenir ?</summary><p>Nous rappelons du lundi au samedi, de 8 h à 19 h, puis nous fixons une visite sur rendez-vous. Le planning des travaux est indiqué avec le devis, selon le chantier.</p></details>
+      <details><summary>Prenez-vous en charge les démarches administratives ?</summary><p>Nous vous aidons à réunir ce que demande le service d'assainissement de votre commune (rapport de contrôle, plan, photos, description des travaux) et nous vous remettons les éléments utiles après les travaux. Les travaux sous la voie publique relèvent de la collectivité.</p></details>
+      <details><summary>Quelle différence entre fosse septique et fosse toutes eaux ?</summary><p>La fosse septique ne reçoit que les eaux des WC ; la fosse toutes eaux reçoit l'ensemble des eaux usées de la maison. Une ancienne fosse septique est souvent relevée lors du contrôle avant une vente.</p></details>
+      <details><summary>Comment se déroule une inspection caméra ?</summary><p>Une caméra est passée dans la canalisation depuis un regard ou une ouverture ; elle montre l'intérieur en direct : fissures, racines, dépôts, contre-pentes, raccords décalés. Nous vous remettons ensuite un rapport avec les images.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="section sombre contact" id="contact" aria-labelledby="t-contact">
+  <div class="cadre">
+    <p class="sur">Parlons de votre installation</p>
+    <h2 id="t-contact">Le plus simple est souvent d'appeler.</h2>
+    <a class="monument" href="tel:+33189480964" aria-label="Appeler le 01 89 48 09 64">01 89 48 09 64</a>
+    <p class="horaires">Du lundi au samedi, de 8 h à 19 h. 14 avenue du Général de Gaulle, 94160 Saint-Mandé.</p>
+    <div class="bas">
+      <div>
+        <h3>Ou décrivez votre besoin en quelques mots.</h3>
+        <p>Regard qui déborde, odeur, écoulement lent, raccordement, travaux. Nous vous rappelons.</p>
+        <p style="margin-top:26px"><a class="action" href="#rapport"><span class="t">J'ai un rapport à envoyer</span><span class="rond" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a></p>
+      </div>
+      <form id="f-contact" novalidate>
+        <div class="champs" style="margin-top:0">
+          <div class="champ"><label for="c-nom">Votre nom</label><input id="c-nom" autocomplete="name"><span class="err" id="c-nom-e" role="alert"></span></div>
+          <div class="champ"><label for="c-tel">Votre téléphone</label><input id="c-tel" type="tel" inputmode="tel" autocomplete="tel"><span class="err" id="c-tel-e" role="alert"></span></div>
+          <div class="champ"><label for="c-ville">Votre commune</label><input id="c-ville" autocomplete="address-level2"><span class="err" id="c-ville-e" role="alert"></span></div>
+          <div class="champ"><label for="c-msg">Votre besoin</label><textarea id="c-msg" rows="3"></textarea></div>
+        </div>
+        <div class="envoi"><button class="action" type="submit"><span class="t">Envoyer ma demande</span><span class="rond" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button></div>
+        <p class="retour" id="c-retour" role="status" hidden></p>
+      </form>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="pied">
+  <div class="cadre">
+    <span><b>BAB Assainissement</b>, 14 avenue du Général de Gaulle, 94160 Saint-Mandé</span>
+    <span>SIREN 933 127 995</span>
+    <span><a href="https://www.babassainissement.fr/mentions-legales/">Mentions légales</a> · <a href="https://www.babassainissement.fr/politique-confidentialite/">Confidentialité</a> · <a href="https://www.babassainissement.fr/plan-du-site/">Plan du site</a></span>
+  </div>
+</footer>
+
+<nav class="barre" aria-label="Actions rapides">
+  <a href="tel:+33189480964"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>Appeler</a>
+  <a href="#rapport">Envoyer mon rapport</a>
+</nav>
+
+<script>
+(function(){
+  var $ = function(i){ return document.getElementById(i); };
+
+  /* Menu */
+  var menu = $("menu"), ouvrir = $("ouvrir-menu"), fermer = $("fermer-menu");
+  function basculer(etat){
+    menu.classList.toggle("ouvert", etat);
+    ouvrir.setAttribute("aria-expanded", String(etat));
+    document.body.style.overflow = etat ? "hidden" : "";
+    (etat ? fermer : ouvrir).focus();
+  }
+  ouvrir.addEventListener("click", function(){ basculer(true); });
+  fermer.addEventListener("click", function(){ basculer(false); });
+  menu.addEventListener("click", function(e){ if (e.target.closest("a")) basculer(false); });
+  document.addEventListener("keydown", function(e){ if (e.key === "Escape" && menu.classList.contains("ouvert")) basculer(false); });
+
+  /* Ouverture : surface et dessous */
+  var etat = false, G = $("vue-g"), R = $("vue-r");
+  var S = {g:"img/hero-surface-1200.webp", gs:"img/hero-surface-720.webp 720w, img/hero-surface-1200.webp 960w", r:"img/hero-surface-720.webp",
+           ga:"Un regard posé dans un jardin : le tampon affleure au ras de la terre, le long d'une clôture blanche."};
+  var D = {g:"img/villecerf-1.webp", gs:"img/villecerf-1.webp 720w", r:"img/hero-dessous-640.webp",
+           ga:"Sous un tampon : un regard avec sa cunette, raccordé à la canalisation d'eaux usées."};
+  $("vue-b").addEventListener("click", function(){
+    etat = !etat;
+    var grand = etat ? D : S, petit = etat ? S : D;
+    G.srcset = grand.gs; G.src = grand.g; G.alt = grand.ga; G.style.objectPosition = etat ? "30% 70%" : "";
+    R.src = petit.r; R.alt = petit.ga; R.style.objectPosition = etat ? "62% 42%" : "";
+    $("vue-anneau").textContent = etat ? "EN SURFACE · CE QUI RESTE VISIBLE DU CHANTIER · EN SURFACE · CE QUI RESTE ·" : "DESSOUS · CE QUE LE TAMPON RECOUVRE · DESSOUS · CE QUE LE TAMPON RECOUVRE ·";
+    this.textContent = etat ? "Revenir à la surface" : "Voir le dessous en grand";
+    this.setAttribute("aria-pressed", String(etat));
+  });
+
+  /* Prestations : la photo suit la ligne survolée ou atteinte au clavier */
+  var lignes = Array.prototype.slice.call(document.querySelectorAll(".ligne")), vImg = $("v-img"), vLeg = $("v-leg"), vVide = $("v-vide");
+  function montrer(l){
+    lignes.forEach(function(x){ x.classList.toggle("actif", x === l); });
+    var src = l.getAttribute("data-img");
+    vVide.hidden = !!src; vImg.style.opacity = src ? 1 : 0;
+    if (src) vImg.src = src;
+    vLeg.textContent = l.getAttribute("data-leg");
+  }
+  lignes.forEach(function(l){
+    l.addEventListener("pointerenter", function(){ montrer(l); });
+    l.addEventListener("focus", function(){ montrer(l); });
+  });
+  montrer(lignes[0]);
+
+  /* Formulaires de démonstration */
+  function telValide(v){ return /^(?:\+33|0)[1-9]\d{8}$/.test(v.replace(/[\s.\-]/g, "")); }
+  function controler(regles){
+    var premier = null;
+    regles.forEach(function(r){
+      var champ = $(r[0]), ok = r[2](champ.value.trim());
+      $(r[0] + "-e").textContent = ok ? "" : r[1];
+      champ.setAttribute("aria-invalid", String(!ok));
+      champ.parentNode.classList.toggle("faux", !ok);
+      if (!ok && !premier) premier = champ;
+    });
+    if (premier) premier.focus();
+    return !premier;
+  }
+  function plein(v){ return v.length > 1; }
+  function nomsFichiers(){
+    var f = [].concat(Array.prototype.slice.call($("photo").files || []), Array.prototype.slice.call($("doc").files || []));
+    $("fichier").textContent = f.length ? (f.length === 1 ? "Fichier prêt : " : f.length + " fichiers prêts : ") + f.map(function(x){ return x.name; }).join(", ") : "";
+  }
+  $("photo").addEventListener("change", nomsFichiers);
+  $("doc").addEventListener("change", nomsFichiers);
+  $("f-rapport").addEventListener("submit", function(e){
+    e.preventDefault(); $("r-retour").hidden = true;
+    if (!controler([["r-nom","Indiquez votre nom, pour que nous sachions qui rappeler.",plein],["r-tel","Il nous faut un numéro à 10 chiffres, par exemple 06 12 34 56 78.",telValide],["r-ville","Indiquez la commune où se trouve le bien.",plein]])) return;
+    $("r-retour").hidden = false;
+    $("r-retour").textContent = "Démonstration : rien n'a été envoyé. Sur le site réel, votre rapport serait transmis à BAB, qui vous rappellerait du lundi au samedi, de 8 h à 19 h.";
+  });
+  $("f-contact").addEventListener("submit", function(e){
+    e.preventDefault(); $("c-retour").hidden = true;
+    if (!controler([["c-nom","Indiquez votre nom, pour que nous sachions qui rappeler.",plein],["c-tel","Il nous faut un numéro à 10 chiffres, par exemple 06 12 34 56 78.",telValide],["c-ville","Indiquez votre commune.",plein]])) return;
+    $("c-retour").hidden = false;
+    $("c-retour").textContent = "Démonstration : rien n'a été envoyé. Sur le site réel, BAB vous rappellerait du lundi au samedi, de 8 h à 19 h.";
+  });
+})();
+</script>
+</body>
+</html>
