@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BAB Assainissement, suivez l'eau (version 2)</title>
+<style>
+@font-face{font-family:"Sofia Sans";src:url(fonts/sofia-sans.woff2) format("woff2");font-weight:100 900;font-display:swap}
+/* Idée de mise en page : un seul paysage illustré, du ciel du matin jusqu'au fond du terrain.
+   Un tuyau part de la maison et serpente sous terre ; une goutte le remplit au fil du défilement
+   et allume chaque prestation au passage. Aucune boîte, aucun quadrillage : tout est courbe. */
+:root{
+  color-scheme: dark;
+  --sky-top:#AFC3F0; --sky-mid:#F6C6B4; --sky-low:#FFE6BE;
+  --plum:#2B1830;        /* encre du titre, portes, boutons du ciel */
+  --grass:#3F7D4E;
+  --soil-1:#5E3D2B; --soil-2:#48302C; --soil-3:#34222D; --soil-4:#221628; --soil-5:#130C1A;
+  --cream:#FFF3E4;       /* texte sous terre */
+  --cream-soft:#DCC9BD;
+  --water:#62E6E0;       /* l'eau : la seule couleur vive */
+  --water-deep:#0C4A55;
+  --display:"Sofia Sans",system-ui,sans-serif;
+  --body:"Sofia Sans",system-ui,sans-serif;
+  --gutter:clamp(20px,5vw,72px);
+  --max:1180px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--soil-5);color:var(--cream);font:400 19px/1.55 var(--body);-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;line-height:.98;letter-spacing:-.01em;text-wrap:balance}
+p{margin:0} a{color:inherit}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--water);outline-offset:4px;border-radius:999px}
+.wrap{max-width:var(--max);margin:0 auto;padding-inline:var(--gutter)}
+.mock{background:var(--plum);color:#E8D9E6;font-size:13.5px;padding:8px var(--gutter);text-align:center}
+
+.pill{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:54px;padding:0 26px;border-radius:999px;border:0;background:var(--plum);color:var(--cream);font-weight:500;text-decoration:none;cursor:pointer;transition:transform .15s,box-shadow .2s}
+.pill:hover{transform:translateY(-2px)}
+.pill.water{background:var(--water);color:#06262B;box-shadow:0 0 0 0 #62E6E055}
+.pill.water:hover{box-shadow:0 0 0 8px #62E6E022,0 8px 40px #62E6E055}
+.pill.soft{background:transparent;box-shadow:inset 0 0 0 1.5px currentColor;color:inherit}
+
+/* Ciel */
+.sky{background:linear-gradient(var(--sky-top),var(--sky-mid) 58%,var(--sky-low));color:var(--plum);position:relative}
+.nav{position:sticky;top:12px;z-index:30;display:flex;justify-content:center;padding:12px var(--gutter) 0;pointer-events:none}
+.nav div{pointer-events:auto;display:flex;align-items:center;gap:clamp(12px,2.4vw,28px);background:#FFF8EFCC;backdrop-filter:blur(14px);border-radius:999px;padding:8px 8px 8px 22px;box-shadow:0 10px 40px -18px #2B183088;color:var(--plum);font-size:15.5px;font-weight:400}
+.nav b{font:400 26px/1 var(--display);letter-spacing:-.01em}
+.nav b i{color:#B4483C}
+.nav a{text-decoration:none}
+.nav a.l:hover{text-decoration:underline;text-underline-offset:5px}
+.nav .pill{min-height:44px;padding:0 18px;font-size:15px}
+#world{position:relative}
+.hero{padding:clamp(36px,7vw,90px) 0 0;position:relative;z-index:2}
+h1{font-size:clamp(50px,8vw,118px);max-width:12ch}
+h1 i{color:#B4483C}
+.lede{font-size:clamp(18px,1.7vw,22px);max-width:30ch;margin-top:24px;font-weight:400}
+.acts{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px;align-items:center}
+.hint{display:inline-flex;align-items:center;gap:10px;margin-top:30px;font-size:15px}
+.hint span{width:26px;height:42px;border-radius:999px;box-shadow:inset 0 0 0 2px var(--plum);position:relative}
+.hint span::after{content:"";position:absolute;left:50%;top:9px;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:var(--plum);animation:fall 1.8s ease-in infinite}
+@keyframes fall{0%{transform:translateY(0);opacity:1}80%{transform:translateY(18px);opacity:0}100%{opacity:0}}
+.scene{display:block;width:100%;height:clamp(230px,33vw,470px);margin-top:clamp(-350px,-25vw,-10px);pointer-events:none}
+.smoke circle{animation:puff 5s ease-out infinite}
+.smoke circle:nth-child(2){animation-delay:1.6s}.smoke circle:nth-child(3){animation-delay:3.2s}
+@keyframes puff{0%{transform:translate(0,0) scale(.5);opacity:0}20%{opacity:.75}100%{transform:translate(26px,-70px) scale(1.7);opacity:0}}
+
+/* Sous terre */
+#under{color:var(--cream);position:relative;background:linear-gradient(var(--soil-1),var(--soil-2) 18%,var(--soil-3) 42%,var(--soil-4) 70%,var(--soil-5));padding-bottom:clamp(60px,9vw,120px)}
+.turf{display:block;width:100%;height:46px;position:relative;z-index:1;margin-bottom:-1px}
+#decor{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+#pipe{position:absolute;left:0;top:0;width:100%;z-index:1;pointer-events:none;overflow:visible}
+#pipe path{fill:none;stroke-linecap:round;stroke-linejoin:round}
+#p-out{stroke:#0B0710;stroke-width:26;opacity:.55}
+#p-base{stroke:#8E6F62;stroke-width:18}
+#p-in{stroke:#3A2530;stroke-width:10}
+#p-water{stroke:var(--water);stroke-width:10;filter:drop-shadow(0 0 10px #62E6E0AA)}
+#p-flow{stroke:#EFFFFE;stroke-width:3;stroke-dasharray:4 26;opacity:.75;animation:flow 1.1s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-30}}
+#drop .halo{fill:var(--water);opacity:.25;animation:glow 2.4s ease-in-out infinite}
+#drop .core{fill:#F2FFFE}
+@keyframes glow{50%{opacity:.5;r:30px}}
+
+.stations{position:relative;z-index:2;display:grid;gap:clamp(110px,19vh,210px);padding-top:clamp(70px,10vw,140px)}
+.st{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:clamp(24px,5vw,80px)}
+.st .txt{max-width:30ch}
+.st:nth-child(odd) .txt{justify-self:end;text-align:right}
+.st:nth-child(even) .txt{order:2}
+.st:nth-child(odd) .node{justify-self:start;margin-left:clamp(0px,7vw,110px)}
+.st:nth-child(even) .node{justify-self:end;margin-right:clamp(0px,7vw,110px)}
+.st h3{font-size:clamp(36px,4.6vw,66px);font-style:normal}
+.st .svc{display:block;margin-top:16px;font-weight:600;font-size:17px;color:var(--water)}
+.st p{margin-top:8px;color:var(--cream-soft);text-shadow:0 1px 14px #130C1A}
+.st button{margin-top:18px;background:transparent;border:0;padding:8px 0;cursor:pointer;font-weight:500;color:var(--cream);border-bottom:1.5px solid var(--water);border-radius:0}
+.st button:hover{color:var(--water)}
+.node{width:clamp(96px,11vw,148px);aspect-ratio:1;border-radius:50%;background:#170F1E;display:grid;place-items:center;box-shadow:0 0 0 2px #FFF3E433,0 20px 50px -20px #000;transition:box-shadow .5s,transform .5s;color:var(--cream)}
+.node svg{width:68%;height:68%;fill:none;stroke:currentColor;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+.node .w{stroke:var(--water)}
+.node .wf{fill:var(--water);stroke:none}
+.node.lit{box-shadow:0 0 0 3px var(--water),0 0 0 14px #62E6E01F,0 0 70px #62E6E077;transform:scale(1.05)}
+
+/* Arrivée */
+.arrive{position:relative;z-index:2;margin-top:clamp(110px,18vh,200px)}
+#end{width:26px;height:26px;border-radius:50%;margin:0 auto -13px;background:var(--water);box-shadow:0 0 30px var(--water);position:relative;z-index:1}
+.pool{border-radius:clamp(32px,5vw,72px);background:radial-gradient(120% 90% at 50% 0%,#B7FBF4,var(--water) 38%,#2FB6BD 100%);color:#06262B;padding:clamp(34px,6vw,84px) clamp(22px,5vw,80px);box-shadow:0 0 120px -20px #62E6E088;display:grid;gap:clamp(28px,4vw,52px)}
+.pool h2{font-size:clamp(46px,7.4vw,112px);max-width:11ch}
+.pool h2 i{color:var(--water-deep)}
+.pool-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,440px);gap:clamp(28px,5vw,72px);align-items:end}
+.pool .sub{margin-top:18px;max-width:34ch;font-weight:400}
+.form{display:grid;gap:12px}
+.sujet{font-size:15px;font-weight:500;background:#06262B;color:var(--water);border-radius:999px;padding:8px 16px;justify-self:start}
+.sujet[hidden]{display:none}
+.dropz{display:grid;gap:4px;text-align:center;border-radius:28px;padding:26px 18px;cursor:pointer;background:#FFFFFF55;box-shadow:inset 0 0 0 2px #06262B;transition:background .2s}
+.dropz:hover,.dropz.over{background:#FFFFFFAA}
+.dropz b{font:400 28px/1.1 var(--display)}
+.dropz span{font-size:14.5px}
+.dropz input{position:absolute;opacity:0;width:1px;height:1px}
+.dropz:focus-within{outline:3px solid #06262B;outline-offset:4px}
+.form label.t{font-size:14.5px;font-weight:500;display:grid;gap:6px}
+.form input[type=tel]{min-height:54px;border-radius:999px;border:0;padding:0 22px;background:#fff;color:#06262B;font-weight:400}
+.form .pill{background:#06262B;color:var(--cream)}
+.msg{font-size:15px;background:#06262B;color:var(--cream);border-radius:22px;padding:12px 18px}
+.msg[hidden]{display:none}
+.steps{list-style:none;margin:0;padding:clamp(22px,3vw,36px) 0 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(16px,3vw,40px);border-top:1.5px solid #06262B55}
+.steps i{display:block;font:800 clamp(44px,5vw,68px)/1 var(--display);color:var(--water-deep)}
+.steps b{display:block;font-weight:600;margin-top:6px}
+.steps span{font-size:15.5px;font-weight:400}
+
+.after{position:relative;z-index:2;padding-top:clamp(56px,8vw,110px);display:grid;gap:26px;text-align:center;justify-items:center}
+.after h2{font-size:clamp(30px,4vw,52px);font-style:normal;max-width:22ch}
+.after p{max-width:60ch;color:var(--cream-soft)}
+.after p b{color:var(--cream);font-weight:500}
+footer{position:relative;z-index:2;margin-top:clamp(48px,7vw,90px);font-size:14.5px;color:var(--cream-soft)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:8px 32px;justify-content:space-between;border-top:1px solid #FFF3E422;padding-top:22px}
+footer b{color:var(--cream);font-weight:500}
+.fab{display:none}
+
+@media (max-width:860px){
+  .nav a.l{display:none}
+  .scene{margin-top:0}
+  .st{grid-template-columns:auto minmax(0,1fr);align-items:start;gap:20px}
+  .st .txt,.st:nth-child(odd) .txt{justify-self:start;text-align:left;order:2;max-width:none}
+  .st .node,.st:nth-child(odd) .node,.st:nth-child(even) .node{justify-self:start;margin:0;order:1;width:76px}
+  .stations{gap:84px}
+  .pool-top{grid-template-columns:minmax(0,1fr)}
+  .steps{grid-template-columns:1fr 1fr}
+}
+@media (max-width:520px){
+  #p-out{stroke-width:18}#p-base{stroke-width:12}#p-in,#p-water{stroke-width:6}
+  body{font-size:17px;padding-bottom:84px}
+  .nav .tel{display:none}
+  .st .node,.st:nth-child(odd) .node,.st:nth-child(even) .node{width:60px}
+  .fab{display:flex;position:fixed;left:16px;right:16px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:40}
+  .fab .pill{flex:1;box-shadow:0 10px 40px #000}
+}
+
+h1{font-size:clamp(33px,5.6vw,78px);max-width:13.5em;letter-spacing:-.02em;line-height:1.02}
+h1 i{font-style:normal}
+.lede{max-width:34ch}
+.nav b{display:flex;align-items:center}.nav b img{height:30px;width:auto}
+.acts{align-items:stretch}
+.acts .pill{min-height:60px;font-weight:700;font-size:20px}
+.tel-h{display:inline-flex;align-items:center;gap:10px;margin-top:14px;font-weight:800;font-size:clamp(28px,3vw,40px);text-decoration:none;color:var(--plum);min-height:48px}
+.tel-h small{font-weight:400;font-size:17px;display:block}
+.node{overflow:hidden;background:#170F1E;width:clamp(150px,19vw,250px)}
+.node img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.st h3{font-size:clamp(28px,3.4vw,46px);line-height:1.05}
+.st .svc{font-size:19px}
+.st p{font-size:19px}
+.st .lieu{display:block;margin-top:10px;font-size:16px;color:var(--cream-soft)}
+.st a.plus{display:inline-flex;align-items:center;min-height:44px;margin-top:10px;font-weight:700;color:var(--cream);text-decoration:underline;text-decoration-color:var(--water);text-decoration-thickness:2px;text-underline-offset:5px}
+.st button{font-weight:700;min-height:44px}
+.aussi{position:relative;z-index:2;margin-top:clamp(90px,14vh,160px);text-align:center}
+.aussi h2{font-size:clamp(26px,3vw,40px)}
+.aussi ul{list-style:none;margin:18px auto 0;padding:0;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:900px}
+.aussi a{display:inline-flex;align-items:center;min-height:48px;padding:0 20px;border-radius:999px;box-shadow:inset 0 0 0 1.5px var(--cream);color:var(--cream);text-decoration:none;font-weight:600;background:#170F1ECC}
+.aussi a:hover{background:var(--water);color:#06262B;box-shadow:none}
+.allee{position:relative;z-index:2;margin-top:clamp(90px,14vh,160px)}
+.allee h2{font-size:clamp(28px,3.6vw,48px);text-align:center}
+.allee p.s{text-align:center;color:var(--cream-soft);max-width:44ch;margin:10px auto 0}
+.allee ol{list-style:none;margin:26px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(8px,1.4vw,20px)}
+.allee img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:clamp(14px,2vw,28px)}
+.allee li b{display:block;margin-top:10px;font-size:19px}
+.allee li span{color:var(--cream-soft);font-size:17px}
+.form textarea{border-radius:22px;border:0;padding:14px 22px;min-height:96px;background:#fff;color:#06262B;font:inherit;width:100%}
+.form input[type=text]{min-height:54px;border-radius:999px;border:0;padding:0 22px;background:#fff;color:#06262B;width:100%}
+.steps i{font-size:clamp(34px,4vw,54px)}
+@media (max-width:860px){
+  .hero{padding-top:22px}
+  .lede{display:none}
+  .acts{display:grid;gap:10px;margin-top:16px}
+  .hint{display:none}
+  .node,.st:nth-child(odd) .node,.st:nth-child(even) .node{width:96px}
+  .allee ol{grid-template-columns:1fr 1fr}
+}
+@media (max-width:520px){.node,.st:nth-child(odd) .node,.st:nth-child(even) .node{width:84px}}
+
+.pool h2{font-size:clamp(32px,4.2vw,58px);max-width:12em}
+.pool h2 i{font-style:normal}
+.aussi,.allee{z-index:3}
+.scene{margin-top:clamp(-300px,-21vw,-10px)}
+.fab{transition:transform .25s}.fab.cache{transform:translateY(160%)}
+@media (max-width:860px){.scene{margin-top:0}}
+.tel-h{position:relative;z-index:3}
+@media (max-width:520px){
+  .nav .pill{display:none}
+  .nav .tel{display:inline-flex!important;align-items:center;min-height:44px;font-weight:800;font-size:19px}
+  .nav div{padding:6px 18px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+<div class="mock">Prototype local. Photos des chantiers et contenus repris de babassainissement.fr. Formulaire de démonstration : rien n'est envoyé.</div>
+
+<div class="sky">
+  <nav class="nav" aria-label="Navigation"><div>
+    <b><img src="img/logo-bab.webp" width="515" height="206" alt="BAB Assainissement"></b>
+    <a class="l" href="#under">Prestations</a>
+    <a class="l" href="#allee">Un chantier</a>
+    <a class="l tel" href="tel:+33189480964">01 89 48 09 64</a>
+    <a class="pill" href="#arrivee">Envoyer mon rapport</a>
+  </div></nav>
+
+  <div id="world">
+    <header class="hero">
+      <div class="wrap">
+        <h1>Votre assainissement est non conforme&nbsp;? <span style="display:block">Nous réalisons les travaux.</span></h1>
+        <p class="lede">Chez vous, sur la partie privée du réseau, en Île-de-France. Suivez l'eau : elle vous montre ce que nous faisons, de la maison jusqu'à la rue.</p>
+        <div class="acts">
+          <a class="pill" href="#arrivee" data-s="J'ai reçu un rapport non conforme">Envoyer mon rapport</a>
+          <a class="pill soft" href="#under">J'ai besoin de travaux</a>
+        </div>
+        <a class="tel-h" href="tel:+33189480964"><span>01 89 48 09 64<small>du lundi au samedi, de 8 h à 19 h</small></span></a>
+      </div>
+      <svg class="scene" viewBox="0 0 1440 420" preserveAspectRatio="xMaxYMax slice" aria-hidden="true">
+        <circle cx="1130" cy="250" r="150" fill="#FFF1C4" opacity=".55"/>
+        <circle cx="1130" cy="250" r="96" fill="#FFE39A"/>
+        <path d="M0 330C200 250 420 340 700 290S1220 230 1440 310V420H0Z" fill="#A9C79B"/>
+        <path d="M0 370C260 310 520 380 820 340S1260 320 1440 350V420H0Z" fill="#6DA468"/>
+        <g>
+          <rect x="826" y="270" width="16" height="96" rx="8" fill="#5E3D2B"/>
+          <circle cx="834" cy="238" r="52" fill="#2F6B3F"/><circle cx="798" cy="268" r="34" fill="#3F7D4E"/><circle cx="870" cy="266" r="36" fill="#3F7D4E"/>
+        </g>
+        <g class="smoke" fill="#FFF8EF"><circle cx="1130" cy="150" r="12"/><circle cx="1130" cy="150" r="12"/><circle cx="1130" cy="150" r="12"/></g>
+        <rect x="1116" y="158" width="28" height="60" rx="6" fill="#8E3A31"/>
+        <rect x="984" y="236" width="192" height="134" rx="14" fill="#FFF3E4"/>
+        <path d="M968 246L1080 160L1192 246Z" fill="#B4483C" stroke="#B4483C" stroke-width="22" stroke-linejoin="round"/>
+        <rect x="1010" y="276" width="48" height="48" rx="12" fill="#FFC94A"/>
+        <path d="M1034 276v48M1010 300h48" stroke="#FFF3E4" stroke-width="5"/>
+        <path d="M1100 370v-52a22 22 0 0 1 44 0v52z" fill="#2B1830"/>
+        <circle cx="1134" cy="336" r="3.5" fill="#FFC94A"/>
+        <path d="M0 384C240 356 520 396 800 372S1240 362 1440 380V420H0Z" fill="#3F7D4E"/>
+        <circle id="outlet" cx="1040" cy="392" r="4" fill="none"/>
+      </svg>
+    </header>
+
+    <main id="under">
+      <svg class="turf" viewBox="0 0 1440 46" preserveAspectRatio="none" aria-hidden="true"><path d="M0 0H1440V20C1300 44 1180 8 1020 26S760 44 600 24S300 6 160 28S40 30 0 22Z" fill="#3F7D4E"/></svg>
+      <canvas id="decor" aria-hidden="true"></canvas>
+      <svg id="pipe" aria-hidden="true">
+        <path id="p-out"/><path id="p-base"/><path id="p-in"/><path id="p-water"/><path id="p-flow"/>
+        <g id="drop"><circle class="halo" r="24"/><circle class="core" r="8"/></g>
+      </svg>
+
+      <div class="wrap stations">
+        <section class="st">
+          <div class="txt">
+            <h3>Le rapport dit « non conforme ».</h3>
+            <span class="svc">Mise en conformité après contrôle</span>
+            <p>Nous corrigeons ce que le contrôle a relevé : regards, canalisations, séparation des eaux.</p>
+            <span class="lieu">Photo : mise en conformité, Villecerf (77).</span>
+            <a class="plus" href="https://www.babassainissement.fr/services/mise-en-conformite/">En savoir plus</a><br>
+            <button type="button" data-s="Mise en conformité après contrôle">C'est mon cas</button>
+          </div>
+          <div class="node"><img src="img/vil-2.webp" alt="Un tampon neuf posé, relié à une canalisation." loading="lazy"></div>
+        </section>
+        <section class="st">
+          <div class="txt">
+            <h3>De la maison jusqu'à la rue.</h3>
+            <span class="svc">Raccordement au tout-à-l'égout</span>
+            <p>La canalisation privée, jusqu'à la boîte de branchement en limite de propriété.</p>
+            <span class="lieu">Photo : une allée, Île-de-France.</span>
+            <a class="plus" href="https://www.babassainissement.fr/services/raccordement-egout/">En savoir plus</a><br>
+            <button type="button" data-s="Raccordement au tout-à-l'égout">C'est mon cas</button>
+          </div>
+          <div class="node"><img src="img/allee-3.webp" alt="Canalisations et boîte de raccordement au fond d'une fouille." loading="lazy"></div>
+        </section>
+        <section class="st">
+          <div class="txt">
+            <h3>Un accès pour contrôler.</h3>
+            <span class="svc">Regards et canalisations</span>
+            <p>Création ou remplacement de regards et de canalisations, sur la partie privée.</p>
+            <span class="lieu">Photo : regard avec cunette, Villecerf (77).</span>
+            <a class="plus" href="https://www.babassainissement.fr/services/travaux-assainissement/">En savoir plus</a><br>
+            <button type="button" data-s="Regards et canalisations">C'est mon cas</button>
+          </div>
+          <div class="node"><img src="img/vil-1.webp" alt="Un regard avec sa cunette." loading="lazy"></div>
+        </section>
+        <section class="st">
+          <div class="txt">
+            <h3>La pluie n'a rien à faire ici.</h3>
+            <span class="svc">Eaux de pluie à la parcelle</span>
+            <p>Puisard, tranchée d'infiltration, drainage : les eaux de pluie ne rejoignent plus les eaux usées.</p>
+            <span class="lieu">Photo : puisard, Limeil-Brévannes (94).</span>
+            <a class="plus" href="https://www.babassainissement.fr/services/drainage-eaux-pluviales/">En savoir plus</a><br>
+            <button type="button" data-s="Eaux de pluie à la parcelle">C'est mon cas</button>
+          </div>
+          <div class="node"><img src="img/pui-2.webp" alt="Un puisard coiffé de son tampon, dans sa fouille." loading="lazy"></div>
+        </section>
+        <section class="st">
+          <div class="txt">
+            <h3>Sans tout-à-l'égout.</h3>
+            <span class="svc">Fosses et micro-stations</span>
+            <p>Pose, remplacement ou mise hors service d'une installation autonome.</p>
+            <span class="lieu">Photo : fosse toutes eaux posée en fouille, avant le remblai.</span>
+            <a class="plus" href="https://www.babassainissement.fr/services/fosses-septiques/">En savoir plus</a><br>
+            <button type="button" data-s="Fosse ou micro-station">C'est mon cas</button>
+          </div>
+          <div class="node"><img src="img/fosse.webp" alt="Une fosse toutes eaux posée dans une fouille." loading="lazy"></div>
+        </section>
+        <section class="st">
+          <div class="txt">
+            <h3>Quand il faut remonter la pente.</h3>
+            <span class="svc">Pompes de relevage</span>
+            <p>Installation, remplacement et entretien des pompes et postes de relevage.</p>
+            <span class="lieu">Photo : maintenance d'une pompe, Montreuil (93).</span>
+            <a class="plus" href="https://www.babassainissement.fr/services/pompes-relevage/">En savoir plus</a><br>
+            <button type="button" data-s="Pompe de relevage">C'est mon cas</button>
+          </div>
+          <div class="node"><img src="img/relevage.webp" alt="Une pompe de relevage sortie de son regard." loading="lazy"></div>
+        </section>
+      </div>
+
+      <div class="wrap aussi">
+        <h2>Nous faisons aussi</h2>
+        <ul>
+          <li><a href="https://www.babassainissement.fr/services/inspection-camera/">Inspection caméra</a></li>
+          <li><a href="https://www.babassainissement.fr/services/curage-debouchage/">Curage</a></li>
+          <li><a href="https://www.babassainissement.fr/services/remplacement-canalisation-fonte/">Canalisations en fonte</a></li>
+          <li><a href="https://www.babassainissement.fr/services/cuve-fioul/">Cuve à fioul</a></li>
+          <li><a href="https://www.babassainissement.fr/services/terrassement/">Terrassement</a></li>
+        </ul>
+      </div>
+
+      <div class="wrap allee" id="allee">
+        <h2>Un vrai chantier, quatre moments.</h2>
+        <p class="s">Une allée en Île-de-France : une canalisation posée sur toute sa longueur, puis l'allée refaite.</p>
+        <ol>
+          <li><img src="img/allee-1.webp" width="800" height="1000" loading="lazy" alt="Allée en terre entre deux murs."><b>1 · Avant</b><span>L'allée en terre.</span></li>
+          <li><img src="img/allee-2.webp" width="800" height="1000" loading="lazy" alt="Tranchée ouverte le long du mur."><b>2 · Ouverture</b><span>La tranchée est ouverte.</span></li>
+          <li><img src="img/allee-3.webp" width="800" height="1000" loading="lazy" alt="Canalisations et boîte de raccordement en place."><b>3 · Raccordement</b><span>La canalisation est posée.</span></li>
+          <li><img src="img/allee-4.webp" width="800" height="1000" loading="lazy" alt="La même allée, bétonnée, avec une grille."><b>4 · Après</b><span>L'allée est refaite.</span></li>
+        </ol>
+      </div>
+
+      <div class="wrap arrive" id="arrivee">
+        <div id="end" aria-hidden="true"></div>
+        <div class="pool">
+          <div class="pool-top">
+            <div>
+              <h2>Parlons de <i>votre</i> installation.</h2>
+              <p class="sub">Aucun prix n'est donné sans visite. Le devis écrit est gratuit, détaillé poste par poste, et les travaux commencent après votre accord.</p>
+              <p class="sub"><a href="tel:+33189480964" style="font-weight:800;font-size:clamp(30px,3.4vw,44px);text-decoration:none;color:#06262B">01 89 48 09 64</a><br>du lundi au samedi, de 8 h à 19 h</p>
+            </div>
+            <form class="form" id="send" novalidate>
+              <span class="sujet" id="sujet" hidden></span>
+              <label class="dropz" id="dropz" for="file">
+                <input type="file" id="file" accept=".pdf,image/*">
+                <b id="dz-t">Déposez votre rapport</b>
+                <span id="dz-s">PDF ou photo. Sans rapport, décrivez simplement votre besoin.</span>
+              </label>
+              <label class="t" for="besoin">Votre besoin, en quelques mots (facultatif)<textarea id="besoin" rows="2"></textarea></label>
+              <label class="t" for="tel">Votre téléphone<input id="tel" type="tel" inputmode="tel" autocomplete="tel" placeholder="06 12 34 56 78"></label>
+              <button class="pill" type="submit">Envoyer</button>
+              <p class="msg" id="msg" hidden></p>
+            </form>
+          </div>
+          <ol class="steps">
+            <li><i>1</i><b>Vous écrivez ou appelez</b><span>Avec votre rapport ou des photos.</span></li>
+            <li><i>2</i><b>Nous vous rappelons</b><span>Du lundi au samedi, de 8 h à 19 h.</span></li>
+            <li><i>3</i><b>Nous venons voir</b><span>Une visite sur rendez-vous.</span></li>
+            <li><i>4</i><b>Devis détaillé</b><span>Les travaux commencent après votre accord.</span></li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="wrap after">
+        <h2>De Saint-Mandé à toute l'Île-de-France.</h2>
+        <p><b>Paris</b>, <b>Seine-et-Marne</b>, <b>Yvelines</b>, <b>Essonne</b>, <b>Hauts-de-Seine</b>, <b>Seine-Saint-Denis</b>, <b>Val-de-Marne</b> et <b>Val-d'Oise</b>. Nous intervenons sur la partie privée de votre réseau, dans les huit départements.</p>
+        <a class="pill water" href="tel:+33189480964">Appeler le 01 89 48 09 64</a>
+      </div>
+
+      <footer><div class="wrap">
+        <span><b>BAB Assainissement</b> · 14 avenue du Général de Gaulle, 94160 Saint-Mandé</span>
+        <span>SIREN 933 127 995</span>
+        <span>Maquette, contenus à valider</span>
+      </div></footer>
+    </main>
+  </div>
+</div>
+
+<div class="fab"><a class="pill water" href="#arrivee">Envoyer mon rapport</a></div>
+
+<script>
+(function(){
+  var $ = function(i){return document.getElementById(i)};
+  var world = $("world"), under = $("under"), svg = $("pipe"), base = $("p-base"), water = $("p-water"), flow = $("p-flow"), drop = $("drop");
+  var paths = ["p-out","p-base","p-in","p-water","p-flow"].map($);
+  var nodes = Array.prototype.slice.call(document.querySelectorAll(".node"));
+  var total = 0, table = [], nodeY = [], H = 0, offY = 0;
+
+  function build(){
+    var u = under.getBoundingClientRect();
+    H = under.offsetHeight;
+    svg.setAttribute("viewBox", "0 0 " + u.width + " " + H);
+    svg.setAttribute("width", u.width); svg.setAttribute("height", H);
+    var pts = [], o = $("outlet").getBoundingClientRect();
+    offY = o.top + o.height / 2 - u.top;                       /* négatif : la sortie est sous la maison */
+    pts.push([o.left + o.width / 2 - u.left, offY]);
+    nodeY = [];
+    nodes.forEach(function(n){ var b = n.getBoundingClientRect(), y = b.top + b.height / 2 - u.top; nodeY.push(y); pts.push([b.left + b.width / 2 - u.left, y]); });
+    var e = $("end").getBoundingClientRect();
+    pts.push([e.left + e.width / 2 - u.left, e.top + e.height / 2 - u.top]);
+    var d = "M" + pts[0][0] + " " + pts[0][1];
+    for (var i = 1; i < pts.length; i++){
+      var a = pts[i-1], b2 = pts[i], m = (a[1] + b2[1]) / 2;
+      d += " C" + a[0] + " " + m + " " + b2[0] + " " + m + " " + b2[0] + " " + b2[1];
+    }
+    paths.forEach(function(p){ p.setAttribute("d", d); });
+    total = base.getTotalLength();
+    table = [];
+    for (var k = 0; k <= 400; k++){ var L = total * k / 400; table.push([base.getPointAtLength(L).y, L]); }
+    decor(u.width, H);
+    update();
+  }
+
+  function lenAt(y){
+    if (y <= table[0][0]) return 0;
+    for (var k = 1; k < table.length; k++){
+      if (table[k][0] >= y){ var a = table[k-1], b = table[k], t = (y - a[0]) / ((b[0] - a[0]) || 1); return a[1] + (b[1] - a[1]) * t; }
+    }
+    return total;
+  }
+
+  var ticking = false;
+  function update(){
+    ticking = false;
+    var u = under.getBoundingClientRect();
+    var y = window.innerHeight * 0.56 - u.top;
+    var len = Math.min(total, Math.max(0, lenAt(y)));
+    water.style.strokeDasharray = len + " " + (total + 10);
+    flow.style.opacity = len > 4 ? .75 : 0;
+    var p = base.getPointAtLength(len);
+    drop.setAttribute("transform", "translate(" + p.x + " " + p.y + ")");
+    /* l'écoulement ne s'affiche que sur la partie déjà remplie */
+    clip.setAttribute("height", Math.max(0, p.y - offY + 4)); clip.setAttribute("y", offY - 20);
+    nodes.forEach(function(n, i){ n.classList.toggle("lit", nodeY[i] <= p.y + 6); });
+  }
+  /* masque rectangulaire : le tuyau descend toujours, la hauteur suffit à borner l'écoulement */
+  var ns = "http://www.w3.org/2000/svg", defs = document.createElementNS(ns, "defs"), cp = document.createElementNS(ns, "clipPath"), clip = document.createElementNS(ns, "rect");
+  cp.setAttribute("id", "wet"); clip.setAttribute("x", "-100"); clip.setAttribute("width", "100000");
+  cp.appendChild(clip); defs.appendChild(cp); svg.insertBefore(defs, svg.firstChild);
+  flow.setAttribute("clip-path", "url(#wet)");
+
+  function onScroll(){ if (!ticking){ ticking = true; requestAnimationFrame(update); } }
+
+  /* Décor : cailloux, racines et éclats minéraux, tirés d'une graine fixe */
+  function decor(w, h){
+    var c = $("decor"), x = c.getContext("2d"), s = 7;
+    function r(){ s = (s * 16807) % 2147483647; return s / 2147483647; }
+    c.width = Math.round(w); c.height = Math.round(Math.min(h, 16000));
+    x.clearRect(0, 0, c.width, c.height);
+    for (var i = 0; i < 9; i++){                                 /* strates */
+      var y0 = h * (0.06 + i * 0.105) + r() * 60;
+      x.beginPath(); x.moveTo(0, y0);
+      for (var px = 0; px <= w; px += w / 6) x.quadraticCurveTo(px + w / 12, y0 + (r() - .5) * 70, px + w / 6, y0 + (r() - .5) * 30);
+      x.lineTo(w, y0 + 220); x.lineTo(0, y0 + 220); x.closePath();
+      x.fillStyle = "rgba(255,243,228," + (0.018 + r() * 0.022) + ")"; x.fill();
+    }
+    x.lineCap = "round";
+    for (var k = 0; k < Math.max(5, w / 150); k++){               /* racines */
+      var rx = r() * w, ry = 30, seg = 5 + Math.floor(r() * 5);
+      x.beginPath(); x.moveTo(rx, ry);
+      for (var j = 0; j < seg; j++){ rx += (r() - .5) * 70; ry += 30 + r() * 50; x.lineTo(rx, ry); }
+      x.strokeStyle = "rgba(255,243,228,.10)"; x.lineWidth = 1 + r() * 2.5; x.stroke();
+    }
+    var n = Math.round(w * h / 26000);
+    for (var q = 0; q < n; q++){                                  /* cailloux */
+      var cx = r() * w, cy = 60 + r() * (h - 60), rr = 3 + r() * r() * 26, dark = r() > .5;
+      x.beginPath(); x.ellipse(cx, cy, rr, rr * (.55 + r() * .35), r() * 3, 0, 6.3);
+      x.fillStyle = dark ? "rgba(0,0,0," + (.10 + r() * .14) + ")" : "rgba(255,243,228," + (.03 + r() * .06) + ")"; x.fill();
+    }
+    for (var z = 0; z < n * 1.4; z++){                            /* éclats, plus denses en profondeur */
+      var t = Math.sqrt(r()), sx = r() * w, sy = t * h;
+      x.fillStyle = "rgba(98,230,224," + (.15 + r() * .5) + ")";
+      x.beginPath(); x.arc(sx, sy, .6 + r() * 1.4, 0, 6.3); x.fill();
+    }
+  }
+
+  window.addEventListener("scroll", onScroll, {passive:true});
+  var rt; function rebuild(){ clearTimeout(rt); rt = setTimeout(build, 120); }
+  window.addEventListener("resize", rebuild);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(build);
+  window.addEventListener("load", build);
+  build();
+
+  if ("IntersectionObserver" in window){ var fab = document.querySelector(".fab"), vu = {};
+    var io = new IntersectionObserver(function(es){ es.forEach(function(e){ vu[e.target.id || "h"] = e.isIntersecting; }); fab.classList.toggle("cache", !!(vu.arrivee || vu.h)); }, {threshold:0.05});
+    io.observe($("arrivee")); io.observe(document.querySelector(".acts")); }
+  /* Parcours vers la demande */
+  document.querySelectorAll("[data-s]").forEach(function(b){
+    b.addEventListener("click", function(){
+      var s = $("sujet"); s.hidden = false; s.textContent = "Votre sujet : " + b.dataset.s;
+      if (b.tagName !== "A") $("arrivee").scrollIntoView({block:"start"});
+    });
+  });
+  var file = $("file"), dz = $("dropz");
+  function named(f){ if (!f) return; $("dz-t").textContent = f.name; $("dz-s").textContent = "Fichier prêt. Touchez pour en choisir un autre."; }
+  file.addEventListener("change", function(){ named(file.files[0]); });
+  ["dragover","dragenter"].forEach(function(n){ dz.addEventListener(n, function(e){ e.preventDefault(); dz.classList.add("over"); }); });
+  ["dragleave","drop"].forEach(function(n){ dz.addEventListener(n, function(e){ e.preventDefault(); dz.classList.remove("over"); }); });
+  dz.addEventListener("drop", function(e){ if (e.dataTransfer && e.dataTransfer.files[0]) named(e.dataTransfer.files[0]); });
+  $("send").addEventListener("submit", function(e){
+    e.preventDefault();
+    var m = $("msg"), v = $("tel").value.replace(/[\s.\-]/g, "");
+    m.hidden = false;
+    if (!/^(?:\+33|0)[1-9]\d{8}$/.test(v)){ m.textContent = "Il nous faut un numéro à 10 chiffres pour vous rappeler, par exemple 06 12 34 56 78."; $("tel").focus(); return; }
+    m.textContent = "Maquette : rien n'est envoyé. Sur le site réel, BAB vous rappelle du lundi au samedi, de 8 h à 19 h.";
+  });
+})();
+</script>
+</body>
+</html>
