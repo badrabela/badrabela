@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BAB Assainissement, prototype direction B, « Le problème devient lisible »</title>
+<meta name="description" content="Prototype local de la page d'accueil BAB Assainissement : mise en conformité, raccordement, regards et canalisations, sur la partie privée, en Île-de-France.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preload" as="font" type="font/woff2" href="../06_SITE_LOCAL/fonts/sofia-sans.woff2" crossorigin>
+<link rel="preload" as="image" href="../06_SITE_LOCAL/img/allee-4.webp" fetchpriority="high">
+<style>
+
+/* BAB — « LES QUATRE MOMENTS »
+   Idée fondatrice : un chantier BAB se raconte toujours de la même façon, le même lieu photographié à
+   chaque étape. La bande de moments (des tranches verticales du même lieu, de gauche à droite dans le temps)
+   est la seule forme de marque. Elle ouvre la page, puis revient pour chaque chantier.
+   Pas de trait décoratif, pas de pictogramme. Une seule famille de caractères. Conçu d'abord pour 390 px. */
+@font-face{font-family:"Sofia Sans";src:url(../06_SITE_LOCAL/fonts/sofia-sans.woff2) format("woff2");font-weight:100 900;font-display:swap}
+@font-face{font-family:"Sofia repli";src:local("Arial"),local("Helvetica Neue"),local("Liberation Sans");size-adjust:93%;ascent-override:96%;descent-override:26%;line-gap-override:0%}
+:root{
+  color-scheme:light;
+  --sol:#E7E6DF;        /* gris minéral du mur de l'allée */
+  --papier:#F5F4EF;
+  --nuit:#10202E;       /* bleu nuit du logo, assombri */
+  --gris:#45515A;
+  --filet:#C5C6BC;
+  --terre:#B84A0C;      /* terre cuite : action principale et soulignés, rien d'autre */
+  --texte:"Sofia Sans","Sofia repli",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --m:20px;
+  --entete:60px;
+  --ecart:3px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--entete) + 14px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--sol);color:var(--nuit);font:400 19px/1.5 var(--texte);-webkit-font-smoothing:antialiased}
+h1,h2,h3{margin:0;font-weight:800;line-height:1.05;letter-spacing:-.012em;text-wrap:balance}
+h1{font-size:clamp(30px,8.4vw,40px)}
+h2{font-size:clamp(28px,7.6vw,36px)}
+h3{font-size:23px;line-height:1.12}
+p{margin:0}
+a{color:inherit}
+img{display:block;max-width:100%;height:auto}
+button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--terre);outline-offset:3px}
+.sombre :focus-visible{outline-color:#fff}
+.c{max-width:1320px;margin:0 auto;padding-inline:var(--m)}
+.cache{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+input.cache{left:0;top:0;opacity:0}
+.evitement{position:absolute;left:8px;top:-70px;background:var(--nuit);color:#fff;padding:12px 16px;z-index:100}
+.evitement:focus{top:8px}
+.proto{background:var(--nuit);color:#D5DAD9;font-size:16px;line-height:1.3;padding:6px var(--m);text-align:center}
+.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.lien{font-weight:700;text-decoration:underline;text-decoration-color:var(--terre);text-decoration-thickness:2.5px;text-underline-offset:5px}
+.lien:hover{text-decoration-thickness:4px}
+.petit{font-size:17px;color:var(--gris)}
+
+/* Actions */
+.btn{display:grid;grid-template-columns:1fr auto;align-items:center;gap:14px;width:100%;min-height:66px;padding:10px 18px;border:2px solid var(--nuit);border-radius:3px;background:transparent;text-decoration:none;text-align:left;cursor:pointer;line-height:1.15;transition:background .15s,color .15s}
+.btn small{display:block;font-size:17px;font-weight:400;margin-bottom:1px}
+.btn b{display:block;font-size:22px;font-weight:800}
+.btn i{font-style:normal;font-size:24px;line-height:1;transition:transform .2s}
+.btn:hover i{transform:translateX(5px)}
+.btn.plein{background:var(--terre);border-color:var(--terre);color:#fff}
+.btn.plein:hover{background:#963B08;border-color:#963B08}
+.btn:not(.plein):hover{background:var(--nuit);color:#fff}
+.btn.simple{min-height:58px;grid-template-columns:1fr;justify-items:center;text-align:center}
+.tel{display:inline-flex;align-items:center;gap:10px;min-height:48px;text-decoration:none;font-weight:800;font-size:28px}
+.tel svg{width:.74em;height:.74em;fill:var(--terre);flex:none}
+.tel:hover .num{text-decoration:underline;text-decoration-color:var(--terre);text-decoration-thickness:3px;text-underline-offset:5px}
+
+/* En-tête */
+.entete{position:sticky;top:0;z-index:50;background:var(--sol);border-bottom:1px solid var(--filet)}
+.entete .c{display:flex;align-items:center;gap:14px;height:var(--entete)}
+.logo{margin-right:auto;display:flex;align-items:center;min-height:48px}
+.logo img{height:36px;width:auto}
+.entete .tel{font-size:20px}
+.entete .tel small{display:none}
+.nav{display:none}
+.btn-menu{display:inline-flex;align-items:center;min-height:48px;padding:0 2px 0 8px;background:none;border:0;font-weight:800;font-size:19px;cursor:pointer;text-decoration:underline;text-decoration-color:var(--terre);text-decoration-thickness:2.5px;text-underline-offset:5px}
+.menu{position:fixed;inset:0;z-index:60;background:var(--sol);display:none;flex-direction:column;padding:10px var(--m) 24px;overflow:auto}
+.menu.ouvert{display:flex}
+.menu-haut{display:flex;justify-content:space-between;align-items:center;min-height:52px}
+.menu nav{display:grid;margin-top:8px}
+.menu nav a{font-weight:800;font-size:27px;text-decoration:none;padding:14px 0;border-bottom:1px solid var(--filet)}
+.menu .tel{font-size:34px;margin-top:22px}
+
+/* LA BANDE DE MOMENTS : la forme de marque */
+.bande{display:flex;gap:var(--ecart);height:var(--hb,236px);background:var(--nuit)}
+.moment{position:relative;flex:1 1 0;min-width:0;border:0;padding:0;margin:0;overflow:hidden;cursor:pointer;background:#27333D;transition:flex-grow .38s cubic-bezier(.3,.7,.2,1)}
+.moment img{width:100%;height:100%;object-fit:cover}
+.moment[aria-pressed="true"]{flex-grow:var(--grand,2.7);cursor:default}
+.moment .et{position:absolute;left:0;top:0;display:flex;align-items:baseline;gap:7px;background:var(--nuit);color:#fff;padding:5px 9px 4px;font-weight:800;font-size:17px;line-height:1.1;white-space:nowrap}
+.moment .et span{font-weight:700;display:none}
+.moment[aria-pressed="true"] .et span{display:inline}
+.moment:focus-visible{outline:3px solid #fff;outline-offset:-5px}
+.moment:not([aria-pressed="true"]):hover img{filter:brightness(1.08)}
+.b-leg{min-height:3.1em;padding-top:9px;font-size:17px;line-height:1.3;color:var(--gris)}
+.b-leg b{color:var(--nuit)}
+.sombre .b-leg{color:#C3CACD}.sombre .b-leg b{color:#fff}
+
+/* 1. Premier écran : la preuve, puis la phrase */
+.premier .bande{--hb:clamp(200px,28vh,260px)}
+.premier .b-leg{padding-inline:var(--m)}
+.premier h1{margin-top:12px;max-width:13em}
+.premier h1 .l2{display:block}
+.parcours{display:grid;gap:10px;margin-top:16px}
+.appel{margin-top:8px;display:flex;flex-wrap:wrap;align-items:baseline;gap:0 14px}
+.chapo{margin-top:18px;max-width:32em;padding-bottom:34px}
+
+.section{padding-block:52px}
+.intro{color:#26333D;max-width:34em;margin-top:12px}
+
+/* 2. Rapport */
+.papier{background:var(--papier)}
+.question{max-width:14em}
+.reponse{margin-top:14px;font-size:20px;max-width:30em}
+.suite{list-style:none;counter-reset:s;margin:24px 0 0;padding:0;max-width:34em}
+.suite li{counter-increment:s;display:grid;grid-template-columns:34px 1fr;align-items:baseline;padding:8px 0}
+.suite li::before{content:counter(s) ".";font-weight:800}
+.depot{display:grid;gap:10px;margin-top:22px}
+.garde{margin-top:14px;font-size:17px;color:var(--gris);max-width:36em}
+.lecture{margin-top:40px}
+.lecture h3{font-size:21px}
+.paires{list-style:none;margin:10px 0 0;padding:0;border-top:2px solid var(--nuit)}
+.paires li{display:grid;grid-template-columns:88px 1fr;gap:14px;padding:12px 0;border-bottom:1px solid var(--filet);align-items:center}
+.paires img{width:88px;height:88px;object-fit:cover}
+.paires .dit{display:block;font-size:17px;color:var(--gris)}
+.paires .fait{display:block;font-weight:800;font-size:21px;line-height:1.15;margin-top:2px}
+
+/* 3. Prestations : dense, pour comparer */
+.familles{display:grid;gap:34px;margin-top:26px}
+.famille figure{margin:0 calc(-1 * var(--m)) 0 0}
+.famille figure img{width:100%;aspect-ratio:16/9;object-fit:cover}
+.famille figcaption{font-size:17px;color:var(--gris);margin-top:6px;padding-right:var(--m)}
+.famille h3{margin-top:16px}
+.liste{list-style:none;margin:4px 0 0;padding:0}
+.liste a{display:grid;grid-template-columns:1fr auto;gap:0 14px;align-items:center;padding:12px 0;border-bottom:1px solid var(--filet);text-decoration:none;min-height:60px}
+.liste b{font-size:22px;font-weight:800;line-height:1.15}
+.liste span{grid-column:1;color:var(--gris);font-size:18px;line-height:1.3}
+.liste i{grid-row:1/span 2;grid-column:2;font-style:normal;font-size:22px;transition:transform .2s}
+.liste a:hover b{text-decoration:underline;text-decoration-color:var(--terre);text-decoration-thickness:3px;text-underline-offset:5px}
+.liste a:hover i{transform:translateX(5px)}
+.apres-liste{margin-top:26px;display:grid;gap:14px;justify-items:start}
+.apres-liste .lien,.fin-chantiers .lien{display:inline-flex;align-items:center;min-height:44px}
+
+/* 4. D'autres lieux */
+.sombre{background:var(--nuit);color:#F1F0EA}
+.sombre .intro{color:#C3CACD}
+.lieu{margin-top:34px}
+.lieu h3{font-size:22px}
+.lieu .ou{color:#C3CACD;font-size:18px;margin:2px 0 10px}
+.lieu .bande{--hb:clamp(210px,30vh,250px);margin-inline:calc(-1 * var(--m));background:#000}
+.fin-chantiers{margin-top:26px}
+.sombre .lien{text-decoration-color:#F2A56B}
+
+/* 5. Comprendre */
+.schemas{display:grid;gap:30px;margin-top:24px}
+.schema h3{font-size:22px}
+.schema svg{display:block;width:100%;height:auto;margin-top:10px;background:var(--papier)}
+.schema svg text{font:800 20px var(--texte);fill:#fff;text-anchor:middle;dominant-baseline:central}
+.schema svg text.mot{font:600 22px var(--texte);fill:var(--gris);text-anchor:start}
+.cle{list-style:none;counter-reset:k;margin:10px 0 0;padding:0;font-size:18px}
+.cle li{counter-increment:k;display:grid;grid-template-columns:34px 1fr;align-items:baseline;padding:6px 0}
+.cle li::before{content:counter(k);width:24px;height:24px;background:var(--nuit);color:#fff;font-weight:800;font-size:16px;line-height:24px;text-align:center}
+.reserve{margin-top:22px;font-size:18px;max-width:40em;color:#26333D}
+.mots{margin:26px 0 0;display:grid;gap:0}
+.mots div{padding:12px 0;border-top:1px solid var(--filet)}
+.mots dt{font-weight:800;font-size:21px}
+.mots dd{margin:2px 0 0;color:#26333D;font-size:18px}
+
+/* 6. Étapes */
+.etapes{list-style:none;counter-reset:e;margin:22px 0 0;padding:0;max-width:40em}
+.etapes li{counter-increment:e;display:grid;grid-template-columns:34px 1fr;align-items:baseline;padding:11px 0;border-top:1px solid var(--filet)}
+.etapes li::before{content:counter(e) ".";font-weight:800;font-size:21px}
+.etapes b{font-size:21px;font-weight:800}
+.etapes span{display:block;color:#26333D;font-size:18px}
+.prix{margin-top:26px;display:grid;grid-template-columns:64px 1fr;gap:14px;align-items:center;max-width:40em}
+.prix img{width:64px;height:64px;object-fit:cover}
+.prix p{font-size:18px;color:#26333D}
+.prix b{color:var(--nuit)}
+
+/* Zones et questions */
+.zones{margin:14px 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:2px 18px;font-size:20px}
+.zones a{display:inline-flex;align-items:center;min-height:44px}
+.questions{margin-top:38px}
+details{border-top:1px solid var(--filet)}
+details:last-of-type{border-bottom:1px solid var(--filet)}
+summary{cursor:pointer;list-style:none;display:grid;grid-template-columns:1fr 24px;gap:14px;align-items:center;padding:14px 0;font-weight:800;font-size:21px;line-height:1.2;min-height:58px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-weight:400;font-size:28px;line-height:1;text-align:center}
+details[open] summary::after{content:"–"}
+details p{padding:0 30px 16px 0;color:#26333D;max-width:40em;font-size:18px}
+
+/* 7. Contact */
+.voies{display:grid;grid-template-columns:minmax(0,1fr);gap:40px}
+.voie h3{margin-bottom:8px}
+.monument{display:block;text-decoration:none;font-weight:800;font-size:clamp(36px,11.2vw,52px);letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap;padding-block:6px}
+.monument:hover{color:var(--terre)}
+.voie .sous{color:var(--gris);font-size:18px;margin-top:6px}
+.choix{display:grid;grid-template-columns:1fr 1fr;border:2px solid var(--nuit);border-radius:3px;overflow:hidden;position:relative}
+.choix label{display:flex;align-items:center;justify-content:center;text-align:center;min-height:60px;padding:8px 10px;font-weight:800;font-size:19px;line-height:1.15;cursor:pointer}
+.choix label+input+label{border-left:2px solid var(--nuit)}
+.choix input:checked+label{background:var(--nuit);color:#fff}
+.choix input:focus-visible+label{outline:3px solid var(--terre);outline-offset:-5px}
+.champs{display:grid;gap:14px;margin-top:18px}
+.champ{display:grid;gap:4px}
+.champ label,.champ .lab{font-weight:800;font-size:19px}
+.champ input,.champ textarea{width:100%;min-height:58px;border:2px solid var(--nuit);border-radius:3px;background:#fff;padding:12px 14px;font-size:20px}
+.champ textarea{min-height:110px;resize:vertical}
+.champ .err{color:#A6231B;font-weight:700;font-size:17px}
+.champ .err:empty{display:none}
+.champ.faux input{border-color:#A6231B}
+.pieces{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pieces label{position:relative;display:flex;align-items:center;justify-content:center;text-align:center;min-height:58px;border:2px dashed var(--nuit);border-radius:3px;background:#fff;font-weight:800;font-size:18px;line-height:1.15;padding:8px;cursor:pointer}
+.pieces label:hover{border-style:solid}
+.pieces label:focus-within{outline:3px solid var(--terre);outline-offset:3px}
+.fichier{font-weight:700;font-size:17px;overflow-wrap:anywhere}
+.fichier:empty{display:none}
+form:has(#m-travaux:checked) .si-rapport,form:has(#m-rapport:checked) .si-travaux{display:none}
+.envoi{margin-top:18px}
+.retour{margin-top:14px;padding:14px 16px;background:var(--nuit);color:#fff;font-size:18px;border-radius:3px}
+.retour[hidden]{display:none}
+
+.pied{font-size:17px;color:var(--gris);padding:24px 0 100px;background:var(--papier);border-top:1px solid var(--filet)}
+.pied .c{display:grid;gap:6px}
+.pied b{color:var(--nuit)}
+
+.barre{position:fixed;left:0;right:0;bottom:0;z-index:40;display:grid;grid-template-columns:1fr 1.3fr;background:var(--nuit);padding-bottom:env(safe-area-inset-bottom,0px);transform:translateY(110%);transition:transform .25s}
+.barre.visible{transform:none}
+.barre a{display:flex;align-items:center;justify-content:center;gap:9px;min-height:54px;text-decoration:none;font-weight:800;font-size:19px;color:#fff;padding:0 8px;text-align:center}
+.barre a+a{background:var(--terre)}
+.barre svg{width:17px;height:17px;fill:#fff;flex:none}
+
+@media (min-width:760px){
+  :root{--m:clamp(28px,4.4vw,64px);--entete:70px;--ecart:4px}
+  body{font-size:20px}
+  h1{font-size:clamp(40px,4.3vw,62px)}
+  h2{font-size:clamp(36px,3.6vw,52px)}
+  h3{font-size:26px}
+  .logo img{height:42px}
+  .entete .tel{font-size:23px}
+  .barre{display:none}
+  .pied{padding-bottom:30px}
+  .pied .c{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 30px}
+  .section{padding-block:clamp(64px,7vw,108px)}
+  .moment .et{font-size:19px;padding:8px 13px 7px}
+  .moment .et span{display:inline}
+  .b-leg{font-size:19px;min-height:0}
+
+  .premier .bande{--hb:clamp(300px,45vh,470px);--grand:2.1}
+  .premier .b-leg{max-width:1320px;margin:0 auto;padding:12px var(--m) 0;min-height:0}
+  .p-texte{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);grid-template-rows:auto 1fr;column-gap:clamp(24px,4vw,64px);align-items:start;padding-top:clamp(16px,3vh,34px)}
+  .premier h1{margin-top:0;grid-column:1;grid-row:1}
+  .p-texte>div{grid-column:2;grid-row:1/span 2}
+  .parcours{margin-top:6px}
+  .chapo{grid-column:1;grid-row:2;margin-top:18px;padding-bottom:clamp(40px,5vw,70px);max-width:30em}
+
+  .rap-grille{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,5fr);gap:clamp(30px,6vw,100px);align-items:start;margin-top:26px}
+  .reponse{margin-top:0;font-size:23px}
+  .suite{margin-top:0}
+  .depot{grid-template-columns:1fr 1fr;max-width:560px}
+  .paires{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 clamp(20px,3vw,44px);border-top:0}
+  .paires li{grid-template-columns:1fr;gap:10px;border-bottom:0;border-top:2px solid var(--nuit);align-items:start;padding-top:14px}
+  .paires img{width:100%;height:auto;aspect-ratio:16/9}
+
+  .familles{grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(22px,3vw,44px);margin-top:36px}
+  .famille figure{margin:0}
+  .famille figure img{aspect-ratio:4/3}
+  .famille figcaption{padding-right:0;min-height:2.7em}
+  .liste b{font-size:23px}
+  .apres-liste{display:flex;gap:16px 40px;flex-wrap:wrap;align-items:center;margin-top:36px}
+  .apres-liste .btn{width:auto;min-width:310px}
+
+  .lieux{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,3fr);gap:var(--ecart);margin-top:34px}
+  .lieu{margin-top:0}
+  .lieu .bande{--hb:clamp(280px,40vh,400px);--grand:2;margin-inline:0}
+  .lieu.un{margin-left:calc(-1 * max(var(--m),(100vw - 1320px)/2 + var(--m)))}
+  .lieu.un>*:not(.bande){padding-left:max(var(--m),(100vw - 1320px)/2 + var(--m))}
+  .lieu.deux{margin-right:calc(-1 * max(var(--m),(100vw - 1320px)/2 + var(--m)))}
+  .lieu.deux>*:not(.bande){padding-left:22px;padding-right:var(--m)}
+  .lieu .b-leg{min-height:3.2em}
+
+  .schemas{grid-template-columns:1fr 1fr;gap:clamp(24px,3vw,44px)}
+  .mots{grid-template-columns:1fr 1fr;column-gap:clamp(24px,5vw,80px)}
+  .zq{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);gap:clamp(30px,6vw,100px);align-items:start}
+  .questions{margin-top:0}
+  .zones{display:grid;gap:0;font-size:22px}
+  .voies{grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:clamp(30px,6vw,100px);align-items:start}
+  .monument{font-size:clamp(46px,5vw,76px)}
+}
+@media (min-width:1080px){
+  .nav{display:flex;gap:clamp(16px,2.2vw,32px);font-size:19px;font-weight:700}
+  .nav a{text-decoration:none;padding:12px 0}
+  .nav a:hover{text-decoration:underline;text-decoration-color:var(--terre);text-decoration-thickness:3px;text-underline-offset:7px}
+  .btn-menu{display:none}
+  .entete .tel{flex-direction:column;align-items:flex-end;gap:0;line-height:1.05}
+  .entete .tel small{display:block;font-weight:400;font-size:16px;color:var(--gris)}
+  .entete .tel span.l{display:flex;align-items:center;gap:8px}
+}
+@media (max-width:379px){.entete .tel svg{display:none}.entete .tel{font-size:18px}}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+
+/* DIRECTION B « LE PROBLÈME DEVIENT LISIBLE » : on part de la phrase du rapport ; une photo précise y répond. */
+body{background:var(--papier)}
+.entete{background:var(--papier)}
+.b1{padding:26px 0 40px}
+.extrait{font-size:17px;color:var(--gris);border-left:3px solid var(--nuit);padding:2px 0 2px 12px;max-width:26em}
+.extrait b{display:block;color:var(--nuit);font-size:21px;font-weight:800}
+.b1 h1{margin-top:18px;max-width:12em}
+.b1 .parcours{max-width:520px}
+.piece{margin:26px 0 0;position:relative}
+.piece img{width:100%;aspect-ratio:3/4;object-fit:cover}
+.piece figcaption{font-size:17px;color:var(--gris);margin-top:8px}
+.rep{position:absolute;display:flex;align-items:center;transform:translate(-7px,-50%);font-size:16px;font-weight:700;color:#fff;white-space:nowrap}
+.rep::before{content:"";width:12px;height:12px;border:2px solid #fff;background:var(--nuit);flex:none}
+.rep i{width:22px;height:2px;background:#fff;flex:none}
+.rep span{background:#10202EE6;padding:4px 9px 3px}
+.rep.g{flex-direction:row-reverse;transform:translate(calc(-100% + 7px),-50%)}
+.b2{background:var(--sol);padding:44px 0 60px}
+.lec{list-style:none;margin:22px 0 0;padding:0;display:grid;gap:26px}
+.lec li{display:grid;gap:10px}
+.lec .dit{font-size:18px;color:var(--gris);border-left:3px solid var(--nuit);padding-left:12px}
+.lec .dit b{display:block;color:var(--nuit);font-weight:800;font-size:22px;line-height:1.15}
+.lec img{width:100%;aspect-ratio:16/10;object-fit:cover}
+.lec .fait{font-weight:800;font-size:22px;line-height:1.15}
+.lec .ou{font-size:17px;color:var(--gris)}
+@media (min-width:760px){
+  .b1 .c{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,4fr);gap:clamp(30px,6vw,100px);align-items:center;min-height:calc(100vh - 180px)}
+  .piece{margin:0}
+  .extrait{font-size:19px}.extrait b{font-size:25px}
+  .b1 h1{font-size:clamp(40px,4.2vw,60px)}
+  .lec{grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(22px,3vw,44px)}
+  .lec img{aspect-ratio:4/3}
+  .rep{font-size:17px}.rep i{width:34px}
+}
+</style>
+</head>
+<body>
+<div class="proto" role="region" aria-label="Avertissement">Étude de direction B. Premier écran et moment de preuve uniquement.</div>
+<header class="entete">
+  <div class="c">
+    <a class="logo" href="#haut" aria-label="BAB Assainissement, accueil"><img src="../06_SITE_LOCAL/img/logo-bab.webp" width="515" height="206" alt="BAB Assainissement"></a>
+    <nav class="nav" aria-label="Navigation principale">
+      <a href="#rapport">Rapport non conforme</a>
+      <a href="#prestations">Prestations</a>
+      <a href="#chantiers">Chantiers</a>
+      <a href="#comprendre">Comprendre</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <a class="tel" href="tel:+33189480964"><span class="l"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg> <span class="num">01 89 48 09 64</span></span><small>lundi au samedi, 8 h à 19 h</small></a>
+    <button class="btn-menu" type="button" id="ouvrir-menu" aria-expanded="false" aria-controls="menu">Menu</button>
+  </div>
+</header>
+
+
+<main>
+<section class="b1"><div class="c">
+  <div>
+    <p class="extrait">Sur votre rapport de contrôle<b>« Installation non conforme »</b></p>
+    <h1>Votre assainissement est non conforme&nbsp;? Nous réalisons les travaux.</h1>
+    <div class="parcours">
+      <a class="btn plein" href="#"><span><small>J'ai reçu un rapport non conforme</small><b>Envoyer mon rapport</b></span><i aria-hidden="true">→</i></a>
+      <a class="btn" href="#"><span><small>J'ai besoin de travaux d'assainissement</small><b>Voir les prestations</b></span><i aria-hidden="true">→</i></a>
+    </div>
+    <p class="appel"><a class="tel" href="tel:+33189480964"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg><span class="num">01 89 48 09 64</span></a><span class="petit">du lundi au samedi, de 8 h à 19 h</span></p>
+  </div>
+  <figure class="piece"><img src="../06_SITE_LOCAL/img/vil-1.webp" width="720" height="960" alt="Un regard avec sa cunette, raccordé à une canalisation, au fond d'une fouille."><span class="rep" style="left:44%;top:50%"><i></i><span>Cunette</span></span><span class="rep g" style="left:88%;top:38%"><i></i><span>Canalisation</span></span><figcaption>Ce que nous posons : un regard avec cunette, à Villecerf (77).</figcaption></figure>
+</div></section>
+<section class="b2"><div class="c">
+  <h2>Ce que dit le rapport. Ce que nous réalisons.</h2>
+  <ul class="lec">
+    <li><p class="dit">Le contrôle relève<b>Le branchement au réseau public</b></p><img src="../06_SITE_LOCAL/img/allee-3.webp" width="800" height="1000" loading="lazy" alt="" style="object-position:38% 68%"><p class="fait">Raccordement jusqu'à la boîte de branchement</p><p class="ou">Allée, Île-de-France.</p></li>
+    <li><p class="dit">Le contrôle relève<b>Eaux usées et eaux de pluie non séparées</b></p><img src="../06_SITE_LOCAL/img/pui-2.webp" width="680" height="907" loading="lazy" alt="" style="object-position:50% 45%"><p class="fait">Séparation des réseaux, regards, puisard</p><p class="ou">Limeil-Brévannes (94).</p></li>
+    <li><p class="dit">Le contrôle relève<b>Une maison non raccordée</b></p><img src="../06_SITE_LOCAL/img/fosse.webp" width="900" height="675" loading="lazy" alt="" style="object-position:40% 70%"><p class="fait">Fosse toutes eaux ou micro-station</p><p class="ou">Fosse posée en fouille, avant le remblai.</p></li>
+  </ul>
+</div></section>
+</main></body></html>

@@ -1,0 +1,27 @@
+OK    lien d’évitement au premier Tab
+OK    1440×900 : titre, deux parcours et téléphone entièrement dans le premier écran — true,true,true,true
+OK    « Décrire mon besoin » ouvre le formulaire en mode travaux
+OK    erreurs explicites et focus sur le premier champ fautif
+OK    message de démonstration, sans promesse d’envoi
+OK    bande : un clic agrandit le moment choisi et met à jour la légende
+OK    bande : utilisable au clavier (Entrée)
+OK    toutes les ancres internes existent
+OK    toutes les images se chargent (aucun emplacement vide)
+OK    aucune erreur JavaScript
+OK    aucune ressource en échec
+OK    390×844 : titre, deux parcours, les deux téléphones et la bande de photos, entiers dans le premier écran — true,true,true,true,true,true
+OK    390×844 : barre fixe absente tant que les parcours sont visibles
+OK    390×844 : barre fixe présente dans les prestations
+OK    390×844 : barre fixe retirée dans le contact et pendant la saisie
+OK    390×420 (clavier ouvert simulé) : champ visible, bouton Envoyer atteignable, rien de fixe par-dessus
+OK    menu ouvert
+OK    menu fermé par Échap
+OK    360×800 : titre, deux parcours, les deux téléphones et la bande de photos, entiers dans le premier écran — true,true,true,true,true,true
+OK    360×800 : barre fixe absente tant que les parcours sont visibles
+OK    360×800 : barre fixe présente dans les prestations
+OK    360×800 : barre fixe retirée dans le contact et pendant la saisie
+OK    360×420 (clavier ouvert simulé) : champ visible, bouton Envoyer atteignable, rien de fixe par-dessus
+OK    1280×800 agrandi à 200 % : aucun défilement horizontal, aucun titre coupé — débordement 0, titres coupés 0
+OK    320 px de large (reflow) : aucun défilement horizontal, aucun titre coupé — débordement 0, titres coupés 0
+OK    mouvement réduit : aucune transition
+OK    sans JavaScript : titre, parcours, quatre photos de la bande, formulaire utilisables
