@@ -3,10 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BAB Assainissement, prototype d'accueil « Le tampon »</title>
+<title>BAB Assainissement, prototype d'accueil « Le tampon », révision 2</title>
 <meta name="description" content="Prototype local de la page d'accueil BAB Assainissement : mise en conformité, raccordement, regards, inspection caméra, fosses, en Île-de-France.">
 <meta name="robots" content="noindex, nofollow">
-<link rel="preload" as="font" type="font/woff2" href="fonts/source-serif-4.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="fonts/schibsted-grotesk.woff2" crossorigin>
 <link rel="preload" as="image" href="img/hero-surface-1200.webp" imagesrcset="img/hero-surface-720.webp 720w, img/hero-surface-1200.webp 960w" imagesizes="(max-width: 900px) 100vw, 42vw" fetchpriority="high">
 <style>
@@ -15,8 +14,6 @@
    La page est donc claire et minérale en surface ; la fonte et le bleu des tuyaux sous pression
    viennent des photos de chantier. Le rond du tampon est la seule forme signature :
    il porte les actions et cadre ce qu'il y a dessous. */
-@font-face{font-family:"Source Serif 4";src:url(fonts/source-serif-4.woff2) format("woff2");font-weight:200 900;font-style:normal;font-display:swap}
-@font-face{font-family:"Source Serif 4";src:url(fonts/source-serif-4-italic.woff2) format("woff2");font-weight:200 900;font-style:italic;font-display:swap}
 @font-face{font-family:"Schibsted Grotesk";src:url(fonts/schibsted-grotesk.woff2) format("woff2");font-weight:400 900;font-style:normal;font-display:swap}
 :root{
   color-scheme:light;
@@ -30,7 +27,7 @@
   --bleu-fonce:#0D2FA6;
   --bleu-clair:#9DB6FF; /* le même bleu, sur fond sombre */
   --alerte:#A6231B;
-  --titre:"Source Serif 4","Iowan Old Style",Georgia,"Times New Roman",serif;
+  --titre:"Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --texte:"Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --marge:clamp(20px,4.2vw,64px);
   --large:1360px;
@@ -334,7 +331,103 @@ details p{padding:0 46px 20px 0;color:var(--fonte-2);max-width:42em}
 @media (max-width:380px){
   .entete .tel{display:none}
 }
-.glisser{display:none;font-size:16px;color:#B4B1A9;margin-top:10px}
+.glisser{display:none;font-size:16px;color:var(--pierre);margin-top:10px}
+
+/* RÉVISION 2 : plus d'italique, plus de boîtes. Une seule police, droite.
+   Le rond du tampon cadre les photos ; les champs et les actions sont arrondis ; plus de bandes de couleur. */
+h1,h2,h3{font-weight:800;letter-spacing:-.034em;line-height:1}
+h1{font-size:clamp(34px,4.7vw,74px)}
+h2{font-size:clamp(30px,3.7vw,56px)}
+.sur::before{display:none}
+.sur{font-weight:700}
+.menu nav a{font:800 27px/1.1 var(--titre);letter-spacing:-.025em}
+.porte b{font:800 clamp(20px,1.85vw,27px)/1.12 var(--titre);letter-spacing:-.025em}
+.ligne b{font:800 clamp(22px,2.2vw,32px)/1.1 var(--titre);letter-spacing:-.028em}
+.etapes b{font:800 clamp(20px,1.7vw,24px)/1.15 var(--titre);letter-spacing:-.02em}
+.etapes li::before{font:800 clamp(48px,5.4vw,84px)/1 var(--texte);letter-spacing:-.04em}
+.pas li::before{font:800 28px/1 var(--texte)}
+.deps a{font:700 clamp(20px,1.6vw,23px)/1.15 var(--titre);letter-spacing:-.02em}
+summary{font:700 clamp(19px,1.5vw,22px)/1.25 var(--titre);letter-spacing:-.015em}
+.prix p{font:700 clamp(20px,1.8vw,26px)/1.3 var(--titre);letter-spacing:-.02em}
+.fiche h3,.contact h3,.h-pas,.sous-serie h3{letter-spacing:-.028em}
+.serie figcaption i{font:800 26px/1 var(--texte);font-style:normal;color:var(--bleu)}
+
+/* ouverture : la photo est un tampon */
+.ouverture{overflow:clip}
+.vue{align-self:start;min-height:0;padding-block:clamp(18px,3.4vh,44px) clamp(20px,3vh,40px)}
+.vue-grand{position:relative;inset:auto;width:124%;aspect-ratio:1;border-radius:50%;overflow:hidden;background:var(--fonte-2)}
+.vue-grand img{object-position:66% 46%}
+.vue-rond{left:0;top:auto;bottom:clamp(170px,30%,250px);width:40%;transform:translateX(-38%)}
+.vue-bas{position:static;background:none;color:var(--fonte);padding:24px 0 0 14%;margin:0;max-width:34em}
+.vue-bas button{color:var(--fonte);border-bottom-color:var(--bleu)}
+.portes{border:0;gap:12px}
+.porte{border:2px solid var(--fonte);border-radius:999px;padding:12px 12px 12px clamp(22px,2.2vw,34px);transition:background .2s}
+.porte:first-child{border-color:var(--bleu);box-shadow:inset 0 0 0 1px var(--bleu)}
+.porte:hover{background:var(--chaux);padding-inline:clamp(22px,2.2vw,34px) 12px}
+.faits{border:0;background:none}
+.faits ul{padding:6px 0 0}
+.chapo{max-width:30em}
+
+/* rapport : plus de boîte */
+.fiche{background:none;border:0;padding:0}
+.depot label{border-radius:999px;border-style:solid;background:var(--chaux)}
+.champ input,.champ textarea{border-radius:18px}
+.retour{border-radius:22px}
+.releve,.pas,.groupe h3,.etapes,.deps,details:first-of-type{border-top-width:0}
+.groupe h3{border-bottom:0;padding-bottom:0;font-size:17px}
+
+/* prestations : la photo dans un rond */
+.visionneuse .im{aspect-ratio:1;border-radius:50%}
+.visionneuse figcaption{text-align:center}
+
+/* réalisations : quatre tampons, puis une grande gélule */
+.serie img{aspect-ratio:1;border-radius:50%}
+.serie figcaption{color:var(--pierre)}
+.serie figcaption b{color:var(--fonte)}
+.mosaique{grid-template-columns:5fr 3.4fr 3.4fr 5fr;grid-template-rows:none;align-items:start}
+.mosaique figure:nth-child(n){grid-column:auto;grid-row:auto}
+.mosaique figure:nth-child(1){margin-top:0}
+.mosaique figure:nth-child(2){margin-top:26%}
+.mosaique figure:nth-child(3){margin-top:4%}
+.mosaique figure:nth-child(4){margin-top:14%}
+.sous-serie p{color:var(--fonte-2)}
+.pleine{margin-inline:var(--marge)}
+.pleine img{aspect-ratio:2.3/1;border-radius:999px}
+.pleine figcaption{position:static;max-width:none;background:none;text-align:center;padding:16px 0 0;color:var(--pierre)}
+
+/* comprendre, contact, pied : plus de bandes */
+.coupe{background:none}
+.coupe .dessin{border:0;background:none}
+.monument{color:var(--fonte)}
+.monument:hover{color:var(--bleu)}
+.contact .horaires,.contact .bas p{color:var(--fonte-2)}
+.contact .bas{border-top:0}
+.contact .champ label,.contact .action{color:var(--fonte)}
+.contact .champ input,.contact .champ textarea{border-color:var(--fonte)}
+.contact .champ .err{color:var(--alerte)}
+.contact .retour{background:var(--fonte);color:#fff}
+.pied{background:none;color:var(--pierre);border-top:1px solid var(--filet)}
+.pied b{color:var(--fonte)}
+@media (max-width:900px){
+  .vue{margin-inline:0;height:auto;padding-top:34px}
+  .vue-grand{width:100%}
+  .vue-rond{left:-2%;top:6px;bottom:auto;width:38%;transform:none}
+  .vue-bas{padding:16px 0 0}
+  .porte{border-radius:40px;padding:9px 10px 9px 20px}
+  .porte span.s{font-size:16px;margin-top:3px}
+  h1{font-size:clamp(31px,8.2vw,56px)}
+  .chapo{margin-top:10px}
+  .portes{margin-top:16px;gap:10px}
+  .ligne img,.ligne .ph{border-radius:50%}
+  .mosaique{grid-template-columns:none}
+  .mosaique figure:nth-child(n){margin-top:0}
+  .pleine img{aspect-ratio:1.5/1;border-radius:60px}
+}
+@media (max-width:640px){
+  body{padding-bottom:92px}
+  .barre{left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));border-radius:999px;overflow:hidden;box-shadow:0 10px 30px #0006;padding-bottom:0}
+  .barre a{min-height:60px}
+}
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *,*::before,*::after{animation:none!important;transition:none!important}
@@ -389,7 +482,7 @@ details p{padding:0 46px 20px 0;color:var(--fonte-2);max-width:42em}
   <div class="cadre">
     <div class="o-texte">
       <p class="sur">Assainissement des propriétés privées, en Île-de-France</p>
-      <h1 id="titre">Votre assainissement est <em>non conforme</em>&nbsp;? Nous réalisons les travaux.</h1>
+      <h1 id="titre">Votre assainissement est non conforme&nbsp;? Nous réalisons les travaux.</h1>
       <p class="chapo">Mise en conformité, raccordement au tout-à-l'égout, regards, canalisations, fosses. BAB intervient chez vous, sur la partie privée du réseau<span class="long">, de la maison jusqu'à la limite de propriété</span>.</p>
       <div class="portes">
         <a class="porte" href="#rapport">
@@ -516,7 +609,7 @@ details p{padding:0 46px 20px 0;color:var(--fonte-2);max-width:42em}
 </section>
 
 <!-- RÉALISATIONS -->
-<section class="section sombre" id="realisations" aria-labelledby="t-real">
+<section class="section" id="realisations" aria-labelledby="t-real">
   <div class="cadre">
     <div class="tete">
       <div><p class="sur">Sur un de nos chantiers</p><h2 id="t-real">De l'allée en terre à l'allée bétonnée.</h2></div>
@@ -561,7 +654,7 @@ details p{padding:0 46px 20px 0;color:var(--fonte-2);max-width:42em}
       <svg viewBox="0 0 1200 430" role="img" aria-label="Coupe de principe : la maison, un regard de visite, la canalisation d'eaux usées en pente vers la rue, les eaux pluviales en réseau séparé, les boîtes de branchement en limite de propriété et le réseau public sous la rue.">
         <defs><pattern id="terre" width="22" height="22" patternUnits="userSpaceOnUse"><path d="M2 20L12 10M14 20L20 14" stroke="#B9B4A8" stroke-width="1.2"/></pattern></defs>
         <rect x="0" y="170" width="1200" height="260" fill="url(#terre)" opacity=".7"/>
-        <rect x="0" y="235" width="1200" height="195" fill="#fff" opacity=".55"/>
+        <rect x="0" y="235" width="1200" height="195" fill="#ECE9E2" opacity=".7"/>
         <!-- maison en coupe -->
         <path d="M40 170V52H250V170" fill="#fff" stroke="#1C2023" stroke-width="2.5"/>
         <path d="M40 52H250M28 170H262" stroke="#1C2023" stroke-width="5"/>
@@ -658,7 +751,7 @@ details p{padding:0 46px 20px 0;color:var(--fonte-2);max-width:42em}
 </section>
 
 <!-- CONTACT -->
-<section class="section sombre contact" id="contact" aria-labelledby="t-contact">
+<section class="section contact" id="contact" aria-labelledby="t-contact">
   <div class="cadre">
     <p class="sur">Parlons de votre installation</p>
     <h2 id="t-contact">Le plus simple est souvent d'appeler.</h2>
