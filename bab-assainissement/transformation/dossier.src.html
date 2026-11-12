@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BAB Assainissement, « La transformation réelle » : dossier de direction artistique</title><meta name="robots" content="noindex">
+<style>
+@font-face{font-family:"Sofia Sans";src:url({{font:fonts/sofia-sans.woff2}}) format("woff2");font-weight:100 900;font-display:swap}
+:root{color-scheme:light;--sol:#E6E6DE;--papier:#F4F4EF;--nuit:#10202E;--gris:#47535C;--filet:#C6C7BD;--terre:#C2510E}
+*{box-sizing:border-box}body{margin:0;background:var(--sol);color:var(--nuit);font:400 19px/1.55 "Sofia Sans",system-ui,sans-serif}
+.c{max-width:1120px;margin:0 auto;padding:0 clamp(20px,4vw,56px)}
+header{padding:clamp(34px,6vw,70px) 0 26px;border-bottom:2px solid var(--nuit)}
+h1{font-size:clamp(32px,5vw,58px);font-weight:800;line-height:1.04;margin:0;max-width:17em;text-wrap:balance}
+header p{font-size:21px;max-width:42em;margin:16px 0 0}
+section{padding:clamp(36px,5vw,68px) 0;border-bottom:1px solid var(--filet)}
+h2{font-size:clamp(27px,3.2vw,40px);font-weight:800;line-height:1.08;margin:0 0 18px;text-wrap:balance}
+h2 span{color:var(--terre);margin-right:12px}
+h3{font-size:23px;font-weight:800;margin:28px 0 8px}
+p{margin:0 0 12px;max-width:44em}ul,ol{max-width:44em;padding-left:24px;margin:0 0 12px}li{margin-bottom:6px}
+.note{background:var(--papier);border-left:4px solid var(--terre);padding:14px 18px;max-width:44em;margin:16px 0}
+.t{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:700px;font-size:18px}th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--filet);vertical-align:top}th{border-bottom:2px solid var(--nuit)}td.n,th.n{text-align:center;font-variant-numeric:tabular-nums}
+figure{margin:18px 0}figure img{display:block;max-width:100%;height:auto;border:1px solid var(--filet)}figcaption{font-size:17px;color:var(--gris);margin-top:6px}
+.duo{display:grid;grid-template-columns:minmax(0,3.6fr) minmax(0,1fr);gap:16px;align-items:start}
+.pal{display:flex;flex-wrap:wrap;gap:12px}.pal div{width:150px;font-size:16px}.pal i{display:block;height:60px;border:1px solid var(--filet);margin-bottom:6px}
+code{font-size:.9em;background:var(--papier);padding:1px 6px}
+footer{padding:24px 0 60px;color:var(--gris);font-size:17px}
+@media(max-width:760px){.duo{grid-template-columns:1fr}}
+</style></head><body>
+<header><div class="c">
+<h1>« La transformation réelle » : diagnostic, deux directions, page d'accueil</h1>
+<p>Travail local uniquement. Rien n'a été modifié en production ni poussé sur le dépôt distant. La direction A est mon choix argumenté ; elle n'est pas validée tant que vous ne l'avez pas dit.</p>
+</div></header>
+
+<section><div class="c">
+<h2><span>A</span>Audit des acquis</h2>
+<h3>Fonctions commerciales conservées telles quelles</h3>
+<ul>
+<li>Le titre « Votre assainissement est non conforme ? Nous réalisons les travaux. »</li>
+<li>Les deux parcours du premier écran, le téléphone dans l'en-tête et sous les boutons.</li>
+<li>La section rapport avec la question du client en titre, les onze prestations en trois familles et leurs liens vers les pages actuelles.</li>
+<li>Les deux schémas, les quatre étapes, les zones, les questions, le formulaire unique à deux situations.</li>
+</ul>
+<h3>Ce qui restait générique dans la version précédente</h3>
+<ul>
+<li><b>Fond clair, titres noirs, boutons bleus.</b> Aucune couleur ne venait de BAB ni du chantier.</li>
+<li><b>Premier écran en deux blocs.</b> Le titre en haut, deux photos côte à côte dessous : la photo arrivait après la structure.</li>
+<li><b>Aucun fil entre les sections.</b> Neuf modules empilés, chacun avec son titre et ses colonnes.</li>
+<li><b>Une police de lisibilité, sans caractère.</b> Très lisible, mais neutre, avec une seconde police à chasse fixe pour les repères.</li>
+<li><b>Trois chantiers au même niveau.</b> Sur téléphone, la séquence des réalisations occupait environ 5 400 px de défilement, soit plus de six écrans.</li>
+</ul>
+<h3>Problèmes démontrés par les outils</h3>
+<ul>
+<li>Les repères posés sur les photos étaient à 15 px sur téléphone. Ils sont maintenant à 16 px, en gras.</li>
+<li>Les cases grises d'une ancienne capture venaient de ma méthode de capture, pas de la page : un test vérifie désormais que toutes les images se chargent.</li>
+</ul>
+</div></section>
+
+<section><div class="c">
+<h2><span>B</span>Inventaire des photographies</h2>
+<p>Les 47 photos viennent du site public, en 800 à 1 600 px de large. Je n'ai pas eu accès aux originaux. L'indice de netteté est une mesure automatique de contraste des contours : plus il est haut, plus l'image est détaillée.</p>
+<div class="t"><table>
+<tr><th>Photos utilisées</th><th>Chantier, d'après le site</th><th>Moment</th><th class="n">Taille</th><th class="n">Netteté</th><th>Usage et remarques</th></tr>
+<tr><td>Allée, 4 photos</td><td>Allée, Île-de-France (commune non précisée)</td><td>Avant, tranchée, raccordement, après</td><td class="n">800 × 1000</td><td class="n">39 à 65</td><td>Premier écran et réalisation principale. Seule série complète avant/après du même lieu. Lignes de fuite fortes, lumière de jour. Angles différents d'une photo à l'autre.</td></tr>
+<tr><td>Villecerf, 4 photos</td><td>Mise en conformité, Villecerf (77)</td><td>Regard, tampon, scellement, finition</td><td class="n">1000 × 1333 et 1000 × 750</td><td class="n">63 à 70</td><td>Prestations et réalisations secondaires. Vues de dessus, nettes, bonnes en petit format.</td></tr>
+<tr><td>Puisard, 3 photos</td><td>Limeil-Brévannes (94)</td><td>Fouille, pose, remblai</td><td class="n">1000 × 1333</td><td class="n">68 à 85</td><td>Réalisations secondaires. Série cohérente, même cadrage.</td></tr>
+<tr><td>Pompe de relevage</td><td>Maintenance, Montreuil (93)</td><td>Intervention</td><td class="n">1000 × 1333</td><td class="n">80</td><td>Famille « voir, nettoyer, entretenir ». Sol en enrobé : à confirmer qu'il s'agit d'une propriété privée.</td></tr>
+<tr><td>Fosse en fouille</td><td>Chantier non localisé sur le site</td><td>Pose, avant remblai</td><td class="n">1600 × 1200</td><td class="n">79</td><td>Recadrée pour retirer la maison et le véhicule visibles, qui permettaient d'identifier le lieu.</td></tr>
+<tr><td>Portrait du fondateur</td><td></td><td></td><td class="n">480 × 480</td><td class="n"></td><td>Section étapes.</td></tr>
+</table></div>
+<div class="note"><b>Écartées.</b> Les interventions de nuit, sur parking et sur voirie, le camion portant un marquage tiers, les caves sombres, et le regard dans un jardin utilisé il y a trois versions (bonne lumière, mais sans « avant »). <b>À vérifier par vous</b> sur les originaux : l'attribution de chaque chantier à BAB, et l'absence de plaque ou de personne reconnaissable au fond des photos de l'allée.</div>
+<p><b>Photo retenue pour piloter le premier écran :</b> l'allée après travaux. Ce n'est ni la plus grande ni la plus nette. C'est la seule qui montre le résultat que le client achète, avec un mur clair à gauche qui laisse la place au titre, et une diagonale qui mène l'œil vers la grille.</p>
+</div></section>
+
+<section><div class="c">
+<h2><span>C</span>Deux directions, sur le premier écran et la réalisation principale</h2>
+<h3>Direction A : le lieu, puis le tracé</h3>
+<p>La page se compose à partir de la photo de l'allée refaite. Le titre est posé dans le prolongement de son mur ; le fond de page reprend le gris de ce mur. Les trois étapes précédentes sont visibles en bas de la photo. La réalisation principale garde le même cadre et montre quatre moments, en coupes franches, au fil du défilement.</p>
+<div class="duo"><figure><img src="{{img:captures/A-1440x900.jpg}}" alt=""><figcaption>A, premier écran, 1440 × 900.</figcaption></figure><figure><img src="{{img:captures/A-390x844.jpg}}" alt=""><figcaption>A, 390 × 844.</figcaption></figure></div>
+<figure><img src="{{img:captures/A-realisation-ordinateur.jpg}}" alt=""><figcaption>A, réalisation principale : les quatre moments, sur ordinateur.</figcaption></figure>
+<figure><img src="{{img:captures/A-telephone-accueil-et-realisation.jpg}}" alt=""><figcaption>A, sur téléphone : le premier écran, puis les quatre moments dans un seul écran fixe.</figcaption></figure>
+<h3>Direction B : le dossier d'intervention</h3>
+<p>Le chantier est présenté comme un document de terrain : un cadre, une photo principale annotée, trois détails d'ouvrage, un tableau avant, travaux, après. Aucune mesure inventée.</p>
+<div class="duo"><figure><img src="{{img:captures/B-1440-premier-ecran.jpg}}" alt=""><figcaption>B, premier écran, 1440 × 900.</figcaption></figure><figure><img src="{{img:captures/B-390-premier-ecran.jpg}}" alt=""><figcaption>B, 390 × 844.</figcaption></figure></div>
+<figure><img src="{{img:captures/B-1440-realisation.jpg}}" alt=""><figcaption>B, réalisation principale. Fichier : <code>direction-b.html</code></figcaption></figure>
+<h3>Comparaison</h3>
+<p>Notes sur 5. Ce sont mes jugements, pas des mesures.</p>
+<div class="t"><table>
+<tr><th>Critère</th><th class="n">A</th><th class="n">B</th><th>Pourquoi</th></tr>
+<tr><td>Originalité</td><td class="n">4</td><td class="n">3</td><td>B ressemble à une fiche technique : c'est propre, mais c'est encore un cadre avec des cases.</td></tr>
+<tr><td>Authenticité</td><td class="n">5</td><td class="n">4</td><td>B imite un document officiel que BAB ne produit pas sous cette forme.</td></tr>
+<tr><td>Qualité photographique</td><td class="n">4</td><td class="n">3</td><td>A montre les photos en grand ; B les réduit en vignettes et en détails recadrés, où leur faible définition se voit.</td></tr>
+<tr><td>Lisibilité</td><td class="n">4</td><td class="n">4</td><td>Le tableau de B se lit vite ; le titre de A reste sur fond uni.</td></tr>
+<tr><td>Compréhension des prestations</td><td class="n">4</td><td class="n">4</td><td>Équivalent.</td></tr>
+<tr><td>Confort sur téléphone</td><td class="n">5</td><td class="n">3</td><td>Dans B, le dossier repousse la photo sous les boutons et allonge le premier écran.</td></tr>
+<tr><td>Cohérence avec l'entreprise</td><td class="n">5</td><td class="n">4</td><td>A montre un lieu rendu propre ; B montre un chantier ouvert, moins rassurant pour un vendeur.</td></tr>
+<tr><td>Réutilisation sur les autres pages</td><td class="n">4</td><td class="n">5</td><td>Le dossier de B ferait un bon gabarit pour chaque fiche de réalisation.</td></tr>
+<tr><th>Total sur 40</th><th class="n">35</th><th class="n">30</th><th></th></tr>
+</table></div>
+<p><b>Je retiens A.</b> Elle fait du résultat la première image et donne à la page un fil. Je garde de B l'idée du tableau avant, travaux, après pour les futures pages de réalisations.</p>
+</div></section>
+
+<section><div class="c">
+<h2><span>D</span>La signature, en trois éléments</h2>
+<ul>
+<li><b>Le tracé.</b> Une ligne terre cuite descend toute la page, comme le tracé d'un réseau sur un plan. Elle part du titre et s'arrête au numéro de téléphone.</li>
+<li><b>Le regard.</b> Un petit carré ouvert sur le tracé marque chaque étape de la page. Le même carré, plein, désigne les ouvrages sur les photos et marque les quatre moments du chantier. C'est le seul signe graphique du site.</li>
+<li><b>La photo qui déborde.</b> Les photos sortent de la colonne vers la droite, jamais centrées dans une boîte.</li>
+</ul>
+<div class="pal">
+<div><i style="background:#E6E6DE"></i><b>Sol</b> #E6E6DE<br>le gris du mur de l'allée</div>
+<div><i style="background:#F4F4EF"></i><b>Papier</b> #F4F4EF<br>lecture, champs</div>
+<div><i style="background:#10202E"></i><b>Nuit</b> #10202E<br>le bleu marine du logo, assombri</div>
+<div><i style="background:#C2510E"></i><b>Terre cuite</b> #C2510E<br>l'orange du logo, mûri</div>
+</div>
+<p style="margin-top:14px">Le bleu électrique est abandonné : il faisait « logiciel ». La terre cuite vient du logo et de la terre des chantiers. Elle ne sert qu'au tracé, aux regards et à l'action principale.</p>
+<figure><img src="{{img:captures/essai-typographique.jpg}}" alt=""><figcaption>Essai de quatre caractères sur le vrai titre et le vrai numéro. Retenu : Sofia Sans, à gauche.</figcaption></figure>
+<p><b>Typographie : Sofia Sans, seule.</b> Un caractère de signalétique, un peu étroit sans être condensé : le titre tient en quatre lignes sur téléphone. Ses chiffres sont larges et réguliers, ce qui compte pour un numéro de téléphone. Deux graisses, aucune italique, aucune seconde police.</p>
+<p><b>Une seule animation.</b> Dans la réalisation principale, le cadre reste fixe et les quatre photos se remplacent en coupes franches, sans fondu ni curseur de superposition, puisque les angles diffèrent. Les jalons sont aussi des boutons. Sans JavaScript ou en mouvement réduit, les quatre photos s'affichent simplement l'une sous l'autre.</p>
+</div></section>
+
+<section><div class="c">
+<h2><span>E</span>La page intégrée, et le comparatif</h2>
+<figure><img src="{{img:captures/comparatif-ordinateur.jpg}}" alt=""><figcaption>À gauche la version précédente, à droite la nouvelle, 1440 × 900.</figcaption></figure>
+<figure style="max-width:640px"><img src="{{img:captures/comparatif-telephone.jpg}}" alt=""><figcaption>À gauche la version précédente, à droite la nouvelle, 390 × 844.</figcaption></figure>
+<figure><img src="{{img:captures/A-ordinateur-suite.jpg}}" alt=""><figcaption>Rapport, prestations, schémas, contact.</figcaption></figure>
+<figure><img src="{{img:captures/A-telephone-suite.jpg}}" alt=""><figcaption>Sur téléphone : rapport, prestations, schémas, étapes, contact.</figcaption></figure>
+<p>Rythme : accueil photographique, rapport en texte seul sur papier, prestations en alternance photo et liste, réalisation en fond nuit, schémas au trait, étapes en simple liste, contact dominé par le numéro. Sur téléphone, la page passe d'environ 15 900 à 14 150 px, et la séquence des réalisations de 5 400 à 3 900 px.</p>
+<h3>Journal des corrections visuelles</h3>
+<ol>
+<li>Premier jet : le titre était centré verticalement, loin des boutons, et les vignettes d'étapes tombaient hors de l'écran. Titre et actions regroupés, vignettes replacées dans la photo.</li>
+<li>Sur téléphone, le titre faisait cinq lignes avec un mot orphelin. Taille réduite, quatre lignes équilibrées.</li>
+<li>Le paragraphe de présentation repoussait les boutons sous le premier écran. Il passe après la photo sur téléphone.</li>
+<li>Dans la réalisation, l'étiquette du moment était coupée à gauche et la légende passait sous la barre fixe. Cadre recalé, hauteur de la photo recalculée.</li>
+<li>Les libellés des quatre jalons se chevauchaient sur téléphone. Seul le jalon en cours affiche son nom, les autres leur numéro.</li>
+<li>Le numéro de téléphone géant et le formulaire dépassaient de l'écran à 390 px. Corrigé.</li>
+<li>La photo de fosse montrait une maison et un véhicule identifiables. Recadrée.</li>
+<li>Les quatre photos du chantier se chargeaient dès l'ouverture. Elles ne se chargent plus qu'à l'approche de la section.</li>
+</ol>
+</div></section>
+
+<section><div class="c">
+<h2><span>F</span>Contrôles réellement effectués</h2>
+<p>Dans Chromium sans écran (Playwright), page servie en local, dans un conteneur en ligne. Aucun téléphone réel, aucun lecteur d'écran, aucun utilisateur.</p>
+<ul>
+<li><b>Six formats capturés et regardés</b> : 1440 × 900, 1280 × 800, 1024 × 768, 768 × 1024, 390 × 844, 360 × 800. Aucun défilement horizontal.</li>
+<li><b>27 vérifications automatiques sur 27</b>, dont : premier écran complet à 390 et 360 px ; les quatre moments se succèdent au défilement ; les jalons sont cliquables ; toutes les images se chargent ; le formulaire affiche ses erreurs puis un message de démonstration.</li>
+<li><b>Barre fixe</b> : absente tant que les deux parcours sont visibles, retirée dans le contact et pendant la saisie. Clavier du téléphone simulé en réduisant la fenêtre à 420 px de haut : le champ reste visible. Ce n'est pas un essai avec un vrai clavier tactile.</li>
+<li><b>Agrandissement à 200 %</b> (1280 × 800 agrandi, soit 640 px de large) et largeur de 320 px : aucun défilement horizontal, aucun titre coupé.</li>
+<li><b>Accessibilité automatique</b> (axe-core, WCAG 2.1 A et AA) : 0 violation sur ordinateur et sur téléphone. À vérifier à l'œil : le contraste du texte posé sur les photos, que l'outil ne mesure pas.</li>
+<li><b>Sans JavaScript et en mouvement réduit</b> : page complète et utilisable.</li>
+<li><b>Performance</b>, téléphone simulé bridé à 1,6 Mbit/s et processeur ralenti quatre fois : premier affichage du texte en 0,5 s, photo principale en 1,3 s, 234 ko au chargement initial, décalage cumulé de 0,03 à 390 px et 0,006 à 360 px. Sur ordinateur sans bridage : 0,16 s et 1,2 Mo. Je n'ai pas lancé Lighthouse.</li>
+</ul>
+<h3>Parcours non testés</h3>
+<ul>
+<li>L'envoi réel du formulaire et du rapport : le prototype n'est relié à rien, et il le dit sous le bouton.</li>
+<li>La prise de photo depuis un vrai téléphone.</li>
+<li>Safari sur iPhone et les navigateurs anciens. La séquence fixe repose sur un comportement que je n'ai vérifié que dans Chromium.</li>
+</ul>
+</div></section>
+
+<section><div class="c">
+<h2><span>G</span>Limites et anomalies restantes</h2>
+<ul>
+<li><b>Définition des photos.</b> 800 × 1000 pour l'allée : sur un écran large, la photo du premier écran est agrandie et manque de piqué. Les originaux régleraient l'essentiel.</li>
+<li><b>La direction n'est appliquée qu'à l'accueil.</b> Les pages prestations, communes, réalisations et l'envoi de rapport restent à décliner.</li>
+<li><b>Le bas de page</b> (zones, questions) est tenu par le tracé mais reste une liste et un accordéon ordinaires.</li>
+<li><b>Les schémas</b> sont sobres et distinguent maison raccordée et non raccordée, avec une réserve sur le règlement local. Ils sont de ma main : à relire pour l'exactitude.</li>
+<li><b>Les repères sur les photos</b> reprennent les mots des légendes du site ; leur position exacte est de mon fait.</li>
+<li><b>Référencement.</b> Le prototype ne reprend pas encore le titre, la description, l'adresse canonique ni les données structurées de l'accueil actuel. Les liens pointent vers les adresses existantes, inchangées.</li>
+</ul>
+</div></section>
+<footer><div class="c">Dossier produit le 12 novembre 2026. Prototype local, non déployé, non poussé.</div></footer>
+</body></html>

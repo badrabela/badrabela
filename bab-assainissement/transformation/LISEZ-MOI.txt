@@ -1,0 +1,14 @@
+BAB Assainissement, « La transformation réelle » (prototype local, hors production)
+
+Ouvrir d'un double-clic :
+  BAB-accueil-autonome.html   la page d'accueil, en un seul fichier
+  dossier.html                diagnostic, inventaire photo, deux directions, contrôles, limites
+  direction-b.html            l'étude de la direction non retenue (même remarque sur la police)
+  index.html                  la version de travail ; ouverte d'un double-clic, elle s'affiche avec une police de remplacement (préférer le fichier autonome)
+
+Dossiers :
+  captures/   six formats, comparatifs ancien/nouveau, direction B
+  videos/     défilement sur ordinateur et sur téléphone
+  img/ fonts/ les images et la police
+
+Le formulaire est une démonstration : rien n'est envoyé.
