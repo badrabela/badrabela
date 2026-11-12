@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BAB Assainissement, maquette du site</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Idée de mise en page : la page est une coupe de terrain. On part de la surface (clair)
+   et chaque service se trouve à sa profondeur réelle, de plus en plus sombre.
+   L'outil de diagnostic en haut est le seul élément fort ; tout le reste reste calme. */
+:root{
+  color-scheme: light;
+  --surface:#EDF3F0;      /* air libre, fond de départ */
+  --paper:#FFFFFF;
+  --ink:#0D2A2E;          /* pétrole profond, texte */
+  --ink-soft:#4B6468;
+  --line:#C9D8D3;
+  --water:#19A394;        /* l'eau qui circule : états actifs */
+  --signal:#F2511B;       /* orange camion hydrocureur : action principale */
+  --signal-ink:#FFFFFF;
+  --s1:#DCE8E3; --s2:#B9D0C9; --s3:#2B555A; --s4:#163A3F; --s5:#08191C; /* strates */
+  --display:"Bricolage Grotesque","Arial Narrow",system-ui,sans-serif;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"DM Mono",ui-monospace,Menlo,monospace;
+  --r:14px;
+  --gutter:clamp(16px,4vw,48px);
+  --max:1180px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--surface);color:var(--ink);font:400 17px/1.55 var(--body);-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.02;letter-spacing:-.02em}
+p{margin:0}
+a{color:inherit}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--water);outline-offset:3px;border-radius:6px}
+.wrap{max-width:var(--max);margin:0 auto;padding-inline:var(--gutter)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:.01em}
+
+/* Bandeau maquette */
+.mock{background:var(--ink);color:#CFE2DD;font-size:13.5px;padding:8px var(--gutter);text-align:center}
+
+/* En-tête */
+.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:24px;min-height:68px;flex-wrap:wrap;padding-block:10px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;margin-right:auto}
+.brand-mark{width:42px;height:42px;border-radius:50%;background:var(--ink);display:grid;place-items:center;flex:none}
+.brand b{display:block;font:800 21px/1 var(--display);letter-spacing:-.02em}
+.brand small{display:block;font-size:12.5px;color:var(--ink-soft);margin-top:3px}
+.nav{display:flex;gap:22px;font-weight:500;font-size:15.5px}
+.nav a{text-decoration:none;padding:6px 0;border-bottom:2px solid transparent}
+.nav a:hover{border-color:var(--water)}
+.call{display:inline-flex;align-items:center;gap:10px;background:var(--ink);color:#fff;text-decoration:none;padding:10px 16px;border-radius:999px;font-weight:600;font-size:15.5px}
+.call .dot{width:9px;height:9px;border-radius:50%;background:#55E0A5;box-shadow:0 0 0 0 #55E0A588;animation:pulse 2.4s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 9px #55E0A500}100%{box-shadow:0 0 0 0 #55E0A500}}
+
+/* Héros */
+.hero{padding-block:clamp(28px,5vw,64px) clamp(36px,6vw,72px)}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,540px);gap:clamp(28px,5vw,64px);align-items:start}
+.depth-tag{display:inline-flex;gap:10px;align-items:center;font:500 13px/1 var(--mono);text-transform:uppercase;color:var(--ink-soft);margin-bottom:22px}
+.depth-tag::before{content:"";width:28px;height:2px;background:var(--water)}
+h1{font-size:clamp(38px,5.4vw,70px);font-weight:800;font-stretch:75%;overflow-wrap:break-word}
+h1 em{font-style:normal;color:var(--signal)}
+.lede{font-size:clamp(18px,1.6vw,21px);max-width:34ch;margin-top:22px;color:var(--ink)}
+.proofs{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:12px;max-width:44ch}
+.proofs li{display:grid;grid-template-columns:22px 1fr;gap:12px;font-size:16px;color:var(--ink-soft)}
+.proofs li::before{content:"";width:10px;height:10px;border-radius:50%;border:2px solid var(--water);margin-top:7px}
+.proofs b{color:var(--ink);font-weight:600}
+
+/* Outil de diagnostic */
+.tool{background:var(--paper);border-radius:22px;padding:clamp(18px,2.4vw,28px);box-shadow:0 1px 0 var(--line),0 24px 60px -30px #0D2A2E55;display:grid;gap:20px}
+.tool h2{font-size:26px;font-weight:700}
+.q{display:grid;gap:10px;border:0;padding:0;margin:0;min-width:0}
+.q legend{padding:0;font-weight:600;font-size:15px;display:flex;gap:10px;align-items:baseline;margin-bottom:10px}
+.q legend span{font:500 12px/1 var(--mono);color:var(--water)}
+.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.chips.tight{grid-template-columns:repeat(auto-fit,minmax(104px,1fr))}
+.chip{display:flex;align-items:center;gap:10px;text-align:left;background:var(--surface);border:1.5px solid transparent;border-radius:12px;padding:11px 12px;cursor:pointer;font-weight:500;font-size:15px;line-height:1.2;min-height:48px;transition:background .15s,border-color .15s,transform .1s}
+.chip svg{flex:none;width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.chip:hover{border-color:var(--line);background:#E4EDE9}
+.chip:active{transform:scale(.98)}
+.chip[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.chip[aria-pressed="true"] svg{stroke:#6FE3D3}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+select{width:100%;min-height:48px;border-radius:12px;border:1.5px solid var(--line);background:var(--paper);padding:0 12px;font-weight:500}
+
+.result{border-radius:16px;background:var(--ink);color:#fff;padding:20px;display:grid;gap:16px}
+.result .kicker{font:500 12px/1 var(--mono);text-transform:uppercase;color:#6FE3D3}
+.result h3{font-size:25px;font-weight:700;margin-top:8px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#ffffff22;border-radius:12px;overflow:hidden}
+.stats div{background:var(--ink);padding:12px 12px 12px 0}
+.stats div+div{padding-left:14px}
+.stats dt{font-size:12.5px;color:#A9C4BF}
+.stats dd{margin:4px 0 0;font:500 16.5px/1.2 var(--mono);font-variant-numeric:tabular-nums}
+dl{margin:0}
+.note{font-size:14.5px;color:#C5D9D4}
+.cb{display:grid;grid-template-columns:1fr auto;gap:8px}
+.cb label{grid-column:1/-1;font-size:14px;font-weight:600}
+.cb input{min-height:50px;border-radius:12px;border:0;padding:0 14px;background:#fff;color:var(--ink);min-width:0;font-family:var(--mono)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:0 20px;border-radius:12px;border:0;background:var(--signal);color:var(--signal-ink);font-weight:700;cursor:pointer;text-decoration:none;transition:filter .15s,transform .1s}
+.btn:hover{filter:brightness(1.08)}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{background:transparent;border:1.5px solid currentColor;color:inherit}
+.msg{font-size:14.5px;border-radius:10px;padding:10px 12px;background:#ffffff14;grid-column:1/-1}
+.msg.err{background:#F2511B33}
+.msg[hidden]{display:none}
+.or{font-size:14.5px;color:#C5D9D4}
+.or a{color:#fff;font-weight:600}
+
+/* Coupe de terrain */
+.strata-head{background:var(--s1);padding-block:clamp(40px,6vw,72px) 28px;border-top:3px solid var(--ink)}
+.strata-head h2,.sec h2{font-size:clamp(34px,4.6vw,60px);font-weight:800;font-stretch:80%}
+.strata-head p{max-width:58ch;margin-top:16px;color:var(--ink-soft)}
+.stratum{--bg:var(--s1);--fg:var(--ink);--mut:var(--ink-soft);--rule:#0D2A2E33;background:var(--bg);color:var(--fg)}
+.stratum.dark{--fg:#F1F7F5;--mut:#A9C4BF;--rule:#ffffff2e}
+.stratum .wrap{display:grid;grid-template-columns:150px minmax(0,1fr);gap:clamp(20px,4vw,56px)}
+.gauge{position:relative;padding-block:38px;border-right:2px solid var(--water);
+  background:repeating-linear-gradient(to bottom,var(--rule) 0 1px,transparent 1px 14px) right/14px 100% no-repeat,
+             repeating-linear-gradient(to bottom,var(--rule) 0 1px,transparent 1px 70px) right/30px 100% no-repeat}
+.gauge b{display:block;font:500 clamp(22px,2.4vw,30px)/1 var(--mono);font-variant-numeric:tabular-nums}
+.gauge span{display:block;margin-top:8px;font-size:13.5px;color:var(--mut);max-width:11ch}
+.gauge::after{content:"";position:absolute;right:-8px;top:42px;width:14px;height:14px;border-radius:50%;background:var(--bg);border:3px solid var(--water)}
+.layer{padding-block:38px 46px;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(20px,4vw,56px);align-items:start}
+.layer h3{font-size:clamp(26px,3vw,38px);font-weight:700}
+.layer p{margin-top:12px;max-width:50ch;color:var(--mut)}
+.layer .meta{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:18px;font:500 14px/1.3 var(--mono)}
+.layer .meta span::before{content:"→ ";color:var(--water)}
+.signs{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.signs li{padding:11px 0;border-top:1px solid var(--rule);font-size:16px}
+.signs li:last-child{border-bottom:1px solid var(--rule)}
+.signs-t{font:500 12px/1 var(--mono);text-transform:uppercase;color:var(--mut);margin-bottom:12px}
+.pick{margin-top:18px;min-height:46px}
+
+/* Suivi */
+.sec{padding-block:clamp(48px,7vw,96px)}
+.follow{background:var(--s5);color:#F1F7F5}
+.follow .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,440px);gap:clamp(28px,5vw,72px);align-items:center}
+.follow p.sub{color:#A9C4BF;margin-top:16px;max-width:48ch}
+.promise{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:18px}
+.call .num{font-weight:500;font-size:14px;opacity:.8}
+.steps li.done{grid-template-columns:20px 1fr auto}
+.promise li{display:grid;grid-template-columns:54px 1fr;gap:14px;align-items:start}
+.promise .n{font:500 14px/1 var(--mono);color:#6FE3D3;padding-top:5px}
+.promise b{display:block;font:700 20px/1.2 var(--display)}
+.promise span{color:#A9C4BF;font-size:16px}
+.phone{background:#F1F7F5;color:var(--ink);border-radius:26px;padding:20px;display:grid;gap:16px;box-shadow:0 30px 80px -30px #000}
+.phone header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.phone header b{font:700 19px/1.1 var(--display)}
+.phone header span{font:500 12.5px/1 var(--mono);color:var(--ink-soft)}
+.eta{background:var(--ink);color:#fff;border-radius:16px;padding:16px;display:grid;gap:12px}
+.eta .big{font:500 34px/1 var(--mono);font-variant-numeric:tabular-nums}
+.eta small{color:#A9C4BF;font-size:14px}
+.track{height:6px;border-radius:99px;background:#ffffff22;position:relative;overflow:hidden}
+.track i{position:absolute;inset:0 38% 0 0;background:#6FE3D3;border-radius:99px;animation:drive 5s ease-in-out infinite alternate}
+@keyframes drive{from{right:44%}to{right:32%}}
+.steps{list-style:none;margin:0;padding:0;display:grid}
+.steps li{display:grid;grid-template-columns:20px 1fr auto;gap:12px;padding:9px 0;font-size:15.5px;align-items:center}
+.steps li::before{content:"";width:12px;height:12px;border-radius:50%;border:2px solid var(--line);justify-self:center}
+.steps li.done::before{background:var(--water);border-color:var(--water)}
+.steps li.now{font-weight:700}
+.steps li.now::before{border-color:var(--signal);background:var(--signal);box-shadow:0 0 0 4px #F2511B33}
+.steps time{font:500 13px/1 var(--mono);color:var(--ink-soft)}
+.steps li.todo{color:var(--ink-soft)}
+
+/* Zone + FAQ */
+.zone{background:var(--surface)}
+.zone .wrap,.faq .wrap{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(28px,5vw,72px);align-items:start}
+.zone p.sub,.faq p.sub{color:var(--ink-soft);margin-top:16px;max-width:42ch}
+.zones{display:grid;gap:14px}
+.zrow{background:var(--paper);border-radius:var(--r);padding:16px 18px;display:grid;grid-template-columns:120px 1fr;gap:16px;align-items:start}
+.zrow .t{font:500 15px/1.3 var(--mono);font-variant-numeric:tabular-nums}
+.zrow .t small{display:block;font-family:var(--body);color:var(--ink-soft);font-size:13px;margin-top:4px}
+.towns{display:flex;flex-wrap:wrap;gap:6px}
+.town{border:1.5px solid var(--line);background:transparent;border-radius:999px;padding:7px 13px;font-size:14.5px;font-weight:500;cursor:pointer;min-height:38px}
+.town:hover{border-color:var(--ink)}
+.town[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.faq{background:var(--paper)}
+details{border-top:1px solid var(--line);padding:4px 0}
+details:last-child{border-bottom:1px solid var(--line)}
+summary{cursor:pointer;list-style:none;display:grid;grid-template-columns:1fr 24px;gap:16px;align-items:center;padding:16px 0;font:700 19px/1.25 var(--display)}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font:400 26px/1 var(--mono);color:var(--water);text-align:center}
+details[open] summary::after{content:"–"}
+details p{padding:0 40px 18px 0;color:var(--ink-soft);max-width:62ch}
+
+/* Pied */
+.end{background:var(--signal);color:#fff;padding-block:clamp(40px,6vw,72px)}
+.end .wrap{display:flex;flex-wrap:wrap;gap:24px;align-items:center;justify-content:space-between}
+.end h2{font-size:clamp(34px,5vw,64px);font-weight:800;font-stretch:78%;max-width:14ch}
+.end .acts{display:flex;flex-wrap:wrap;gap:10px}
+.end .btn{background:var(--ink);min-height:56px;padding:0 24px}
+.end .btn.ghost{background:transparent;color:#fff}
+footer{background:var(--ink);color:#A9C4BF;font-size:14.5px;padding-block:28px 34px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:10px 32px;justify-content:space-between}
+footer b{color:#fff}
+
+/* Barre d'action mobile */
+.bar{display:none}
+
+@media (max-width:980px){
+  .hero .wrap,.follow .wrap,.zone .wrap,.faq .wrap{grid-template-columns:minmax(0,1fr)}
+  .nav{display:none}
+  .layer{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:640px){
+  body{padding-bottom:76px;font-size:16.5px}
+  .call span.num{display:none}
+  .stratum .wrap{grid-template-columns:minmax(0,1fr);gap:0}
+  .gauge{border-right:0;border-bottom:2px solid var(--water);background:none;padding-block:26px 14px;display:flex;align-items:baseline;gap:14px}
+  .gauge span{margin:0;max-width:none}
+  .gauge::after{display:none}
+  .layer{padding-block:22px 36px}
+  .row2{grid-template-columns:minmax(0,1fr)}
+  .stats{grid-template-columns:minmax(0,1fr)}
+  .stats div,.stats div+div{padding:10px 0;display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+  .stats dd{margin:0;text-align:right}
+  .cb{grid-template-columns:minmax(0,1fr)}
+  .zrow{grid-template-columns:minmax(0,1fr);gap:10px}
+  .bar{display:grid;grid-template-columns:1fr 1fr;gap:8px;position:fixed;left:0;right:0;bottom:0;z-index:30;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(10px);border-top:1px solid var(--line)}
+  .bar .btn{min-height:54px}
+  .bar .btn.dark{background:var(--ink)}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="mock">Maquette de travail. Coordonnées et prestations reprises de babassainissement.fr ; l'exemple de devis est illustratif et sans montants.</div>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#haut" aria-label="BAB Assainissement, accueil">
+      <span class="brand-mark" aria-hidden="true">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6FE3D3" stroke-width="2.2" stroke-linecap="round"><path d="M3 7h9a4 4 0 0 1 4 4v10"/><path d="M3 13h5a2 2 0 0 1 2 2v6" stroke="#fff"/><circle cx="19.5" cy="5" r="1.6" fill="#F2511B" stroke="none"/></svg>
+      </span>
+      <span><b>BAB Assainissement</b><small>Saint-Mandé · Île-de-France</small></span>
+    </a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#coupe">Prestations</a>
+      <a href="#devis">Prix et devis</a>
+      <a href="#zone">Zones</a>
+      <a href="#questions">Questions</a>
+    </nav>
+    <a class="call" href="tel:+33189480964"><span class="mono">01 89 48 09 64</span><span class="num">&nbsp;· lun.–sam. 8 h–19 h</span></a>
+  </div>
+</header>
+
+<main id="haut">
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <div class="depth-tag">0,00 m · en surface</div>
+      <h1>Rapport non conforme, vente, <em>raccordement&nbsp;?</em></h1>
+      <p class="lede">Dites-nous où vous en êtes en trois gestes. Vous savez tout de suite quelle prestation vous concerne et ce qui se passe ensuite.</p>
+      <ul class="proofs">
+        <li><span><b>Un devis détaillé, poste par poste,</b> établi après une visite sur place.</span></li>
+        <li><span><b>Les travaux commencent seulement après votre accord.</b></span></li>
+        <li><span><b>La partie privée de votre réseau,</b> de la maison jusqu'à la boîte de branchement.</span></li>
+      </ul>
+    </div>
+
+    <form class="tool" id="diagnostic" novalidate>
+      <h2>Où en êtes-vous&nbsp;?</h2>
+
+      <fieldset class="q">
+        <legend><span>1</span>Votre situation</legend>
+        <div class="chips" id="g-p">
+          <button type="button" class="chip" data-k="p" data-v="rapport"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M9 12l6 6M15 12l-6 6"/></svg>Rapport non conforme</button>
+          <button type="button" class="chip" data-k="p" data-v="vente"><svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9H4z"/><path d="M9 15l2 2 4-4"/></svg>Je vends ou j'achète</button>
+          <button type="button" class="chip" data-k="p" data-v="rue"><svg viewBox="0 0 24 24"><path d="M3 8h8v8h10"/><circle cx="18" cy="16" r="3"/></svg>Ma rue est raccordée</button>
+          <button type="button" class="chip" data-k="p" data-v="odeurs"><svg viewBox="0 0 24 24"><path d="M7 20c-2-3 2-4 0-7s2-4 0-7M12 20c-2-3 2-4 0-7s2-4 0-7M17 20c-2-3 2-4 0-7s2-4 0-7"/></svg>Odeurs, écoulement lent</button>
+          <button type="button" class="chip" data-k="p" data-v="bas"><svg viewBox="0 0 24 24"><path d="M3 9h8v9h10"/><path d="M16 14V5M13 8l3-3 3 3"/></svg>Sous-sol plus bas que la rue</button>
+          <button type="button" class="chip" data-k="p" data-v="fosse"><svg viewBox="0 0 24 24"><rect x="4" y="9" width="16" height="10" rx="3"/><path d="M9 9V5h6v4M4 14h16"/></svg>Ancienne fosse ou cuve</button>
+        </div>
+      </fieldset>
+
+      <div class="row2">
+        <fieldset class="q">
+          <legend><span>2</span>Un rapport de contrôle&nbsp;?</legend>
+          <div class="chips tight" id="g-q">
+            <button type="button" class="chip" data-k="q" data-v="oui">Oui</button>
+            <button type="button" class="chip" data-k="q" data-v="non">Pas encore</button>
+          </div>
+        </fieldset>
+        <div class="q">
+          <label for="commune" style="font-weight:600;font-size:15px;display:flex;gap:10px;align-items:baseline"><span class="mono" style="font-size:12px;color:var(--water)">3</span>Votre département</label>
+          <select id="commune"></select>
+        </div>
+      </div>
+
+      <div class="result" aria-live="polite">
+        <div>
+          <div class="kicker">Ce qui vous concerne</div>
+          <h3 id="r-title"></h3>
+        </div>
+        <dl class="stats">
+          <div><dt>Première étape</dt><dd id="r-first"></dd></div>
+          <div><dt id="r-when-l"></dt><dd>Sous 7 jours</dd></div>
+          <div><dt>Devis écrit</dt><dd>48 h après la visite</dd></div>
+        </dl>
+        <p class="note" id="r-note"></p>
+        <div class="cb">
+          <label for="tel">Votre numéro, on vous rappelle du lundi au samedi, de 8 h à 19 h</label>
+          <input id="tel" name="tel" type="tel" inputmode="tel" autocomplete="tel" placeholder="06 12 34 56 78">
+          <button class="btn" type="submit">Être rappelé</button>
+          <p class="msg" id="cb-msg" hidden></p>
+        </div>
+        <p class="or">Ou appelez le <a class="mono" href="tel:+33189480964">01 89 48 09 64</a></p>
+      </div>
+    </form>
+  </div>
+</section>
+
+<section id="coupe" aria-labelledby="coupe-t">
+  <div class="strata-head">
+    <div class="wrap">
+      <div class="depth-tag">Coupe de terrain</div>
+      <h2 id="coupe-t">Ce qui se passe sous votre maison</h2>
+      <p>Descendez. Chaque prestation est rangée à la profondeur où elle a lieu, de la canalisation sous la dalle jusqu'au point bas du terrain. Les repères de profondeur sont des ordres de grandeur.</p>
+    </div>
+  </div>
+
+  <article class="stratum" style="--bg:var(--s1)">
+    <div class="wrap">
+      <div class="gauge"><b>−0,30 m</b><span>Sous la dalle</span></div>
+      <div class="layer">
+        <div>
+          <h3>Remplacement de canalisation fonte</h3>
+          <p>Les anciennes conduites en fonte se fissurent et s'affaissent. On remplace le tronçon abîmé sans refaire tout le réseau.</p>
+          <div class="meta"><span>inspection caméra d'abord</span><span>sur devis après visite</span></div>
+          <button class="btn pick" type="button" data-pick="odeurs">C'est mon cas</button>
+        </div>
+        <div><div class="signs-t">Vous le reconnaissez à</div>
+          <ul class="signs"><li>Des odeurs au sous-sol ou en vide sanitaire</li><li>Des traces d'humidité au pied des murs</li><li>Un rapport qui mentionne une fonte fissurée</li></ul></div>
+      </div>
+    </div>
+  </article>
+
+  <article class="stratum" style="--bg:var(--s2)">
+    <div class="wrap">
+      <div class="gauge"><b>−0,80 m</b><span>Canalisations enterrées</span></div>
+      <div class="layer">
+        <div>
+          <h3>Curage et inspection caméra</h3>
+          <p>On nettoie les canalisations à haute pression, puis la caméra parcourt le réseau. Vous recevez un rapport avec les images.</p>
+          <div class="meta"><span>rapport et images</span><span>sur devis</span></div>
+          <button class="btn pick" type="button" data-pick="vente">C'est mon cas</button>
+        </div>
+        <div><div class="signs-t">Utile quand</div>
+          <ul class="signs"><li>Vous achetez et voulez savoir ce qu'il y a dessous</li><li>L'écoulement ralentit dans toute la maison</li><li>Le contrôleur n'a pas pu vérifier le réseau</li></ul></div>
+      </div>
+    </div>
+  </article>
+
+  <article class="stratum dark" style="--bg:var(--s3)">
+    <div class="wrap">
+      <div class="gauge"><b>−1,20 m</b><span>Regards et réseaux</span></div>
+      <div class="layer">
+        <div>
+          <h3>Mise en conformité et raccordement au tout-à-l'égout</h3>
+          <p>On corrige ce que le rapport a relevé : séparation des eaux usées et pluviales, regards, canalisations, puis raccordement de la maison jusqu'à la boîte de branchement. Terrassement compris.</p>
+          <div class="meta"><span>tranchées, regards, remise en état</span><span>sur devis après visite</span></div>
+          <button class="btn pick" type="button" data-pick="rapport">C'est mon cas</button>
+        </div>
+        <div><div class="signs-t">Vous en avez besoin si</div>
+          <ul class="signs"><li>Votre rapport de contrôle conclut « non conforme »</li><li>Les gouttières rejoignent le tuyau des eaux usées</li><li>Le réseau public vient d'arriver dans votre rue</li></ul></div>
+      </div>
+    </div>
+  </article>
+
+  <article class="stratum dark" style="--bg:var(--s4)">
+    <div class="wrap">
+      <div class="gauge"><b>−1,80 m</b><span>Fosse, micro-station, cuve</span></div>
+      <div class="layer">
+        <div>
+          <h3>Fosses septiques, micro-stations et cuves à fioul</h3>
+          <p>Pose, remplacement ou mise hors service d'une fosse ou d'une micro-station. Neutralisation ou retrait d'une ancienne cuve à fioul.</p>
+          <div class="meta"><span>pose · remplacement · mise hors service</span><span>sur devis</span></div>
+          <button class="btn pick" type="button" data-pick="fosse">C'est mon cas</button>
+        </div>
+        <div><div class="signs-t">Vous en avez besoin si</div>
+          <ul class="signs"><li>La maison vient d'être raccordée et la fosse est toujours là</li><li>Votre installation autonome est à remplacer</li><li>Une cuve à fioul dort dans le jardin ou la cave</li></ul></div>
+      </div>
+    </div>
+  </article>
+
+  <article class="stratum dark" style="--bg:#0E2B2F">
+    <div class="wrap">
+      <div class="gauge"><b>−2,50 m</b><span>Point bas du terrain</span></div>
+      <div class="layer">
+        <div>
+          <h3>Pompes de relevage</h3>
+          <p>Quand les évacuations sont plus basses que l'égout, une pompe remonte les eaux jusqu'à la rue. Installation, remplacement, entretien.</p>
+          <div class="meta"><span>installation · remplacement · entretien</span><span>sur devis</span></div>
+          <button class="btn pick" type="button" data-pick="bas">C'est mon cas</button>
+        </div>
+        <div><div class="signs-t">Vous en avez besoin si</div>
+          <ul class="signs"><li>Votre sous-sol aménagé a une salle d'eau</li><li>Le terrain est en contrebas de la rue</li><li>La pompe en place disjoncte ou tourne sans arrêt</li></ul></div>
+      </div>
+    </div>
+  </article>
+</section>
+
+<section class="sec follow" id="devis">
+  <div class="wrap">
+    <div>
+      <div class="depth-tag" style="color:#A9C4BF">Prix et devis</div>
+      <h2>Quatre étapes, sans surprise</h2>
+      <p class="sub">Le prix dépend de la distance, de la profondeur, du terrain et des regards à créer. Il se fixe donc après avoir vu les lieux, jamais avant.</p>
+      <ol class="promise">
+        <li><span class="n">01</span><div><b>Vous écrivez ou appelez</b><span>Avec votre rapport de contrôle, ou quelques photos.</span></div></li>
+        <li><span class="n">02</span><div><b>On vous rappelle</b><span>Du lundi au samedi, de 8 h à 19 h.</span></div></li>
+        <li><span class="n">03</span><div><b>Visite sur rendez-vous, sous 7 jours</b><span>On regarde le terrain, les regards et les canalisations.</span></div></li>
+        <li><span class="n">04</span><div><b>Devis détaillé sous 48 h</b><span>Poste par poste. Les travaux commencent seulement après votre accord.</span></div></li>
+      </ol>
+    </div>
+    <div class="phone" role="img" aria-label="Exemple de structure d'un devis : cinq postes, montants établis après la visite">
+      <header><b>Devis, raccordement</b><span>Exemple de structure</span></header>
+      <div class="eta">
+        <small>Établi après la visite</small>
+        <div class="big">5 postes</div>
+        <small>Chaque ligne a sa quantité et son prix. Aucun forfait opaque.</small>
+      </div>
+      <ul class="steps">
+        <li class="done">Terrassement, tranchée<time>12 m</time></li>
+        <li class="done">Canalisation<time>12 m</time></li>
+        <li class="done">Regards<time>2 u</time></li>
+        <li class="done">Évacuation des terres<time>6 m³</time></li>
+        <li class="done">Remise en état du jardin<time>1 ens.</time></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="sec zone" id="zone">
+  <div class="wrap">
+    <div>
+      <div class="depth-tag">Zones d'intervention</div>
+      <h2>Toute l'Île-de-France, depuis Saint-Mandé</h2>
+      <p class="sub">Choisissez votre département : il est repris dans votre demande en haut de page.</p>
+    </div>
+    <div class="zones" id="zones"></div>
+  </div>
+</section>
+
+<section class="sec faq" id="questions">
+  <div class="wrap">
+    <div>
+      <div class="depth-tag">Questions fréquentes</div>
+      <h2>Ce qu'on nous demande au téléphone</h2>
+      <p class="sub">Des réponses courtes. Pour le reste, on vous rappelle.</p>
+    </div>
+    <div>
+      <details open>
+        <summary>Combien coûte un raccordement&nbsp;?</summary>
+        <p>Cela dépend de la distance jusqu'à la rue, de la profondeur, de la nature du terrain et du nombre de regards à créer. C'est pourquoi le prix est établi par devis détaillé, après une visite.</p>
+      </details>
+      <details>
+        <summary>Mon rapport est non conforme. Puis-je quand même vendre&nbsp;?</summary>
+        <p>Oui. Le rapport est joint au dossier de vente et les travaux peuvent être réalisés par vous ou par l'acquéreur. Un devis détaillé aide à négocier en connaissance de cause.</p>
+      </details>
+      <details>
+        <summary>Qui s'occupe de l'égout dans la rue&nbsp;?</summary>
+        <p>La collectivité. Nous intervenons sur la partie privée de votre réseau, de la maison jusqu'à la boîte de branchement. Au-delà, on vous indique à qui vous adresser.</p>
+      </details>
+      <details>
+        <summary>Que devient ma fosse une fois la maison raccordée&nbsp;?</summary>
+        <p>Elle doit être mise hors service : vidangée, désinfectée, puis comblée ou retirée. Nous le faisons sur le même chantier que le raccordement.</p>
+      </details>
+      <details>
+        <summary>Faut-il un rapport pour vous contacter&nbsp;?</summary>
+        <p>Non. Quelques photos des regards et du terrain suffisent pour préparer la visite. Si un doute subsiste, on commence par une inspection caméra.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="end">
+  <div class="wrap">
+    <h2>Parlons de votre installation.</h2>
+    <div class="acts">
+      <a class="btn" href="#diagnostic">Dire où j'en suis</a>
+      <a class="btn ghost" href="tel:+33189480964">Appeler le <span class="mono">01 89 48 09 64</span></a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span><b>BAB Assainissement</b> · 14 avenue du Général de Gaulle, 94160 Saint-Mandé</span>
+    <span class="mono">01 89 48 09 64 · lun.–sam. 8 h–19 h · SIREN 933 127 995</span>
+    <span>Maquette, contenus à valider</span>
+  </div>
+</footer>
+
+<div class="bar">
+  <a class="btn dark" href="tel:+33189480964">Appeler</a>
+  <a class="btn" href="#diagnostic">Ma situation</a>
+</div>
+
+<script>
+(function(){
+  var P = {
+    rapport:{t:"Mise en conformité après contrôle", f:"Lecture du rapport", n:"On reprend les anomalies une par une et on les corrige : séparation des eaux, regards, canalisations."},
+    vente:{t:"Inspection caméra avant la vente", f:"Passage caméra", n:"Vous savez ce qu'il y a sous la maison avant de signer. Le rapport avec images sert de base au devis s'il faut des travaux."},
+    rue:{t:"Raccordement au tout-à-l'égout", f:"Visite du terrain", n:"De la maison jusqu'à la boîte de branchement, tranchée et remise en état comprises. L'ancienne fosse est mise hors service sur le même chantier."},
+    odeurs:{t:"Curage puis inspection caméra", f:"Curage haute pression", n:"On nettoie, puis on regarde. Si une canalisation en fonte est fissurée, on chiffre le remplacement du seul tronçon abîmé."},
+    bas:{t:"Pompe de relevage", f:"Visite du point bas", n:"Installation, remplacement ou entretien d'une pompe qui remonte les eaux jusqu'au niveau de la rue."},
+    fosse:{t:"Fosse, micro-station ou cuve à fioul", f:"Visite du terrain", n:"Pose, remplacement ou mise hors service d'une fosse ou d'une micro-station. Neutralisation ou retrait d'une cuve à fioul."}
+  };
+  var Z = [
+    {d:"94", l:"Val-de-Marne · siège", c:["Val-de-Marne (94)"]},
+    {d:"Petite couronne", l:"et Paris", c:["Paris (75)","Hauts-de-Seine (92)","Seine-Saint-Denis (93)"]},
+    {d:"Grande couronne", l:"Provinois compris", c:["Seine-et-Marne (77)","Yvelines (78)","Essonne (91)","Val-d'Oise (95)"]}
+  ];
+  var S = {p:"rapport", q:"oui", c:"Val-de-Marne (94)"};
+  var $ = function(id){return document.getElementById(id)};
+  var sel = $("commune"), zones = $("zones");
+
+  Z.forEach(function(z){
+    var row = document.createElement("div"); row.className = "zrow";
+    var t = document.createElement("div"); t.className = "t"; t.textContent = z.d;
+    var sm = document.createElement("small"); sm.textContent = z.l; t.appendChild(sm);
+    var towns = document.createElement("div"); towns.className = "towns";
+    z.c.forEach(function(c){
+      var o = document.createElement("option"); o.value = c; o.textContent = c; sel.appendChild(o);
+      var b = document.createElement("button"); b.type = "button"; b.className = "town"; b.textContent = c; b.dataset.c = c;
+      b.addEventListener("click", function(){ S.c = c; render(); });
+      towns.appendChild(b);
+    });
+    row.appendChild(t); row.appendChild(towns); zones.appendChild(row);
+  });
+
+  function render(){
+    var p = P[S.p];
+    document.querySelectorAll(".chip").forEach(function(b){ b.setAttribute("aria-pressed", String(S[b.dataset.k] === b.dataset.v)); });
+    document.querySelectorAll(".town").forEach(function(b){ b.setAttribute("aria-pressed", String(b.dataset.c === S.c)); });
+    sel.value = S.c;
+    $("r-title").textContent = p.t;
+    $("r-first").textContent = p.f;
+    $("r-when-l").textContent = "Visite, " + S.c.replace(/ \(\d+\)/, "");
+    $("r-note").textContent = p.n + (S.q === "oui"
+      ? " Gardez votre rapport sous la main : on prépare la visite à partir de ce qu'il relève."
+      : " Pas de rapport ? Quelques photos des regards et du terrain suffisent pour préparer la visite.");
+  }
+
+  document.querySelectorAll(".chip").forEach(function(b){
+    b.addEventListener("click", function(){ S[b.dataset.k] = b.dataset.v; render(); });
+  });
+  sel.addEventListener("change", function(){ S.c = sel.value; render(); });
+  document.querySelectorAll("[data-pick]").forEach(function(b){
+    b.addEventListener("click", function(){
+      S.p = b.dataset.pick; render();
+      $("diagnostic").scrollIntoView({block:"start"});
+    });
+  });
+
+  $("diagnostic").addEventListener("submit", function(e){
+    e.preventDefault();
+    var m = $("cb-msg"), v = $("tel").value.replace(/[\s.\-]/g, "");
+    m.hidden = false;
+    if (!/^(?:\+33|0)[1-9]\d{8}$/.test(v)){
+      m.className = "msg err";
+      m.textContent = "Ce numéro semble incomplet. Saisissez 10 chiffres, par exemple 06 12 34 56 78.";
+      $("tel").focus();
+      return;
+    }
+    m.className = "msg";
+    m.textContent = "Maquette : rien n'est envoyé. Sur le site réel, cette demande (" + P[S.p].t.toLowerCase() + ", " + S.c + ") part chez BAB, qui vous rappelle du lundi au samedi, de 8 h à 19 h.";
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

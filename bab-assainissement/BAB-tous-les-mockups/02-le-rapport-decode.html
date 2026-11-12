@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BAB Assainissement, le rapport décodé</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Idée de mise en page : le visiteur arrive avec un rapport de contrôle « non conforme ».
+   La page est ce rapport, posé sur un bureau : à gauche le formulaire administratif,
+   à droite sa traduction en travaux. Le tampon rouge est le seul élément fort. */
+:root{
+  color-scheme: light;
+  --desk:#E6E9EC;        /* bureau gris froid */
+  --paper:#FBFCFB;       /* feuille */
+  --ink:#16224F;         /* encre bleu administratif */
+  --ink-soft:#56608A;
+  --rule:#B9C1DA;
+  --stamp:#C8281E;       /* tampon */
+  --hl:#FFE45C;          /* surligneur */
+  --ok:#1C7A4B;          /* conforme */
+  --display:"Newsreader",Georgia,"Times New Roman",serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --gutter:clamp(16px,4vw,48px);
+  --max:1200px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--desk);color:var(--ink);font:400 17px/1.55 var(--body);-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--display);font-weight:500;margin:0;line-height:1.05;letter-spacing:-.015em;text-wrap:balance}
+p{margin:0} a{color:inherit}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--stamp);outline-offset:3px;border-radius:4px}
+.wrap{max-width:var(--max);margin:0 auto;padding-inline:var(--gutter)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.mock{background:var(--ink);color:#D5DAF0;font-size:13.5px;padding:8px var(--gutter);text-align:center}
+
+.top{background:var(--desk);border-bottom:1px solid var(--rule);position:sticky;top:0;z-index:20}
+.top .wrap{display:flex;align-items:center;gap:24px;flex-wrap:wrap;min-height:66px;padding-block:10px}
+.brand{margin-right:auto;text-decoration:none;display:flex;align-items:baseline;gap:10px}
+.brand b{font:600 26px/1 var(--display);letter-spacing:-.02em}
+.brand span{font:500 12px/1 var(--mono);text-transform:uppercase;color:var(--ink-soft)}
+.nav{display:flex;gap:22px;font-size:15.5px;font-weight:500}
+.nav a{text-decoration:none;border-bottom:1.5px solid transparent;padding:4px 0}
+.nav a:hover{border-color:var(--ink)}
+.tel{text-decoration:none;text-align:right;line-height:1.2}
+.tel b{display:block;font:500 17px/1.2 var(--mono)}
+.tel small{font-size:12.5px;color:var(--ink-soft)}
+
+.hero{padding-block:clamp(32px,5vw,64px) 28px}
+.eyebrow{font:500 12.5px/1 var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);margin-bottom:20px}
+h1{font-size:clamp(40px,6.4vw,86px);max-width:15ch}
+h1 mark{background:linear-gradient(transparent 12%,var(--hl) 12% 88%,transparent 88%);color:inherit;padding:0 .12em;font-style:italic}
+.lede{font-size:clamp(18px,1.6vw,21px);max-width:52ch;margin-top:22px}
+
+/* Le bureau : rapport + traduction */
+.deskgrid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:clamp(18px,3vw,36px);align-items:start;padding-bottom:clamp(40px,6vw,80px)}
+.sheet{background:var(--paper);border:1px solid var(--rule);box-shadow:0 1px 0 #fff inset,0 18px 40px -26px #16224F66;position:relative}
+.report{padding:22px clamp(16px,2.2vw,26px) 26px;font-family:var(--mono);font-size:14px;transform:rotate(-.5deg)}
+.report header{display:flex;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:12px;flex-wrap:wrap}
+.report header b{font-weight:500;text-transform:uppercase;letter-spacing:.04em}
+.fields{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:14px 170px 18px 0;color:var(--ink-soft)}
+.fields dd{margin:0;border-bottom:1px dotted var(--rule);color:var(--ink)}
+dl{margin:0}
+.stamp{position:absolute;right:18px;top:64px;transform:rotate(-9deg);border:3px solid var(--stamp);color:var(--stamp);font:500 19px/1 var(--mono);letter-spacing:.08em;padding:9px 12px;border-radius:4px;opacity:.88;mix-blend-mode:multiply;background:transparent}
+.stamp.ok{border-color:var(--ok);color:var(--ok)}
+.report fieldset{border:0;padding:0;margin:0;min-width:0}
+.report legend{padding:0;margin-bottom:8px;text-transform:uppercase;font-size:12px;letter-spacing:.06em;color:var(--ink-soft)}
+.line{display:grid;grid-template-columns:22px 34px 1fr;gap:8px;align-items:start;padding:11px 6px;border-top:1px solid var(--rule);cursor:pointer;line-height:1.35}
+.line:last-of-type{border-bottom:1px solid var(--rule)}
+.line input{appearance:none;width:18px;height:18px;border:1.5px solid var(--ink);margin:1px 0 0;background:var(--paper);cursor:pointer;display:grid;place-items:center;border-radius:0}
+.line input:checked::after{content:"✕";font:500 15px/1 var(--mono);color:var(--stamp)}
+.line .code{color:var(--ink-soft)}
+.line:has(input:checked){background:linear-gradient(transparent 14%,var(--hl) 14% 86%,transparent 86%)}
+.line:hover{background-color:#EEF1F8}
+.report .foot{margin-top:14px;font-size:12.5px;color:var(--ink-soft)}
+
+.trans{display:grid;gap:14px}
+.sum{background:var(--ink);color:#fff;padding:18px 20px;display:grid;gap:6px}
+.sum b{font:500 clamp(22px,2.4vw,30px)/1.15 var(--display)}
+.sum span{font-size:15px;color:#C9D0EC}
+.card{padding:18px 20px 20px;display:grid;gap:12px}
+.card .ref{font:500 12px/1 var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--stamp)}
+.card h3{font-size:25px}
+.card dl{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+.card dt{font:500 12px/1 var(--mono);text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);margin-bottom:6px}
+.card dd{margin:0;font-size:15.5px}
+.posts{display:flex;flex-wrap:wrap;gap:6px}
+.posts span{font:400 13px/1 var(--mono);border:1px solid var(--rule);padding:6px 9px;background:#F1F3F9}
+.empty{padding:22px 20px;color:var(--ink-soft)}
+.cta{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 22px;border:0;background:var(--stamp);color:#fff;font-weight:600;text-decoration:none;cursor:pointer;border-radius:3px}
+.btn:hover{filter:brightness(1.08)}
+.btn.line2{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
+
+.sec{padding-block:clamp(44px,6vw,88px)}
+.sec h2{font-size:clamp(32px,4.4vw,56px);max-width:18ch}
+.sec .sub{color:var(--ink-soft);margin-top:14px;max-width:52ch}
+.two{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(24px,5vw,72px);align-items:start}
+
+.send{background:var(--paper);border-block:1px solid var(--rule)}
+.form{display:grid;gap:14px}
+.drop{display:grid;gap:6px;place-items:center;text-align:center;border:2px dashed var(--ink);padding:30px 18px;cursor:pointer;background:#F1F3F9}
+.drop:hover,.drop.over{background:var(--hl)}
+.drop b{font:500 22px/1.2 var(--display)}
+.drop span{font-size:14.5px;color:var(--ink-soft)}
+.drop input{position:absolute;opacity:0;width:1px;height:1px}
+.drop:focus-within{outline:3px solid var(--stamp);outline-offset:3px}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fld{display:grid;gap:6px;font-size:14.5px;font-weight:500}
+.fld input{min-height:50px;border:1.5px solid var(--ink);background:var(--paper);padding:0 12px;border-radius:0;font-family:var(--mono)}
+.msg{font-size:15px;padding:12px 14px;background:#F1F3F9;border-left:4px solid var(--ink)}
+.msg.err{border-color:var(--stamp)}
+.msg[hidden]{display:none}
+
+.steps{list-style:none;padding:0;margin:0;counter-reset:s;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;border-top:2px solid var(--ink)}
+.steps li{counter-increment:s;padding:18px 18px 4px 0;border-right:1px solid var(--rule);padding-left:18px}
+.steps li:first-child{padding-left:0}
+.steps li:last-child{border-right:0}
+.steps li::before{content:"Étape " counter(s);font:500 12px/1 var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft)}
+.steps b{display:block;font:500 23px/1.15 var(--display);margin:10px 0 8px}
+.steps p{font-size:15.5px;color:var(--ink-soft)}
+.steps em{font-style:normal;background:var(--hl);padding:0 .2em;color:var(--ink)}
+
+.law{background:var(--ink);color:#fff}
+.law .sub{color:#C9D0EC}
+.law h2{color:#fff}
+.laws{display:grid;gap:0}
+.laws div{display:grid;grid-template-columns:110px 1fr;gap:20px;padding:20px 0;border-top:1px solid #ffffff33;align-items:baseline}
+.laws div:last-child{border-bottom:1px solid #ffffff33}
+.laws b{font:500 clamp(30px,3.4vw,44px)/1 var(--display);color:var(--hl)}
+.laws p{color:#E3E7F6}
+.laws small{display:block;color:#A9B2D8;font-size:14px;margin-top:4px}
+
+.scope{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--rule);background:var(--paper)}
+.scope div{padding:22px}
+.scope div+div{border-left:1px dashed var(--ink);background:#EEF0F3;color:var(--ink-soft)}
+.scope h3{font-size:24px;margin-bottom:8px}
+.scope .tag{font:500 12px/1 var(--mono);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;color:var(--ok)}
+.scope div+div .tag{color:var(--ink-soft)}
+.deps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin-top:22px;border-top:1px solid var(--rule);border-left:1px solid var(--rule)}
+.deps span{padding:12px 14px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);background:var(--paper);font-size:15px;display:flex;gap:10px;align-items:baseline}
+.deps i{font:500 13px/1 var(--mono);font-style:normal;color:var(--stamp)}
+
+footer{background:var(--paper);border-top:2px solid var(--ink);padding-block:26px 32px;font-size:14.5px;color:var(--ink-soft)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:8px 32px;justify-content:space-between}
+footer b{color:var(--ink)}
+.bar{display:none}
+
+@media (max-width:960px){
+  .deskgrid,.two{grid-template-columns:minmax(0,1fr)}
+  .nav{display:none}
+  .steps{grid-template-columns:1fr 1fr}
+  .steps li{border-right:0;padding-left:0;padding-bottom:14px}
+  .deps{grid-template-columns:1fr 1fr}
+  .report{transform:none}
+}
+@media (max-width:620px){
+  body{padding-bottom:78px;font-size:16.5px}
+  .tel{display:none}
+  .card dl,.frow,.scope,.steps{grid-template-columns:minmax(0,1fr)}
+  .scope div+div{border-left:0;border-top:1px dashed var(--ink)}
+  .laws div{grid-template-columns:minmax(0,1fr);gap:6px}
+  .fields{margin-right:0}
+  .stamp{position:static;display:inline-block;margin:14px 0 4px;transform:rotate(-3deg)}
+  .bar{display:grid;grid-template-columns:1fr 1.3fr;gap:8px;position:fixed;inset:auto 0 0 0;z-index:30;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:var(--desk);border-top:1px solid var(--rule)}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="mock">Maquette de travail. Coordonnées et prestations reprises de babassainissement.fr ; l'extrait de rapport et ses lignes sont des exemples.</div>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#haut"><b>BAB</b><span>Assainissement · Saint-Mandé</span></a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#decoder">Décoder</a><a href="#envoyer">Envoyer mon rapport</a><a href="#etapes">Étapes</a><a href="#zones">Zones</a>
+    </nav>
+    <a class="tel" href="tel:+33189480964"><b>01 89 48 09 64</b><small>lundi au samedi, 8 h à 19 h</small></a>
+  </div>
+</header>
+
+<main id="haut">
+<section class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Mise en conformité · Île-de-France</div>
+    <h1>Votre rapport dit <mark>non conforme</mark>. Voici ce que ça veut dire.</h1>
+    <p class="lede">Cochez les lignes qui figurent dans votre rapport de contrôle. Chaque anomalie est traduite en français courant, puis en travaux, avec les postes qui apparaîtront dans le devis.</p>
+  </div>
+</section>
+
+<section id="decoder" aria-label="Décodeur de rapport">
+  <div class="wrap deskgrid">
+    <form class="sheet report" id="report">
+      <header><b>Contrôle d'assainissement</b><span>Extrait, page 3/4</span></header>
+      <dl class="fields">
+        <dt>Bien</dt><dd>Maison individuelle</dd>
+        <dt>Motif</dt><dd>Vente immobilière</dd>
+        <dt>Conclusion</dt><dd id="concl">&nbsp;</dd>
+      </dl>
+      <div class="stamp" id="stamp" aria-hidden="true">NON CONFORME</div>
+      <fieldset>
+        <legend>Anomalies relevées (cochez les vôtres)</legend>
+        <label class="line"><input type="checkbox" id="a1" value="a1" checked><span class="code">A1</span><span>Eaux pluviales raccordées au réseau d'eaux usées</span></label>
+        <label class="line"><input type="checkbox" id="a2" value="a2" checked><span class="code">A2</span><span>Fosse septique maintenue en service, rue desservie par le réseau</span></label>
+        <label class="line"><input type="checkbox" id="a3" value="a3"><span class="code">A3</span><span>Absence de regard de visite en limite de propriété</span></label>
+        <label class="line"><input type="checkbox" id="a4" value="a4"><span class="code">A4</span><span>Canalisation en fonte fissurée ou affaissée</span></label>
+        <label class="line"><input type="checkbox" id="a5" value="a5"><span class="code">A5</span><span>Évacuations situées sous le niveau de la rue, sans relevage</span></label>
+        <label class="line"><input type="checkbox" id="a6" value="a6"><span class="code">A6</span><span>Écoulement non vérifiable, réseau encombré</span></label>
+      </fieldset>
+      <p class="foot">Votre rapport emploie d'autres mots ? Envoyez-le, on le lit pour vous.</p>
+    </form>
+
+    <div class="trans" aria-live="polite">
+      <div class="sum"><b id="sum-t"></b><span>Visite planifiée sous 7 jours. Devis écrit sous 48 h après la visite, détaillé poste par poste.</span></div>
+      <div id="cards" class="trans"></div>
+      <div class="cta">
+        <a class="btn" href="#envoyer">Envoyer mon rapport</a>
+        <a class="btn line2" href="tel:+33189480964">Appeler le <span class="mono">&nbsp;01 89 48 09 64</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec send" id="envoyer">
+  <div class="wrap two">
+    <div>
+      <div class="eyebrow">Le plus simple</div>
+      <h2>Déposez le rapport. On vous rappelle.</h2>
+      <p class="sub">Une photo prise au téléphone suffit. Vous êtes rappelé du lundi au samedi, entre 8 h et 19 h, par quelqu'un qui a lu votre document.</p>
+    </div>
+    <form class="form" id="send" novalidate>
+      <label class="drop" id="drop" for="file">
+        <input type="file" id="file" accept=".pdf,image/*">
+        <b id="drop-t">Glissez votre rapport ici</b>
+        <span id="drop-s">PDF ou photo. Ou touchez pour choisir un fichier.</span>
+      </label>
+      <div class="frow">
+        <label class="fld" for="tel">Téléphone<input id="tel" type="tel" inputmode="tel" autocomplete="tel" placeholder="06 12 34 56 78"></label>
+        <label class="fld" for="cp">Code postal du bien<input id="cp" inputmode="numeric" autocomplete="postal-code" placeholder="94160" maxlength="5"></label>
+      </div>
+      <button class="btn" type="submit">Envoyer mon rapport</button>
+      <p class="msg" id="msg" hidden></p>
+    </form>
+  </div>
+</section>
+
+<section class="sec" id="etapes">
+  <div class="wrap">
+    <div class="eyebrow">Déroulé</div>
+    <h2>Quatre étapes, sans surprise</h2>
+    <ol class="steps" style="margin-top:32px">
+      <li><b>Vous écrivez ou appelez</b><p>Avec votre rapport, ou simplement quelques photos des regards et du terrain.</p></li>
+      <li><b>On vous rappelle</b><p>Du lundi au samedi, de 8 h à 19 h. On fixe la visite <em>sous 7 jours</em>.</p></li>
+      <li><b>Visite sur place</b><p>On regarde le terrain, les regards et les canalisations, caméra à l'appui si besoin.</p></li>
+      <li><b>Devis détaillé</b><p>Envoyé <em>sous 48 h</em>, poste par poste. Les travaux commencent seulement après votre accord.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section class="sec law">
+  <div class="wrap two">
+    <div>
+      <div class="eyebrow" style="color:#A9B2D8">Les délais qui comptent</div>
+      <h2>Combien de temps avez-vous&nbsp;?</h2>
+      <p class="sub">Un rapport non conforme n'empêche pas de vendre. Il fixe un calendrier.</p>
+    </div>
+    <div class="laws">
+      <div><b>1 an</b><p>Après une vente, l'acquéreur d'un bien en assainissement non collectif non conforme a un an pour faire les travaux.<small>À compter de la signature de l'acte de vente.</small></p></div>
+      <div><b>2 ans</b><p>Quand le réseau public arrive dans votre rue, vous avez deux ans pour vous y raccorder.<small>À compter de la mise en service du réseau.</small></p></div>
+      <div><b>3 ans</b><p>Le rapport de contrôle joint à une vente doit dater de moins de trois ans.<small>Au-delà, un nouveau contrôle est demandé.</small></p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="zones">
+  <div class="wrap two">
+    <div>
+      <div class="eyebrow">Périmètre</div>
+      <h2>Votre côté de la limite, dans toute l'Île-de-France</h2>
+      <p class="sub">Nous partons de Saint-Mandé et intervenons dans les huit départements.</p>
+    </div>
+    <div>
+      <div class="scope">
+        <div><div class="tag">Ce que nous faisons</div><h3>La partie privée</h3><p>De la maison jusqu'à la boîte de branchement : canalisations, regards, fosse, pompe de relevage, séparation des eaux usées et pluviales.</p></div>
+        <div><div class="tag">Ce que nous ne faisons pas</div><h3>Le réseau public</h3><p>Au-delà de la limite de propriété, l'égout relève de la collectivité. On vous dit à qui vous adresser.</p></div>
+      </div>
+      <div class="deps">
+        <span><i>75</i>Paris</span><span><i>77</i>Seine-et-Marne</span><span><i>78</i>Yvelines</span><span><i>91</i>Essonne</span>
+        <span><i>92</i>Hauts-de-Seine</span><span><i>93</i>Seine-Saint-Denis</span><span><i>94</i>Val-de-Marne</span><span><i>95</i>Val-d'Oise</span>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span><b>BAB Assainissement</b> · 14 avenue du Général de Gaulle, 94160 Saint-Mandé</span>
+    <span class="mono">01 89 48 09 64 · SIREN 933 127 995</span>
+    <span>Maquette, contenus à valider</span>
+  </div>
+</footer>
+
+<div class="bar">
+  <a class="btn line2" href="tel:+33189480964">Appeler</a>
+  <a class="btn" href="#envoyer">Envoyer mon rapport</a>
+</div>
+
+<script>
+(function(){
+  var A = {
+    a1:{t:"Séparer les eaux de pluie des eaux usées", m:"L'eau de vos gouttières part dans le même tuyau que celle des toilettes. Par forte pluie, le réseau sature et peut refouler.", w:"On crée un réseau pluvial distinct, avec ses propres regards, et on ne laisse que les eaux usées vers l'égout.", p:["Terrassement","Canalisations","Regards","Remise en état"]},
+    a2:{t:"Mettre la fosse hors service et se raccorder", m:"Le tout-à-l'égout passe dans votre rue, mais la maison utilise encore sa fosse. Le raccordement est obligatoire.", w:"On vidange, on désinfecte et on comble l'ancienne fosse, puis on raccorde la maison à la boîte de branchement.", p:["Mise hors service de la fosse","Raccordement","Terrassement","Regards"]},
+    a3:{t:"Créer un regard de visite", m:"Il n'existe aucun accès pour contrôler ou entretenir votre branchement avant qu'il ne rejoigne la rue.", w:"On pose un regard accessible en limite de propriété, sur la canalisation existante.", p:["Regard","Terrassement","Remise en état"]},
+    a4:{t:"Remplacer la canalisation en fonte", m:"Le vieux tuyau en fonte est fissuré ou s'est affaissé. Les eaux usées fuient dans le sol ou stagnent.", w:"On localise le défaut à la caméra, puis on remplace le tronçon abîmé, sous la maison ou dans le jardin.", p:["Inspection caméra","Remplacement fonte","Terrassement"]},
+    a5:{t:"Installer une pompe de relevage", m:"Vos évacuations sont plus basses que l'égout. Sans pompe, l'eau ne peut pas remonter jusqu'à la rue.", w:"On installe une station de relevage et sa conduite de refoulement. On assure aussi le remplacement et l'entretien.", p:["Pompe de relevage","Canalisations","Raccordement"]},
+    a6:{t:"Curer puis inspecter à la caméra", m:"Le contrôleur n'a pas pu vérifier l'écoulement : le réseau est trop encombré pour être examiné.", w:"On nettoie les canalisations à haute pression, puis on passe la caméra. Vous recevez un rapport avec les images.", p:["Curage haute pression","Inspection caméra","Rapport et images"]}
+  };
+  var $ = function(i){return document.getElementById(i)};
+  var boxes = Array.prototype.slice.call(document.querySelectorAll("#report input"));
+  function el(tag, cls, txt){var e=document.createElement(tag); if(cls) e.className=cls; if(txt!=null) e.textContent=txt; return e;}
+
+  function render(){
+    var on = boxes.filter(function(b){return b.checked});
+    var cards = $("cards"); cards.textContent = "";
+    var stamp = $("stamp");
+    if (!on.length){
+      stamp.textContent = "CONFORME"; stamp.className = "stamp ok";
+      $("concl").textContent = "Aucune anomalie cochée";
+      $("sum-t").textContent = "Rien à corriger pour l'instant";
+      cards.appendChild(el("div","sheet empty","Cochez au moins une ligne du rapport pour voir les travaux correspondants. Si votre rapport est conforme, vous n'avez rien à faire."));
+      return;
+    }
+    stamp.textContent = "NON CONFORME"; stamp.className = "stamp";
+    $("concl").textContent = on.length + (on.length > 1 ? " anomalies" : " anomalie");
+    $("sum-t").textContent = on.length + (on.length > 1 ? " points à corriger, une seule visite" : " point à corriger, une visite");
+    on.forEach(function(b){
+      var a = A[b.value], c = el("article","sheet card");
+      c.appendChild(el("div","ref","Ligne " + b.value.toUpperCase() + " du rapport"));
+      c.appendChild(el("h3",null,a.t));
+      var dl = el("dl");
+      var d1 = el("div"); d1.appendChild(el("dt",null,"Ce que ça veut dire")); d1.appendChild(el("dd",null,a.m));
+      var d2 = el("div"); d2.appendChild(el("dt",null,"Ce que nous faisons")); d2.appendChild(el("dd",null,a.w));
+      dl.appendChild(d1); dl.appendChild(d2); c.appendChild(dl);
+      var ps = el("div","posts"); ps.setAttribute("aria-label","Postes du devis");
+      a.p.forEach(function(x){ps.appendChild(el("span",null,x))});
+      c.appendChild(ps); cards.appendChild(c);
+    });
+  }
+  boxes.forEach(function(b){b.addEventListener("change", render)});
+
+  var file = $("file"), drop = $("drop");
+  function named(f){ if(!f) return; $("drop-t").textContent = f.name; $("drop-s").textContent = "Fichier prêt. Touchez pour en choisir un autre."; }
+  file.addEventListener("change", function(){named(file.files[0])});
+  ["dragover","dragenter"].forEach(function(n){drop.addEventListener(n,function(e){e.preventDefault();drop.classList.add("over")})});
+  ["dragleave","drop"].forEach(function(n){drop.addEventListener(n,function(e){e.preventDefault();drop.classList.remove("over")})});
+  drop.addEventListener("drop", function(e){ if(e.dataTransfer && e.dataTransfer.files[0]) named(e.dataTransfer.files[0]); });
+
+  $("send").addEventListener("submit", function(e){
+    e.preventDefault();
+    var m = $("msg"), v = $("tel").value.replace(/[\s.\-]/g,"");
+    m.hidden = false;
+    if (!/^(?:\+33|0)[1-9]\d{8}$/.test(v)){
+      m.className = "msg err"; m.textContent = "Il nous faut un numéro à 10 chiffres pour vous rappeler, par exemple 06 12 34 56 78."; $("tel").focus(); return;
+    }
+    m.className = "msg";
+    m.textContent = "Maquette : rien n'est envoyé. Sur le site réel, le rapport et vos " + boxes.filter(function(b){return b.checked}).length + " lignes cochées partent chez BAB, qui vous rappelle du lundi au samedi entre 8 h et 19 h.";
+  });
+  render();
+})();
+</script>
+</body>
+</html>

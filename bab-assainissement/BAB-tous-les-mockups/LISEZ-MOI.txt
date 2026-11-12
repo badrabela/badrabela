@@ -1,0 +1,19 @@
+BAB Assainissement : tous les mock-ups, dans l'ordre où ils ont été faits.
+Chaque fichier s'ouvre d'un double-clic dans un navigateur. Aucun formulaire n'envoie de données.
+
+01  Diagnostic en trois gestes (coupe de terrain)
+02  Le rapport décodé
+03  La coupe du terrain (plan de chantier)
+04  Suivez l'eau, version 1 (paysage illustré)        <- la première qui vous a plu
+05  Le film du chantier
+06  Le tampon
+07  La preuve avant le discours
+08  La transformation réelle
+09  Les quatre moments
+10  Bleu BAB (version adoucie)
+11  Suivez l'eau, version 2 (vraies photos)
+12  Le guichet (un écran, trois choix)
+13  Suivez l'eau, version 3 (sans arrondis ni halos)   <- la dernière
+
+Les maquettes 01 à 05 chargent leurs polices sur Internet ; sans connexion, elles s'affichent avec une police de remplacement.
+Les maquettes 01, 04 et 05 datent d'avant la correction du nom et du métier : leur contenu est en partie inexact.
